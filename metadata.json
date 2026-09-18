@@ -1,0 +1,6 @@
+{
+  "name": "Virtual Modern Office Tour",
+  "description": "Sito interattivo con video a tutto schermo di un ufficio moderno con navigazione animata tra postazioni ed emoji.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
