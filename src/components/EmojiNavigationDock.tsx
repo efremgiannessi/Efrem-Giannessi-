@@ -22,12 +22,12 @@ export const EmojiNavigationDock: React.FC<EmojiNavigationDockProps> = ({
   return (
     <nav
       aria-label="Navigazione postazioni ufficio con emoji"
-      className="fixed bottom-6 left-0 right-0 z-30 flex flex-col items-center justify-center px-4"
+      className="fixed bottom-3 sm:bottom-6 left-0 right-0 z-30 flex flex-col items-center justify-center px-2 sm:px-4 pb-safe pointer-events-none"
     >
       {/* Dock Container */}
       <div
         id="emoji-dock-container"
-        className="relative flex max-w-4xl items-center gap-1.5 sm:gap-3 rounded-3xl border border-white/20 bg-stone-950/80 p-2 sm:p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all"
+        className="pointer-events-auto relative flex max-w-[96vw] sm:max-w-4xl items-center gap-1 sm:gap-3 rounded-2xl sm:rounded-3xl border border-white/20 bg-stone-950/85 p-1.5 sm:p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all"
       >
         {/* Quick Prev Button */}
         <button
@@ -38,13 +38,13 @@ export const EmojiNavigationDock: React.FC<EmojiNavigationDockProps> = ({
             onPrevStation();
           }}
           title="Postazione precedente"
-          className="flex h-11 w-11 items-center justify-center rounded-2xl text-stone-400 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl text-stone-400 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 active:scale-95"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
         {/* Stations Emoji List */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 overflow-x-auto no-scrollbar py-0.5">
+        <div className="flex items-center gap-1 sm:gap-2.5 overflow-x-auto no-scrollbar py-0.5 px-0.5">
           {stations.map((station, index) => {
             const isActive = station.id === activeStationId;
 

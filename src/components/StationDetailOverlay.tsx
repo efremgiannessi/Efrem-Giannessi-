@@ -13,7 +13,13 @@ export const StationDetailOverlay: React.FC<StationDetailOverlayProps> = ({
   station,
   onExploreHotspots,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  // On mobile (screen width < 640px) default to collapsed to maximize video view
+  const [isExpanded, setIsExpanded] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 640;
+    }
+    return true;
+  });
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [bookingToast, setBookingToast] = useState<string | null>(null);
 
@@ -26,14 +32,14 @@ export const StationDetailOverlay: React.FC<StationDetailOverlayProps> = ({
   return (
     <aside
       aria-label="Dettagli postazione attiva"
-      className="fixed top-20 left-6 z-20 max-w-sm sm:max-w-md pointer-events-auto"
+      className="fixed top-16 sm:top-20 left-3 sm:left-6 z-20 w-[calc(100%-1.5rem)] sm:w-auto max-w-sm sm:max-w-md pointer-events-auto"
     >
       <motion.div
         key={station.id}
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="overflow-hidden rounded-3xl border border-white/20 bg-stone-950/85 p-5 shadow-[0_15px_35px_rgba(0,0,0,0.5)] backdrop-blur-xl text-white"
+        className="overflow-hidden rounded-2xl sm:rounded-3xl border border-white/20 bg-stone-950/90 p-3.5 sm:p-5 shadow-[0_15px_35px_rgba(0,0,0,0.6)] backdrop-blur-xl text-white"
       >
         {/* Header with Emoji & Title */}
         <div className="flex items-start justify-between gap-3">
@@ -101,15 +107,15 @@ export const StationDetailOverlay: React.FC<StationDetailOverlayProps> = ({
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  id="btn-reserve-station"
-                  onClick={handleBooking}
+                <a
+                  id="btn-request-consultation"
+                  href="mailto:EfremGiannessi@gmail.com?subject=Richiesta%20Informazioni%20Progetto%20BIM%20e%20Computo"
+                  onClick={() => audioSystem.playClick(750)}
                   className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-3.5 py-2 text-xs font-semibold text-stone-950 shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-500 transition-all active:scale-98"
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                  Prenota Postazione
-                </button>
+                  Richiedi Info / Preventivo
+                </a>
 
                 <button
                   type="button"

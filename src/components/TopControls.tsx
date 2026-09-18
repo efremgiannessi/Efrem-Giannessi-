@@ -64,30 +64,32 @@ export const TopControls: React.FC<TopControlsProps> = ({
   return (
     <header
       aria-label="Controlli vista ufficio"
-      className="fixed top-4 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-6 pointer-events-none"
+      className="fixed top-2 sm:top-4 left-0 right-0 z-30 flex items-center justify-between px-2 sm:px-6 pt-safe pointer-events-none gap-1.5"
     >
       {/* Brand & Title */}
-      <div className="flex items-center gap-3 pointer-events-auto rounded-2xl border border-white/15 bg-stone-950/80 px-3.5 py-2 shadow-xl backdrop-blur-xl">
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-stone-950 font-black text-sm shadow-md">
-          🏢
+      <div
+        className="flex items-center gap-2 sm:gap-3 pointer-events-auto rounded-xl sm:rounded-2xl border border-white/15 bg-stone-950/85 px-2.5 sm:px-3.5 py-1.5 sm:py-2 shadow-xl backdrop-blur-xl"
+      >
+        <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-stone-950 font-black text-xs sm:text-sm shadow-md">
+          EG
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-white">
-              Modern Office
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">
+              Efrem Giannessi
             </span>
-            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-300 border border-amber-500/30">
-              360° LIVE
+            <span className="hidden xs:inline rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[8px] sm:text-[9px] font-bold text-amber-300 border border-amber-500/30">
+              BIM 5D • 360°
             </span>
           </div>
-          <p className="text-[10px] text-stone-400">Tour Interattivo con Video & Emoji</p>
+          <p className="hidden sm:block text-[10px] text-stone-400">Progettazione BIM 5D • Computo Industriale • Rendering</p>
         </div>
       </div>
 
       {/* Center/Right Control Bar */}
-      <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto rounded-2xl border border-white/15 bg-stone-950/80 p-1.5 shadow-xl backdrop-blur-xl">
+      <div className="flex items-center gap-1 sm:gap-2 pointer-events-auto rounded-xl sm:rounded-2xl border border-white/15 bg-stone-950/85 p-1 sm:p-1.5 shadow-xl backdrop-blur-xl">
         {/* Lighting Mode Selector */}
-        <div className="flex items-center rounded-xl bg-white/5 p-0.5 border border-white/10">
+        <div className="flex items-center rounded-lg sm:rounded-xl bg-white/5 p-0.5 border border-white/10">
           <button
             type="button"
             id="lighting-day"
@@ -96,13 +98,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('day');
             }}
             title="Luce Giorno"
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
               lightingMode === 'day'
                 ? 'bg-amber-400 text-stone-950 shadow font-semibold'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Sun className="h-4 w-4" />
+            <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           <button
             type="button"
@@ -112,13 +114,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('sunset');
             }}
             title="Luce Tramonto"
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
               lightingMode === 'sunset'
                 ? 'bg-amber-600 text-white shadow font-semibold'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Sunset className="h-4 w-4" />
+            <Sunset className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           <button
             type="button"
@@ -128,13 +130,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('night');
             }}
             title="Luce Notte"
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
               lightingMode === 'night'
                 ? 'bg-indigo-600 text-white shadow font-semibold'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Moon className="h-4 w-4" />
+            <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
         </div>
 

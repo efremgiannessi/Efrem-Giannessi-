@@ -74,21 +74,39 @@ export const HotspotModal: React.FC<HotspotModalProps> = ({ hotspot, onClose }) 
           {hotspot.description}
         </p>
 
-        {/* Technical Specs box */}
-        <div className="mt-4 rounded-2xl bg-white/5 border border-white/10 p-3.5 space-y-1.5 text-xs text-stone-300">
-          <div className="flex items-center justify-between">
-            <span className="text-stone-400">Interazione:</span>
-            <span className="font-medium text-amber-300">Attiva in tempo reale</span>
+        {/* Detailed Bullet Points from efremgiannessi.org */}
+        {hotspot.detailBullets && hotspot.detailBullets.length > 0 && (
+          <div className="mt-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-2 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              Punti Chiave & Metodologia:
+            </h4>
+            <ul className="space-y-1.5">
+              {hotspot.detailBullets.map((bullet, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs text-stone-200">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-stone-400">Posizione stanza:</span>
-            <span className="font-mono text-white">{hotspot.x}% X / {hotspot.y}% Y</span>
-          </div>
-        </div>
+        )}
 
-        {/* Action Button */}
-        <div className="mt-6 flex gap-2">
-          {hotspot.actionLabel && (
+        {/* Action / External Link Buttons */}
+        <div className="mt-6 flex flex-col sm:flex-row gap-2">
+          {hotspot.linkUrl ? (
+            <a
+              id="open-hotspot-link"
+              href={hotspot.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => audioSystem.playClick(850)}
+              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-sm font-semibold text-stone-950 shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-500 transition-all active:scale-98"
+            >
+              <span>{hotspot.actionLabel || 'Visita il sito'}</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          ) : hotspot.actionLabel ? (
             <button
               type="button"
               id="execute-hotspot-action"
@@ -109,7 +127,7 @@ export const HotspotModal: React.FC<HotspotModalProps> = ({ hotspot, onClose }) 
                 </>
               )}
             </button>
-          )}
+          ) : null}
 
           <button
             type="button"

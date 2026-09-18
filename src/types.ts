@@ -9,6 +9,8 @@ export interface Hotspot {
   y: number; // percentage from top (0 - 100)
   actionLabel?: string;
   badge?: string;
+  linkUrl?: string;
+  detailBullets?: string[];
 }
 
 export interface OfficeStation {
@@ -23,7 +25,9 @@ export interface OfficeStation {
   features: string[];
   equipment: string[];
   hotspots: Hotspot[];
-  // Background images / visuals for each lighting mode (high-res modern architecture photography)
+  // Video background for interactive video tour (MP4 format)
+  videoUrl: string;
+  // Background images / visuals for fallback or lighting mode
   backgrounds: {
     day: string;
     sunset: string;
