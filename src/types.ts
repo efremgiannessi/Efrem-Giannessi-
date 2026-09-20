@@ -1,4 +1,6 @@
 export type LightingMode = 'day' | 'sunset' | 'night';
+export type WeatherIntensity = 'subtle' | 'vivid' | 'off';
+export type TransitionStyle = 'motion-blur' | 'cross-dissolve' | 'warp-zoom';
 
 export interface Hotspot {
   id: string;
@@ -29,6 +31,12 @@ export interface OfficeStation {
   videoUrl: string;
   // Background images / visuals for fallback or lighting mode
   backgrounds: {
+    day: string;
+    sunset: string;
+    night: string;
+  };
+  // Interactive 360° Equirectangular Panorama Photo Sphere URLs
+  panorama360?: {
     day: string;
     sunset: string;
     night: string;

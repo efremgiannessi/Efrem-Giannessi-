@@ -1,6 +1,6 @@
 {
-  "name": "Efrem Giannessi | BIM 5D & Computo",
-  "description": "Studio Virtuale di Efrem Giannessi: Progettazione BIM 5D, Computo Metrico Industriale e Rendering Fotorealistico a Noceto (PR) con video interattivi a 360° e punti tecnici cliccabili.",
+  "name": "Efrem Giannessi | BIM 5D, Revit & Sviluppo Plugin",
+  "description": "Studio Virtuale di Efrem Giannessi: Progettazione BIM 5D, Modellazione Autodesk Revit, Sviluppo Plugin & API per Revit (C#, pyRevit, Python), Computo Metrico Industriale e Rendering con video interattivi a 360°.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
