@@ -117,16 +117,22 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
       role="dialog"
       aria-modal="true"
       aria-labelledby="cost-estimator-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
     >
       <div
-        className="relative w-full max-w-4xl rounded-3xl border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-4xl rounded-none border border-white/15 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400" />
+
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-stone-950 font-black shadow-lg shadow-amber-500/30">
+            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-none bg-amber-400/10 border border-amber-400/40 text-amber-400 font-black">
               <Calculator className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
@@ -134,11 +140,11 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                 <h2 id="cost-estimator-title" className="text-base sm:text-lg font-bold text-white tracking-wide">
                   Calcolatore & Preventivatore BIM 5D
                 </h2>
-                <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-400/40">
+                <span className="rounded-none bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/30">
                   UNI 11337 / ISO 19650
                 </span>
               </div>
-              <p className="text-xs text-stone-400">
+              <p className="text-xs text-stone-400 font-light">
                 Stima parametrica preliminare dei tempi, onorari di modellazione e risparmio di cantiere
               </p>
             </div>
@@ -150,23 +156,23 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
               audioSystem.playClick(500);
               onClose();
             }}
-            className="rounded-xl p-2 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="rounded-none border border-white/10 bg-white/5 p-1.5 text-stone-400 hover:border-amber-400/50 hover:text-white transition-colors"
             title="Chiudi calcolatore"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content Body: Grid 2 Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 py-4 overflow-y-auto min-h-0">
           {/* Left Column: Parametric Inputs (7 cols) */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 space-y-4 font-mono">
             {/* Building Type */}
             <div>
-              <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-2">
-                Tipologia Opera
+              <label className="text-[11px] font-bold text-stone-300 uppercase tracking-wider block mb-2">
+                TIPOLOGIA OPERA
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 {[
                   { id: 'residenziale', label: 'Residenziale', icon: '🏡' },
                   { id: 'commerciale', label: 'Terziario', icon: '🏢' },
@@ -180,10 +186,10 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                       audioSystem.playClick(620);
                       setBuildingType(type.id as typeof buildingType);
                     }}
-                    className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-medium transition-all ${
+                    className={`flex flex-col items-center justify-center p-2.5 rounded-none border text-xs uppercase tracking-wider transition-all ${
                       buildingType === type.id
-                        ? 'bg-amber-400/20 border-amber-400 text-amber-300 font-bold shadow-md'
-                        : 'bg-white/5 border-white/10 text-stone-400 hover:bg-white/10 hover:text-stone-200'
+                        ? 'bg-amber-400/15 border-amber-400 text-amber-300 font-bold shadow-sm'
+                        : 'bg-white/5 border-white/10 text-stone-400 hover:border-white/25 hover:text-stone-200'
                     }`}
                   >
                     <span className="text-lg mb-1">{type.icon}</span>
@@ -194,12 +200,12 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
             </div>
 
             {/* Area m2 Slider */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5">
+            <div className="rounded-none border border-white/10 bg-stone-900/60 p-3.5">
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor={`${inputId}-area`} className="text-xs font-semibold text-white">
-                  Superficie Lorda di Progetto
+                <label htmlFor={`${inputId}-area`} className="text-xs font-semibold text-white uppercase tracking-wider">
+                  Superficie Lorda Progetto
                 </label>
-                <span className="font-mono text-sm font-bold text-amber-300 bg-amber-400/10 px-2.5 py-0.5 rounded-lg border border-amber-400/30">
+                <span className="font-mono text-sm font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded-none border border-amber-400/40">
                   {areaM2.toLocaleString('it-IT')} m²
                 </span>
               </div>
@@ -211,23 +217,23 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                 step="50"
                 value={areaM2}
                 onChange={(e) => setAreaM2(Number(e.target.value))}
-                className="w-full h-2 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                className="w-full h-1.5 bg-stone-800 rounded-none appearance-none cursor-pointer accent-amber-400"
               />
-              <div className="flex justify-between text-[10px] text-stone-500 font-mono mt-1">
-                <span>100 m² (Piccolo)</span>
+              <div className="flex justify-between text-[9px] text-stone-400 font-mono mt-1 uppercase">
+                <span>100 m² (Min)</span>
                 <span>2.500 m²</span>
                 <span>5.000 m²</span>
-                <span>10.000 m² (Complesso)</span>
+                <span>10.000 m² (Max)</span>
               </div>
             </div>
 
             {/* Level of Development (LOD) */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">
                   Livello di Dettaglio (LOD UNI 11337)
                 </label>
-                <span className="text-[10px] text-stone-400">Accuratezza geometrica & informativa</span>
+                <span className="text-[10px] text-stone-400 font-light">Accuratezza geometrica & informativa</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
@@ -243,29 +249,29 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                       audioSystem.playClick(650);
                       setLod(item.id as typeof lod);
                     }}
-                    className={`flex flex-col text-left p-2.5 rounded-xl border transition-all ${
+                    className={`flex flex-col text-left p-2.5 rounded-none border transition-all ${
                       lod === item.id
-                        ? 'bg-amber-400/20 border-amber-400 text-amber-300 shadow-md'
-                        : 'bg-white/5 border-white/10 text-stone-400 hover:bg-white/10'
+                        ? 'bg-amber-400/15 border-amber-400 text-amber-300 shadow-sm'
+                        : 'bg-white/5 border-white/10 text-stone-400 hover:border-white/25'
                     }`}
                   >
-                    <span className="text-xs font-bold text-white">{item.title}</span>
-                    <span className="text-[10px] text-stone-400 mt-0.5">{item.desc}</span>
+                    <span className="text-xs font-bold text-white uppercase">{item.title}</span>
+                    <span className="text-[9px] text-stone-400 mt-0.5 font-sans">{item.desc}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Disciplines & Services Checkboxes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
-                <span className="text-xs font-bold text-stone-200 block mb-1">Discipline Coinvolte</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sans">
+              <div className="rounded-none border border-white/10 bg-white/5 p-3 space-y-2">
+                <span className="text-xs font-bold font-mono uppercase tracking-wider text-stone-200 block mb-1">Discipline Coinvolte</span>
                 <label className="flex items-center gap-2 text-xs text-stone-300 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={includeArch}
                     onChange={(e) => setIncludeArch(e.target.checked)}
-                    className="rounded accent-amber-400 h-4 w-4"
+                    className="rounded-none accent-amber-400 h-3.5 w-3.5"
                   />
                   <span>Modellazione Architettonica</span>
                 </label>
@@ -274,7 +280,7 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                     type="checkbox"
                     checked={includeStruct}
                     onChange={(e) => setIncludeStruct(e.target.checked)}
-                    className="rounded accent-amber-400 h-4 w-4"
+                    className="rounded-none accent-amber-400 h-3.5 w-3.5"
                   />
                   <span>Modellazione Strutturale</span>
                 </label>
@@ -283,20 +289,20 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                     type="checkbox"
                     checked={includeMEP}
                     onChange={(e) => setIncludeMEP(e.target.checked)}
-                    className="rounded accent-amber-400 h-4 w-4"
+                    className="rounded-none accent-amber-400 h-3.5 w-3.5"
                   />
                   <span>Impianti MEP (Mecc./Elettr./Idrico)</span>
                 </label>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
-                <span className="text-xs font-bold text-stone-200 block mb-1">Moduli Speciali</span>
+              <div className="rounded-none border border-white/10 bg-white/5 p-3 space-y-2">
+                <span className="text-xs font-bold font-mono uppercase tracking-wider text-stone-200 block mb-1">Moduli Speciali</span>
                 <label className="flex items-center gap-2 text-xs text-stone-300 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={include5DCost}
                     onChange={(e) => setInclude5DCost(e.target.checked)}
-                    className="rounded accent-amber-400 h-4 w-4"
+                    className="rounded-none accent-amber-400 h-3.5 w-3.5"
                   />
                   <span>Computo 5D & WBS Dinamica</span>
                 </label>
@@ -305,7 +311,7 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                     type="checkbox"
                     checked={includeClashDetection}
                     onChange={(e) => setIncludeClashDetection(e.target.checked)}
-                    className="rounded accent-amber-400 h-4 w-4"
+                    className="rounded-none accent-amber-400 h-3.5 w-3.5"
                   />
                   <span>Clash Detection & BCF Report</span>
                 </label>
@@ -314,50 +320,50 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
           </div>
 
           {/* Right Column: Calculated ROI & Quotation Summary (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col justify-between rounded-2xl border border-amber-400/30 bg-gradient-to-b from-amber-500/10 via-stone-950 to-stone-950 p-4 sm:p-5">
+          <div className="lg:col-span-5 flex flex-col justify-between rounded-none border border-amber-400/30 bg-stone-900/60 p-4 sm:p-5">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
                   Stima Economica Parametrica
                 </span>
-                <span className="text-[10px] font-mono text-stone-400">Aggiornato 2026</span>
+                <span className="text-[10px] font-mono text-stone-400">REV. 2026</span>
               </div>
 
               <div className="mt-4 space-y-3">
                 {/* Construction cost */}
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-stone-400">Valore Stimato Costruzione Opere:</span>
+                  <span className="text-stone-400 font-light">Valore Opere Cantiere:</span>
                   <span className="font-mono font-bold text-stone-200">
                     € {estimatedConstructionCost.toLocaleString('it-IT')}
                   </span>
                 </div>
 
                 {/* BIM Service Estimate */}
-                <div className="rounded-xl bg-amber-500/15 border border-amber-400/40 p-3">
-                  <div className="text-[11px] font-semibold text-amber-300 mb-0.5">
-                    Onorario Stimato Ingegneria BIM 5D
+                <div className="rounded-none bg-amber-400/10 border border-amber-400/30 p-3">
+                  <div className="text-[10px] font-mono uppercase tracking-wider font-semibold text-amber-300 mb-0.5">
+                    Onorario Ingegneria BIM 5D
                   </div>
                   <div className="text-2xl font-black font-mono text-white">
                     € {estimatedBIMService.toLocaleString('it-IT')}
                   </div>
-                  <div className="text-[10px] text-amber-200/80 mt-1 flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>Consegna stimata: <strong>~{estimatedDays} giorni lavorativi</strong></span>
+                  <div className="text-[10px] text-amber-200/80 mt-1 flex items-center gap-1 font-mono">
+                    <Clock className="h-3 w-3 text-amber-400" />
+                    <span>Consegna stimata: <strong>~{estimatedDays} gg lavorativi</strong></span>
                   </div>
                 </div>
 
                 {/* ROI / Clash Detection Savings */}
-                <div className="rounded-xl bg-emerald-500/15 border border-emerald-500/40 p-3">
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-300 mb-0.5">
+                <div className="rounded-none bg-emerald-500/10 border border-emerald-500/30 p-3">
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider font-semibold text-emerald-300 mb-0.5">
                     <span>Risparmio Risoluzione Interferenze</span>
-                    <span className="bg-emerald-400 text-stone-950 text-[9px] font-bold px-1.5 py-0.2 rounded font-mono">
+                    <span className="bg-emerald-400 text-stone-950 text-[9px] font-bold px-1.5 py-0.2 rounded-none font-mono">
                       ROI +{netROI}%
                     </span>
                   </div>
                   <div className="text-xl font-black font-mono text-emerald-300">
                     € {estimatedClashSavings.toLocaleString('it-IT')}
                   </div>
-                  <p className="text-[10px] text-emerald-200/80 mt-1 leading-tight">
+                  <p className="text-[10px] text-stone-400 mt-1 leading-tight font-light">
                     La clash detection preventiva elimina fino al 90% delle varianti impreviste e ritardi in cantiere.
                   </p>
                 </div>
@@ -365,22 +371,22 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
             </div>
 
             {/* Actions */}
-            <div className="mt-5 pt-3 border-t border-white/10 space-y-2">
+            <div className="mt-5 pt-3 border-t border-white/10 space-y-2 font-mono">
               <button
                 type="button"
                 id="btn-send-quote-email"
                 onClick={handleSendToEmail}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-bold py-2.5 px-4 text-xs shadow-lg shadow-amber-500/30 transition-all active:scale-98"
+                className="w-full flex items-center justify-center gap-2 rounded-none bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold py-2.5 px-4 text-xs uppercase tracking-wider transition-all active:scale-98 shadow-md"
               >
                 <Mail className="h-4 w-4" />
-                <span>Invia a Efrem Giannessi per Preventivo Ufficiale</span>
+                <span>Richiedi Preventivo Ufficiale</span>
               </button>
 
               <button
                 type="button"
                 id="btn-copy-quote-summary"
                 onClick={handleCopyQuote}
-                className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-stone-300 hover:text-white py-2 px-3 text-xs font-semibold transition-all"
+                className="w-full flex items-center justify-center gap-1.5 rounded-none border border-white/15 bg-white/5 hover:border-amber-400/40 text-stone-300 hover:text-white py-2 px-3 text-xs uppercase tracking-wider transition-all"
               >
                 {isCopied ? (
                   <>
@@ -390,7 +396,7 @@ Richiesta preventivo ufficiale a: EfremGiannessi@gmail.com`;
                 ) : (
                   <>
                     <Download className="h-3.5 w-3.5 text-stone-400" />
-                    <span>Copia Scheda Sintesi Computo</span>
+                    <span>Copia Sintesi Computo</span>
                   </>
                 )}
               </button>

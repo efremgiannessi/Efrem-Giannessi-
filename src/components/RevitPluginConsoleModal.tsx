@@ -236,16 +236,22 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
       role="dialog"
       aria-modal="true"
       aria-labelledby="revit-console-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
     >
       <div
-        className="relative w-full max-w-5xl rounded-3xl border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-5xl rounded-none border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400 z-20" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-500 text-white font-black shadow-lg shadow-sky-500/30">
+            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-none bg-sky-400/10 border border-sky-400/40 text-sky-400 font-bold">
               <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
@@ -253,11 +259,11 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
                 <h2 id="revit-console-title" className="text-base sm:text-lg font-bold text-white tracking-wide">
                   Console Sviluppo Plugin & pyRevit
                 </h2>
-                <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-300 border border-sky-500/40">
-                  Revit API • Python • C#
+                <span className="rounded-none bg-sky-400/15 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-sky-400 border border-sky-400/30">
+                  REVIT API • PYTHON • C#
                 </span>
               </div>
-              <p className="text-xs text-stone-400">
+              <p className="text-xs text-stone-400 font-light">
                 Sandbox interattivo di automazione, scripting per computi e sviluppo estensioni Autodesk Revit
               </p>
             </div>
@@ -269,31 +275,31 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
               audioSystem.playClick(500);
               onClose();
             }}
-            className="rounded-xl p-2 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="rounded-none border border-white/10 bg-white/5 p-1.5 text-stone-400 hover:border-amber-400/50 hover:text-white transition-colors"
             title="Chiudi console"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Snippet Selection Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 my-3 shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 my-3 shrink-0 font-mono">
           {SNIPPETS.map((snippet) => (
             <button
               key={snippet.id}
               type="button"
               onClick={() => handleSelectSnippet(snippet)}
-              className={`p-2.5 rounded-xl border text-left transition-all ${
+              className={`p-2.5 rounded-none border text-left transition-all ${
                 selectedSnippetId === snippet.id
-                  ? 'bg-sky-500/20 border-sky-400 text-white shadow-md'
-                  : 'bg-white/5 border-white/10 text-stone-400 hover:bg-white/10 hover:text-stone-200'
+                  ? 'bg-amber-400/10 border-amber-400/80 text-white shadow-sm'
+                  : 'bg-stone-900/60 border-white/10 text-stone-400 hover:border-white/20 hover:text-stone-200'
               }`}
             >
-              <div className="flex items-center justify-between text-[10px] font-mono text-sky-300 mb-0.5">
+              <div className="flex items-center justify-between text-[10px] text-amber-400 mb-0.5 uppercase tracking-wider">
                 <span>{snippet.language}</span>
-                <span className="text-stone-400">{snippet.filename}</span>
+                <span className="text-stone-500 font-normal">{snippet.filename}</span>
               </div>
-              <div className="text-xs font-semibold text-white line-clamp-1">
+              <div className="text-xs font-bold text-white line-clamp-1 font-sans">
                 {snippet.title}
               </div>
             </button>
@@ -303,17 +309,17 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
         {/* Code & Console Dual View */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0 overflow-y-auto">
           {/* Code Viewer (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col rounded-2xl border border-white/15 bg-stone-900/90 overflow-hidden shadow-inner">
-            <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/10 bg-stone-950/70 text-xs">
+          <div className="lg:col-span-7 flex flex-col rounded-none border border-white/15 bg-stone-900/90 overflow-hidden shadow-inner">
+            <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/10 bg-stone-950 text-xs">
               <div className="flex items-center gap-2 text-stone-300 font-mono text-[11px]">
                 <FileCode className="h-3.5 w-3.5 text-sky-400" />
                 <span>{currentSnippet.filename}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 font-mono">
                 <button
                   type="button"
                   onClick={handleCopyCode}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold bg-white/10 hover:bg-white/20 text-stone-200 transition-colors"
+                  className="flex items-center gap-1 rounded-none border border-white/15 px-2 py-1 text-[10px] font-semibold bg-white/5 hover:border-amber-400/50 hover:bg-white/10 text-stone-200 transition-colors uppercase"
                 >
                   {copied ? (
                     <>
@@ -332,7 +338,7 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
                   id="btn-run-revit-script"
                   onClick={handleRunScript}
                   disabled={isRunning}
-                  className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-md transition-all active:scale-95 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-none border border-emerald-500/60 px-2.5 py-1 text-[10px] font-bold bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-sm transition-all active:scale-95 disabled:opacity-50 uppercase tracking-wider"
                 >
                   <Play className={`h-3 w-3 ${isRunning ? 'animate-spin' : ''}`} />
                   <span>{isRunning ? 'Esecuzione...' : 'Esegui Script'}</span>
@@ -340,7 +346,7 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
               </div>
             </div>
 
-            <pre className="flex-1 p-3.5 text-[11px] font-mono text-emerald-300/90 overflow-x-auto leading-relaxed selection:bg-sky-500/30 selection:text-white">
+            <pre className="flex-1 p-3.5 text-[11px] font-mono text-emerald-300/90 overflow-x-auto leading-relaxed selection:bg-sky-500/30 selection:text-white bg-stone-950/60">
               <code>{currentSnippet.code}</code>
             </pre>
           </div>
@@ -348,21 +354,21 @@ export const RevitPluginConsoleModal: React.FC<RevitPluginConsoleModalProps> = (
           {/* Console Output & Description (5 cols) */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             {/* Description Card */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5 text-xs text-stone-300">
-              <h4 className="font-bold text-white mb-1 flex items-center gap-1.5 text-xs">
-                <Cpu className="h-3.5 w-3.5 text-sky-400" />
+            <div className="rounded-none border border-white/15 bg-stone-900/60 p-3.5 text-xs text-stone-300">
+              <h4 className="font-bold text-white mb-1 flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-amber-400">
+                <Cpu className="h-3.5 w-3.5 text-amber-400" />
                 <span>Funzionalità del Modulo</span>
               </h4>
-              <p className="text-[11px] text-stone-300 leading-relaxed">
+              <p className="text-[11px] text-stone-300 leading-relaxed font-light">
                 {currentSnippet.description}
               </p>
             </div>
 
             {/* Terminal Live Console */}
-            <div className="flex-1 flex flex-col rounded-2xl border border-white/15 bg-black/80 overflow-hidden shadow-inner min-h-[160px]">
+            <div className="flex-1 flex flex-col rounded-none border border-white/15 bg-black/90 overflow-hidden shadow-inner min-h-[160px]">
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10 bg-stone-950 text-[10px] font-mono text-stone-400">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="h-1.5 w-1.5 rounded-none bg-emerald-400 animate-pulse" />
                   <span>OUTPUT TERMINALE REVIT</span>
                 </div>
                 <span>STATUS: {isRunning ? 'RUNNING' : 'IDLE'}</span>

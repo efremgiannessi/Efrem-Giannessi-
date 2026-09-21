@@ -317,6 +317,92 @@ class AudioSynthesizer {
     }
   }
 
+  // Active Theory signature high-frequency tech hover blip
+  public playTechHover() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1600, now);
+      osc.frequency.exponentialRampToValueAtTime(2400, now + 0.035);
+
+      gain.gain.setValueAtTime(0.02, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.035);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Active Theory project card momentum glide / whoosh
+  public playCardSlide() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(90, now);
+      osc.frequency.exponentialRampToValueAtTime(45, now + 0.18);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(400, now);
+      filter.frequency.exponentialRampToValueAtTime(120, now + 0.18);
+
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Active Theory subtle digital glitch artifact
+  public playGlitch() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800 + Math.random() * 600, now);
+      osc.frequency.setValueAtTime(300 + Math.random() * 400, now + 0.02);
+
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch {
+      // ignore
+    }
+  }
+
   // Switch continuous ambience based on station type
   public updateStationAmbience(ambience: string) {
     this.currentAmbienceType = ambience;
@@ -420,6 +506,34 @@ class AudioSynthesizer {
   public getRainActive(): boolean {
     return this.isRainActive;
   }
+
+  public unlockAudio() {
+    this.isMuted = false;
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+  }
 }
 
 export const audioSystem = new AudioSynthesizer();
+
+// Ensure audio is ALWAYS active on any user gesture/interaction
+if (typeof window !== 'undefined') {
+  const activateAudio = () => {
+    audioSystem.unlockAudio();
+    window.removeEventListener('pointerdown', activateAudio);
+    window.removeEventListener('touchstart', activateAudio);
+    window.removeEventListener('scroll', activateAudio);
+    window.removeEventListener('wheel', activateAudio);
+    window.removeEventListener('keydown', activateAudio);
+    window.removeEventListener('mousemove', activateAudio);
+  };
+
+  window.addEventListener('pointerdown', activateAudio, { passive: true });
+  window.addEventListener('touchstart', activateAudio, { passive: true });
+  window.addEventListener('scroll', activateAudio, { passive: true });
+  window.addEventListener('wheel', activateAudio, { passive: true });
+  window.addEventListener('keydown', activateAudio, { passive: true });
+  window.addEventListener('mousemove', activateAudio, { passive: true });
+}

@@ -1,394 +1,217 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import React, { useState, useRef, useEffect } from 'react';
+import { ActiveTheoryScene } from './components/ActiveTheoryScene';
+import { ActiveTheoryNav } from './components/ActiveTheoryNav';
+import { ActiveTheoryHero } from './components/ActiveTheoryHero';
+import { AmbientBlurredProjects } from './components/AmbientBlurredProjects';
+import { RenderingSection } from './components/RenderingSection';
+import { PyRevitPythonSection } from './components/PyRevitPythonSection';
+import { ProfessionalProfileSection } from './components/ProfessionalProfileSection';
+import { TechnicalSkillsSection } from './components/TechnicalSkillsSection';
+import { CertificationsSection } from './components/CertificationsSection';
+import { ActiveTheoryContact } from './components/ActiveTheoryContact';
+import { ActiveTheoryRevitModal } from './components/ActiveTheoryRevitModal';
+import { ActiveTheoryAuditModal } from './components/ActiveTheoryAuditModal';
+import { ActiveTheoryCursor } from './components/ActiveTheoryCursor';
+import { SceneManager, GraphicTheme, GRAPHIC_THEMES } from './webgl/SceneManager';
+import { SmoothScroll } from './webgl/SmoothScroll';
+import { Sparkles, ArrowDown, ArrowUp } from 'lucide-react';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { OFFICE_STATIONS } from './data/officeStations';
-import { OfficeStation, LightingMode, Hotspot, TransitionStyle } from './types';
-import { OfficeVideoCanvas } from './components/OfficeVideoCanvas';
-import { Office360Viewer } from './components/Office360Viewer';
-import { EmojiNavigationDock } from './components/EmojiNavigationDock';
-import { FlyingEmojiTransition } from './components/FlyingEmojiTransition';
-import { StationDetailOverlay } from './components/StationDetailOverlay';
-import { TopControls } from './components/TopControls';
-import { HotspotModal } from './components/HotspotModal';
-import { GitHubPublishModal } from './components/GitHubPublishModal';
-import { OfficeMiniMap } from './components/OfficeMiniMap';
-import { BIMViewerModal } from './components/BIMViewerModal';
-import { CadBimCompareModal } from './components/CadBimCompareModal';
-import { GuidedTourController } from './components/GuidedTourController';
-import { LightTimeSyncModal } from './components/LightTimeSyncModal';
-import { LightTimeToast } from './components/LightTimeToast';
-import { WeatherAtmosphereOverlay } from './components/WeatherAtmosphereOverlay';
-import { BIMCostEstimatorModal } from './components/BIMCostEstimatorModal';
-import { RevitPluginConsoleModal } from './components/RevitPluginConsoleModal';
-import { VirtualStagingModal } from './components/VirtualStagingModal';
-import { LivePitchMeetingOverlay } from './components/LivePitchMeetingOverlay';
-import { DirectAuditBookingModal } from './components/DirectAuditBookingModal';
-import { useLightTimeSync } from './hooks/useLightTimeSync';
-import { audioSystem } from './utils/audioSynthesizer';
+export function App() {
+  const [sceneManager, setSceneManager] = useState<SceneManager | null>(null);
+  const scrollerRef = useRef<SmoothScroll | null>(null);
 
-export default function App() {
-  const [currentStationIndex, setCurrentStationIndex] = useState<number>(0);
-  const {
-    lightingMode,
-    isAutoSync,
-    setIsAutoSync,
-    timeInfo,
-    manualSelectMode,
-    syncNow,
-    simulatedHour,
-    setSimulatedHour,
-    lastSyncMessage,
-    clearSyncMessage,
-    weatherIntensity,
-    setWeatherIntensity,
-    toggleWeatherIntensity,
-  } = useLightTimeSync();
-  const [isTimeSyncModalOpen, setIsTimeSyncModalOpen] = useState<boolean>(false);
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [transitionDirection, setTransitionDirection] = useState<'left' | 'right' | 'direct'>('direct');
-  const [flyingEmoji, setFlyingEmoji] = useState<{ emoji: string; name: string } | null>(null);
-  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
-  const [showHotspots, setShowHotspots] = useState<boolean>(true);
-  const [showMiniMap, setShowMiniMap] = useState<boolean>(true);
-  const [isAutoTouring, setIsAutoTouring] = useState<boolean>(false);
-  const [isGitHubModalOpen, setIsGitHubModalOpen] = useState<boolean>(false);
-  const [isBIMViewerOpen, setIsBIMViewerOpen] = useState<boolean>(false);
-  const [isCadCompareOpen, setIsCadCompareOpen] = useState<boolean>(false);
-  const [is360Mode, setIs360Mode] = useState<boolean>(false);
-  const [isBIMEstimatorOpen, setIsBIMEstimatorOpen] = useState<boolean>(false);
-  const [isRevitConsoleOpen, setIsRevitConsoleOpen] = useState<boolean>(false);
-  const [isVirtualStagingOpen, setIsVirtualStagingOpen] = useState<boolean>(false);
-  const [isPitchMode, setIsPitchMode] = useState<boolean>(false);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
-  const [quoteMessageForBooking, setQuoteMessageForBooking] = useState<string>('');
-  const [isRainAudioActive, setIsRainAudioActive] = useState<boolean>(false);
-  const [transitionStyle, setTransitionStyle] = useState<TransitionStyle>('motion-blur');
+  // Graphic Theme State & Shift Notification
+  const [activeTheme, setActiveTheme] = useState<GraphicTheme>(GRAPHIC_THEMES[0]);
+  const [shiftToast, setShiftToast] = useState<{
+    message: string;
+    theme: GraphicTheme;
+    trigger: 'bottom' | 'top' | 'manual';
+  } | null>(null);
 
-  const currentStation = OFFICE_STATIONS[currentStationIndex];
-  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // pyRevit & Audit Modals
+  const [isRevitModalOpen, setIsRevitModalOpen] = useState<boolean>(false);
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
+  const [auditProjectTitle, setAuditProjectTitle] = useState<string>('');
 
-  // Switch station with animated flying emoji and camera travel
-  const navigateToStation = useCallback(
-    (newIndex: number) => {
-      if (newIndex === currentStationIndex || isTransitioning) return;
+  const handleSceneReady = (scene: SceneManager, scroller: SmoothScroll) => {
+    setSceneManager(scene);
+    scrollerRef.current = scroller;
 
-      const direction: 'left' | 'right' = newIndex > currentStationIndex ? 'right' : 'left';
-      setTransitionDirection(direction);
-      setIsTransitioning(true);
+    // Listen to automatic edge morphing & manual theme changes
+    scene.onThemeChange = (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'manual') => {
+      setActiveTheme(theme);
 
-      const targetStation = OFFICE_STATIONS[newIndex];
-      setFlyingEmoji({ emoji: targetStation.emoji, name: targetStation.name });
-
-      // Audio feedback
-      audioSystem.playTransitionWhoosh();
-      audioSystem.updateStationAmbience(targetStation.ambientSound);
-
-      // Change station
-      setCurrentStationIndex(newIndex);
-
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current);
+      let msg = '';
+      if (trigger === 'bottom') {
+        msg = 'ARRIVO IN FONDO AL SITO // TRASFORMAZIONE GRAFICA ATTIVATA';
+      } else if (trigger === 'top') {
+        msg = 'RITORNO IN CIMA AL SITO // NUOVO STILE GRAFICO APPLICATO';
+      } else {
+        msg = 'COMMUTAZIONE MANUALE ARCHITETTURA 3D';
       }
 
-      transitionTimeoutRef.current = setTimeout(() => {
-        setIsTransitioning(false);
-        setFlyingEmoji(null);
-      }, 950);
-    },
-    [currentStationIndex, isTransitioning]
-  );
-
-  const handleNextStation = useCallback(() => {
-    const nextIdx = (currentStationIndex + 1) % OFFICE_STATIONS.length;
-    navigateToStation(nextIdx);
-  }, [currentStationIndex, navigateToStation]);
-
-  const handlePrevStation = useCallback(() => {
-    const prevIdx = (currentStationIndex - 1 + OFFICE_STATIONS.length) % OFFICE_STATIONS.length;
-    navigateToStation(prevIdx);
-  }, [currentStationIndex, navigateToStation]);
-
-  // Keyboard navigation (Arrow keys, M for mini-map, Escape to close overlays)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing in an input
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
-        return;
-      }
-
-      if (e.key === 'ArrowRight') {
-        handleNextStation();
-      } else if (e.key === 'ArrowLeft') {
-        handlePrevStation();
-      } else if (e.key.toLowerCase() === 'm') {
-        setShowMiniMap((prev) => !prev);
-      } else if (e.key === 'Escape') {
-        setSelectedHotspot(null);
-        setIsGitHubModalOpen(false);
-        setShowMiniMap(false);
-        setIsBIMViewerOpen(false);
-        setIsCadCompareOpen(false);
-        setIsBIMEstimatorOpen(false);
-        setIsRevitConsoleOpen(false);
-        setIsVirtualStagingOpen(false);
-        setIsPitchMode(false);
-        setIsBookingModalOpen(false);
-        setIsTimeSyncModalOpen(false);
-      }
+      setShiftToast({ message: msg, theme, trigger });
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNextStation, handlePrevStation]);
+  };
 
-  const handleToggleRainAudio = useCallback(() => {
-    const newState = audioSystem.toggleRainSoundscape();
-    setIsRainAudioActive(newState);
-  }, []);
+  // Automatically dismiss HUD toast after 3.8s
+  useEffect(() => {
+    if (!shiftToast) return;
+    const timer = setTimeout(() => {
+      setShiftToast(null);
+    }, 3800);
+    return () => clearTimeout(timer);
+  }, [shiftToast]);
 
-  // Guided tour station transitions are synchronized with GuidedTourController
-  // allowing narration audio & visual countdown to complete seamlessly.
+  // Dual-guard IntersectionObserver on top and bottom sentinels for 100% reliable edge detection
+  useEffect(() => {
+    if (!sceneManager) return;
 
-  // Open first hotspot on demand
-  const handleExploreHotspots = () => {
-    if (currentStation.hotspots.length > 0) {
-      audioSystem.playHotspotPing();
-      setSelectedHotspot(currentStation.hotspots[0]);
+    const topEl = document.getElementById('edge-sentinel-top');
+    const bottomEl = document.getElementById('edge-sentinel-bottom');
+
+    if (!topEl || !bottomEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target.id === 'edge-sentinel-bottom') {
+              sceneManager.triggerEdge('bottom');
+            } else if (entry.target.id === 'edge-sentinel-top') {
+              sceneManager.triggerEdge('top');
+            }
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.05,
+      }
+    );
+
+    observer.observe(topEl);
+    observer.observe(bottomEl);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [sceneManager]);
+
+  const handleManualCycleTheme = () => {
+    if (sceneManager) {
+      sceneManager.cycleGraphicTheme('manual');
     }
   };
 
-  const handleSelectHotspot = (hotspot: Hotspot) => {
-    audioSystem.playHotspotPing();
-    setSelectedHotspot(hotspot);
+  const handleScrollTo = (sectionId: string) => {
+    const el = document.getElementById(sectionId);
+    if (el && scrollerRef.current) {
+      const top = el.offsetTop;
+      scrollerRef.current.scrollTo(top);
+    }
   };
 
   return (
-    <main
-      id="modern-office-tour-app"
-      className="relative h-[100dvh] w-[100dvw] overflow-hidden bg-stone-950 font-sans text-stone-100"
-    >
-      {/* 1. Fullscreen Interactive 360° Sphere Viewer OR Parallax Video Canvas */}
-      {is360Mode ? (
-        <Office360Viewer
-          currentStation={currentStation}
-          lightingMode={lightingMode}
-          onSelectHotspot={handleSelectHotspot}
-          showHotspots={showHotspots}
-          onOpenBIMViewer={() => setIsBIMViewerOpen(true)}
-          onOpenCadCompare={() => setIsCadCompareOpen(true)}
-          onToggle360Mode={() => setIs360Mode(false)}
-          isTransitioning={isTransitioning}
-          transitionDirection={transitionDirection}
-          transitionStyle={transitionStyle}
-          onSelectTransitionStyle={setTransitionStyle}
-        />
-      ) : (
-        <OfficeVideoCanvas
-          currentStation={currentStation}
-          lightingMode={lightingMode}
-          isTransitioning={isTransitioning}
-          transitionDirection={transitionDirection}
-          onSelectHotspot={handleSelectHotspot}
-          showHotspots={showHotspots}
-          transitionStyle={transitionStyle}
-          onSelectTransitionStyle={setTransitionStyle}
-        />
+    <div className="relative min-h-screen bg-[#050508] text-stone-100 overflow-x-hidden selection:bg-cyan-400 selection:text-stone-950">
+      {/* 1. Interactive 3D WebGL Three.js Canvas */}
+      <ActiveTheoryScene onSceneReady={handleSceneReady} />
+
+      {/* 1.5 Ambient Blurred Project Visuals with Fluid Transition Animations */}
+      <AmbientBlurredProjects />
+
+      {/* 2. Precision Kinetic Trailing Cursor */}
+      <ActiveTheoryCursor />
+
+      {/* 3. Fixed HUD Technical Navigation */}
+      <ActiveTheoryNav onScrollToSection={handleScrollTo} />
+
+      {/* 3.5 Real-time Graphic Shift Toast Alert */}
+      {shiftToast && (
+        <div className="fixed bottom-8 right-6 md:right-10 z-50 pointer-events-none transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <div className="p-4 bg-stone-950/90 backdrop-blur-md border border-cyan-400/80 shadow-[0_0_30px_rgba(0,240,255,0.25)] flex items-center gap-3.5 font-mono">
+            <div className="w-9 h-9 border border-cyan-400 flex items-center justify-center bg-cyan-950/30 text-cyan-400 shrink-0">
+              {shiftToast.trigger === 'bottom' ? (
+                <ArrowDown className="w-5 h-5 animate-bounce" />
+              ) : shiftToast.trigger === 'top' ? (
+                <ArrowUp className="w-5 h-5 animate-bounce" />
+              ) : (
+                <Sparkles className="w-5 h-5 animate-spin" />
+              )}
+            </div>
+            <div>
+              <div className="text-[10px] text-cyan-400/90 uppercase tracking-widest font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                <span>{shiftToast.message}</span>
+              </div>
+              <div className="text-sm font-bold tracking-wider text-white mt-0.5">
+                {shiftToast.theme.code} // {shiftToast.theme.name}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* 1b. Dynamic Weather Particle & Atmospheric Volumetric Ray Overlay */}
-      <WeatherAtmosphereOverlay
-        lightingMode={lightingMode}
-        intensity={weatherIntensity}
+      {/* 4. Smooth Content Wrapper */}
+      <main id="smooth-content" className="relative z-10 w-full">
+        {/* Top Edge Sentinel for IntersectionObserver */}
+        <div id="edge-sentinel-top" className="absolute top-0 left-0 w-full h-32 pointer-events-none opacity-0" />
+
+        {/* Monumental Hero Section */}
+        <ActiveTheoryHero
+          onExploreProjects={() => handleScrollTo('profilo')}
+          onOpenRevitModal={() => handleScrollTo('competenze')}
+          onOpenAuditModal={() => handleScrollTo('contact')}
+          onScrollToRendering={() => handleScrollTo('rendering')}
+          onScrollToPyRevit={() => handleScrollTo('pyrevit-python')}
+        />
+
+        {/* 1. Profilo Professionale (6 Separate Modules) */}
+        <ProfessionalProfileSection
+          onContactClick={() => handleScrollTo('contact')}
+        />
+
+        {/* 2. Competenze Tecniche (5 Separate Modules) */}
+        <TechnicalSkillsSection />
+
+        {/* 3. Formazione e Certificazioni (5 Specific Certificates) */}
+        <CertificationsSection />
+
+        {/* 4. Realizzazione Rendering & Visualizzazione Architettonica */}
+        <RenderingSection />
+
+        {/* 5. Sviluppo Applicazioni per pyRevit con Python */}
+        <PyRevitPythonSection
+          onOpenTerminalModal={() => setIsRevitModalOpen(true)}
+        />
+
+        {/* 6. Personal Contacts & Direct Contact Form */}
+        <ActiveTheoryContact
+          onOpenAuditModal={() => {
+            setAuditProjectTitle('');
+            setIsAuditModalOpen(true);
+          }}
+        />
+
+        {/* Bottom Edge Sentinel for IntersectionObserver (positioned absolutely without adding layout height) */}
+        <div id="edge-sentinel-bottom" className="absolute bottom-0 left-0 w-full h-24 pointer-events-none opacity-0" />
+      </main>
+
+      {/* 5. pyRevit Script Execution Modal */}
+      <ActiveTheoryRevitModal
+        isOpen={isRevitModalOpen}
+        onClose={() => setIsRevitModalOpen(false)}
       />
 
-      {/* 2. Flying Emoji Traveling Transition */}
-      <FlyingEmojiTransition
-        emoji={flyingEmoji?.emoji || null}
-        stationName={flyingEmoji?.name || null}
-        direction={transitionDirection}
+      {/* 6. Direct Contact Modal */}
+      <ActiveTheoryAuditModal
+        isOpen={isAuditModalOpen}
+        onClose={() => setIsAuditModalOpen(false)}
+        defaultProjectTitle={auditProjectTitle}
       />
-
-      {/* 3. Top Control Bar (Lighting, Sound, Auto-Tour, Fullscreen, Mini-Map, GitHub, BIM, CAD, 360, Time Sync, Weather, Estimator, Console, Staging, Pitch, Rain, Booking) */}
-      <TopControls
-        lightingMode={lightingMode}
-        onSelectLightingMode={manualSelectMode}
-        isAutoTouring={isAutoTouring}
-        onToggleAutoTour={() => setIsAutoTouring(!isAutoTouring)}
-        showHotspots={showHotspots}
-        onToggleShowHotspots={() => setShowHotspots(!showHotspots)}
-        showMiniMap={showMiniMap}
-        onToggleMiniMap={() => setShowMiniMap((prev) => !prev)}
-        onOpenGitHubModal={() => setIsGitHubModalOpen(true)}
-        onOpenBIMViewer={() => setIsBIMViewerOpen(true)}
-        onOpenCadCompare={() => setIsCadCompareOpen(true)}
-        is360Mode={is360Mode}
-        onToggle360Mode={() => setIs360Mode((prev) => !prev)}
-        isAutoSync={isAutoSync}
-        onToggleAutoSync={setIsAutoSync}
-        onOpenTimeSyncModal={() => setIsTimeSyncModalOpen(true)}
-        timeInfo={timeInfo}
-        weatherIntensity={weatherIntensity}
-        onToggleWeatherIntensity={toggleWeatherIntensity}
-        onOpenBIMEstimator={() => setIsBIMEstimatorOpen(true)}
-        onOpenRevitConsole={() => setIsRevitConsoleOpen(true)}
-        onOpenVirtualStaging={() => setIsVirtualStagingOpen(true)}
-        onTogglePitchMode={() => setIsPitchMode((prev) => !prev)}
-        isPitchMode={isPitchMode}
-        onOpenBookingModal={() => {
-          setQuoteMessageForBooking('');
-          setIsBookingModalOpen(true);
-        }}
-        isRainAudioActive={isRainAudioActive}
-        onToggleRainAudio={handleToggleRainAudio}
-      />
-
-      {/* 4. Active Station Information Card */}
-      <StationDetailOverlay
-        station={currentStation}
-        onExploreHotspots={handleExploreHotspots}
-        onOpenBIMViewer={() => setIsBIMViewerOpen(true)}
-        onOpenCadCompare={() => setIsCadCompareOpen(true)}
-        is360Mode={is360Mode}
-        onToggle360Mode={() => setIs360Mode((prev) => !prev)}
-        lightingMode={lightingMode}
-        isAutoSync={isAutoSync}
-        localTimeStr={timeInfo.localTimeStr}
-        onOpenTimeSyncModal={() => setIsTimeSyncModalOpen(true)}
-        onOpenBookingModal={() => {
-          setQuoteMessageForBooking('');
-          setIsBookingModalOpen(true);
-        }}
-        onOpenBIMEstimator={() => setIsBIMEstimatorOpen(true)}
-        onOpenVirtualStaging={() => setIsVirtualStagingOpen(true)}
-      />
-
-      {/* 5. Bottom Emoji Navigation Dock */}
-      <EmojiNavigationDock
-        stations={OFFICE_STATIONS}
-        activeStationId={currentStation.id}
-        onSelectStation={(station) => {
-          const idx = OFFICE_STATIONS.findIndex((s) => s.id === station.id);
-          if (idx !== -1) navigateToStation(idx);
-        }}
-        onNextStation={handleNextStation}
-        onPrevStation={handlePrevStation}
-      />
-
-      {/* 6. Guided Tour Live Controller with Audio Guide Voice */}
-      <GuidedTourController
-        isActive={isAutoTouring}
-        currentStationId={currentStation.id}
-        stationName={currentStation.name}
-        stationEmoji={currentStation.emoji}
-        onStopTour={() => setIsAutoTouring(false)}
-        onNextStation={handleNextStation}
-      />
-
-      {/* 7. Architectural Mini-Map Overlay (Quick Jump Navigator) */}
-      <OfficeMiniMap
-        isOpen={showMiniMap}
-        onClose={() => setShowMiniMap(false)}
-        stations={OFFICE_STATIONS}
-        currentStationIndex={currentStationIndex}
-        onSelectStation={(idx) => {
-          navigateToStation(idx);
-        }}
-      />
-
-      {/* 8. Hotspot Inspector Modal */}
-      <HotspotModal
-        hotspot={selectedHotspot}
-        onClose={() => setSelectedHotspot(null)}
-      />
-
-      {/* 9. Interactive 3D WebGL BIM & IFC Inspector Modal */}
-      <BIMViewerModal
-        isOpen={isBIMViewerOpen}
-        onClose={() => setIsBIMViewerOpen(false)}
-        stationName={currentStation.shortName}
-      />
-
-      {/* 10. Split-Screen CAD 2D vs BIM 3D Comparison Modal */}
-      <CadBimCompareModal
-        isOpen={isCadCompareOpen}
-        onClose={() => setIsCadCompareOpen(false)}
-      />
-
-      {/* 11. GitHub Deploy Modal Guide */}
-      <GitHubPublishModal
-        isOpen={isGitHubModalOpen}
-        onClose={() => setIsGitHubModalOpen(false)}
-      />
-
-      {/* 12. Global Light-Time Synchronization Modal */}
-      <LightTimeSyncModal
-        isOpen={isTimeSyncModalOpen}
-        onClose={() => setIsTimeSyncModalOpen(false)}
-        timeInfo={timeInfo}
-        isAutoSync={isAutoSync}
-        onToggleAutoSync={setIsAutoSync}
-        onSyncNow={syncNow}
-        onSelectMode={manualSelectMode}
-        simulatedHour={simulatedHour}
-        onSetSimulatedHour={setSimulatedHour}
-        currentLightingMode={lightingMode}
-        weatherIntensity={weatherIntensity}
-        onSetWeatherIntensity={setWeatherIntensity}
-        isRainAudioActive={isRainAudioActive}
-        onToggleRainAudio={handleToggleRainAudio}
-      />
-
-      {/* 13. Light-Time Sync Dynamic Toast Notification */}
-      <LightTimeToast
-        message={lastSyncMessage}
-        mode={lightingMode}
-        onDismiss={clearSyncMessage}
-        onOpenModal={() => setIsTimeSyncModalOpen(true)}
-      />
-
-      {/* 14. BIM 5D Parametric Cost & ROI Estimator Modal */}
-      <BIMCostEstimatorModal
-        isOpen={isBIMEstimatorOpen}
-        onClose={() => setIsBIMEstimatorOpen(false)}
-        onOpenContactWithQuote={(quoteSummary) => {
-          setIsBIMEstimatorOpen(false);
-          setQuoteMessageForBooking(quoteSummary);
-          setIsBookingModalOpen(true);
-        }}
-      />
-
-      {/* 15. Revit Plugin & Scripting Sandbox Console Modal */}
-      <RevitPluginConsoleModal
-        isOpen={isRevitConsoleOpen}
-        onClose={() => setIsRevitConsoleOpen(false)}
-      />
-
-      {/* 16. Virtual Staging & Photorealistic Rendering Comparison Modal */}
-      <VirtualStagingModal
-        isOpen={isVirtualStagingOpen}
-        onClose={() => setIsVirtualStagingOpen(false)}
-      />
-
-      {/* 17. Live Pitch Meeting & Presenter Overlay (Laser Pointer, Pen, Drawing) */}
-      <LivePitchMeetingOverlay
-        isActive={isPitchMode}
-        onClose={() => setIsPitchMode(false)}
-        currentStationName={currentStation.name}
-        onNextStation={handleNextStation}
-        onPrevStation={handlePrevStation}
-      />
-
-      {/* 18. Direct BIM Audit & Consultation Booking Form Modal */}
-      <DirectAuditBookingModal
-        isOpen={isBookingModalOpen}
-        onClose={() => {
-          setIsBookingModalOpen(false);
-          setQuoteMessageForBooking('');
-        }}
-        initialMessage={quoteMessageForBooking}
-      />
-    </main>
+    </div>
   );
 }
+
+export default App;

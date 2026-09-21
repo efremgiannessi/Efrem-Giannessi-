@@ -131,11 +131,14 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
       )}
 
       {/* Floating Presenter Toolbar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto z-50 flex items-center gap-2 rounded-2xl border border-white/20 bg-stone-950/95 p-2 shadow-2xl backdrop-blur-xl text-stone-100 animate-in fade-in slide-in-from-bottom-6">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto z-50 flex items-center gap-2 rounded-none border border-white/20 bg-stone-950/95 p-2 shadow-2xl backdrop-blur-xl text-stone-100 font-mono text-xs">
+        <div className="pointer-events-none absolute top-0 left-0 w-2 h-2 border-t border-l border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2 h-2 border-b border-r border-amber-400" />
+
         <div className="flex items-center gap-1.5 px-2 border-r border-white/10">
-          <Presentation className="h-4 w-4 text-amber-400 animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
-            Pitch Meeting
+          <Presentation className="h-4 w-4 text-amber-400" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+            PITCH MODE
           </span>
         </div>
 
@@ -147,12 +150,12 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
               audioSystem.playClick(600);
               onPrevStation();
             }}
-            className="p-1.5 rounded-lg text-stone-300 hover:bg-white/10"
+            className="p-1 rounded-none border border-transparent hover:border-white/20 text-stone-300 hover:text-white"
             title="Postazione precedente"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-xs font-semibold text-white px-1 max-w-[140px] truncate">
+          <span className="text-xs font-semibold text-white px-1 max-w-[140px] truncate font-sans">
             {currentStationName}
           </span>
           <button
@@ -161,7 +164,7 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
               audioSystem.playClick(600);
               onNextStation();
             }}
-            className="p-1.5 rounded-lg text-stone-300 hover:bg-white/10"
+            className="p-1 rounded-none border border-transparent hover:border-white/20 text-stone-300 hover:text-white"
             title="Postazione successiva"
           >
             <ChevronRight className="h-4 w-4" />
@@ -177,10 +180,10 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
             audioSystem.playClick(700);
             setTool('laser');
           }}
-          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
             tool === 'laser'
-              ? 'bg-rose-500 text-white shadow-md'
-              : 'text-stone-300 hover:bg-white/10'
+              ? 'bg-rose-500/20 text-rose-300 border-rose-500 shadow-sm'
+              : 'border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/5'
           }`}
         >
           <Crosshair className="h-3.5 w-3.5" />
@@ -194,10 +197,10 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
             audioSystem.playClick(700);
             setTool('pen');
           }}
-          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
             tool === 'pen'
-              ? 'bg-amber-400 text-stone-950 font-bold shadow-md'
-              : 'text-stone-300 hover:bg-white/10'
+              ? 'bg-amber-400 text-stone-950 font-bold border-amber-300 shadow-sm'
+              : 'border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/5'
           }`}
         >
           <PenTool className="h-3.5 w-3.5" />
@@ -211,10 +214,10 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
             audioSystem.playClick(700);
             setTool('highlighter');
           }}
-          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
             tool === 'highlighter'
-              ? 'bg-amber-300 text-stone-950 font-bold shadow-md'
-              : 'text-stone-300 hover:bg-white/10'
+              ? 'bg-amber-400/20 text-amber-300 font-bold border-amber-400 shadow-sm'
+              : 'border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/5'
           }`}
         >
           <span>Evidenzia</span>
@@ -224,7 +227,7 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
         <button
           type="button"
           onClick={handleClearBoard}
-          className="p-1.5 rounded-lg text-stone-400 hover:text-rose-400 hover:bg-white/10 transition-colors"
+          className="p-1 rounded-none border border-transparent hover:border-rose-500/40 text-stone-400 hover:text-rose-400 transition-colors"
           title="Cancella tutti i tratti"
         >
           <Trash2 className="h-4 w-4" />
@@ -239,7 +242,7 @@ export const LivePitchMeetingOverlay: React.FC<LivePitchMeetingOverlayProps> = (
             audioSystem.playClick(500);
             onClose();
           }}
-          className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="p-1 rounded-none border border-transparent hover:border-white/20 text-stone-400 hover:text-white transition-colors"
           title="Esci dalla modalità Pitch"
         >
           <X className="h-4 w-4" />

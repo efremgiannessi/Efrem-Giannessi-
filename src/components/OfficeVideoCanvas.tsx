@@ -368,7 +368,7 @@ export const OfficeVideoCanvas: React.FC<OfficeVideoCanvasProps> = ({
           },
           transition: {
             duration: 0.95,
-            ease: [0.4, 0.0, 0.2, 1], // cinematic cubic-bezier cross-dissolve
+            ease: [0.4, 0.0, 0.2, 1] as const, // cinematic cubic-bezier cross-dissolve
           },
         };
 
@@ -394,7 +394,7 @@ export const OfficeVideoCanvas: React.FC<OfficeVideoCanvasProps> = ({
           },
           transition: {
             duration: 0.85,
-            ease: [0.16, 1, 0.3, 1], // warp exponential ease out
+            ease: [0.16, 1, 0.3, 1] as const, // warp exponential ease out
           },
         };
 
@@ -421,7 +421,7 @@ export const OfficeVideoCanvas: React.FC<OfficeVideoCanvasProps> = ({
           },
           transition: {
             duration: 0.85,
-            ease: [0.22, 1, 0.36, 1], // fluid kinematic deceleration
+            ease: [0.22, 1, 0.36, 1] as const, // fluid kinematic deceleration
           },
         };
     }

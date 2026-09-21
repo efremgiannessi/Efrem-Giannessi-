@@ -438,23 +438,29 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
       />
 
       {/* Main Window */}
-      <div className="relative z-10 flex flex-col w-full max-w-5xl h-[90vh] max-h-[820px] rounded-3xl border border-white/20 bg-stone-950/95 shadow-2xl backdrop-blur-2xl text-stone-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative z-10 flex flex-col w-full max-w-5xl h-[90vh] max-h-[820px] rounded-none border border-white/20 bg-stone-950/95 shadow-2xl backdrop-blur-2xl text-stone-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400 z-20" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 bg-white/5">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 bg-white/5 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold shadow-md">
-              <Box className="h-5 w-5 animate-pulse" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-none bg-amber-400/10 border border-amber-400/40 text-amber-400 font-bold">
+              <Box className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-white tracking-wide">
+                <h2 className="text-sm sm:text-base font-bold text-white tracking-wide">
                   Viewer Parametrico BIM 3D & Ispezione IFC
                 </h2>
-                <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400 border border-amber-500/30">
+                <span className="rounded-none bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/30">
                   OPENBIM IFC 4.3
                 </span>
               </div>
-              <p className="text-xs text-stone-400 hidden xs:block">
+              <p className="text-xs text-stone-400 hidden xs:block font-light">
                 Modello federato di commessa • Selezione elementi, stratigrafie, computo 5D e sezione dinamica
               </p>
             </div>
@@ -467,15 +473,15 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
               audioSystem.playClick(500);
               onClose();
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-stone-400 hover:bg-white/20 hover:text-white transition-all active:scale-95"
+            className="flex h-8 w-8 items-center justify-center rounded-none border border-white/10 bg-white/5 text-stone-400 hover:border-amber-400/50 hover:text-white transition-all"
             title="Chiudi viewer BIM"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* View Controls Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6 py-2 border-b border-white/10 bg-stone-900/60 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6 py-2 border-b border-white/10 bg-stone-900/60 font-mono text-xs shrink-0">
           <div className="flex items-center gap-1 sm:gap-2">
             <button
               type="button"
@@ -483,13 +489,13 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                 audioSystem.playClick(550);
                 setDisplayMode('shaded');
               }}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
                 displayMode === 'shaded'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow'
-                  : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                  ? 'bg-amber-400 text-stone-950 font-bold border-amber-300 shadow-sm'
+                  : 'bg-white/5 border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/10'
               }`}
             >
-              Solido Ombreggiato
+              Solido
             </button>
             <button
               type="button"
@@ -497,10 +503,10 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                 audioSystem.playClick(550);
                 setDisplayMode('wireframe');
               }}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
                 displayMode === 'wireframe'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow'
-                  : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                  ? 'bg-amber-400 text-stone-950 font-bold border-amber-300 shadow-sm'
+                  : 'bg-white/5 border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/10'
               }`}
             >
               Wireframe CAD
@@ -511,13 +517,13 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                 audioSystem.playClick(550);
                 setDisplayMode('xray');
               }}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
                 displayMode === 'xray'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow'
-                  : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                  ? 'bg-amber-400 text-stone-950 font-bold border-amber-300 shadow-sm'
+                  : 'bg-white/5 border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/10'
               }`}
             >
-              Raggi X / Trasparenza
+              Trasparenza X-Ray
             </button>
           </div>
 
@@ -528,14 +534,14 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                 audioSystem.playClick(600);
                 setSectionCut(!sectionCut);
               }}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold transition-all border ${
                 sectionCut
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold'
-                  : 'bg-white/5 text-stone-300 hover:bg-white/10 border border-white/10'
+                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/60 font-bold'
+                  : 'bg-white/5 text-stone-300 hover:border-white/20 border-white/10'
               }`}
             >
               <Layers className="h-3.5 w-3.5" />
-              <span>Piano di Sezione {sectionCut ? 'Attivo' : 'Spento'}</span>
+              <span>Sezione [{sectionCut ? 'ON' : 'OFF'}]</span>
             </button>
 
             <button
@@ -544,10 +550,10 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                 audioSystem.playClick(500);
                 setIsRotating(!isRotating);
               }}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-none text-[11px] uppercase tracking-wider font-semibold border ${
                 isRotating
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                  : 'bg-white/5 text-stone-400 border-white/10'
+                  : 'bg-white/5 text-stone-400 border-white/10 hover:border-white/20'
               }`}
             >
               <RotateCcw className={`h-3.5 w-3.5 ${isRotating ? 'animate-spin' : ''}`} />
@@ -559,20 +565,20 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
         {/* Content Body: 3D Canvas (Left) + IFC Properties Inspector (Right) */}
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
           {/* Three.js Canvas Container */}
-          <div className="relative flex-1 bg-stone-950/80 min-h-[280px] lg:min-h-0">
+          <div className="relative flex-1 bg-stone-950 min-h-[280px] lg:min-h-0">
             <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
             {/* In-canvas Guidance Overlay */}
             <div className="absolute top-3 left-3 pointer-events-none flex flex-col gap-1">
-              <span className="rounded-md bg-stone-900/90 px-2 py-1 text-[10px] font-mono text-stone-300 border border-white/15 backdrop-blur-md">
-                🖱️ Trascina: Ruota camera • Rotella: Zoom
+              <span className="rounded-none bg-stone-900/90 px-2 py-1 text-[10px] font-mono text-stone-300 border border-white/15 backdrop-blur-md">
+                TRASCINA: RUOTA CAMERA • ROTELLA: ZOOM
               </span>
             </div>
 
             {/* Element Quick Switcher in Canvas Footer */}
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 overflow-x-auto p-1.5 rounded-2xl bg-stone-950/85 border border-white/15 backdrop-blur-lg">
-              <span className="text-[10px] font-mono text-amber-400 font-semibold px-2 shrink-0">
-                ELEMENTI IFC:
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 overflow-x-auto p-1.5 rounded-none bg-stone-950/90 border border-white/15 backdrop-blur-lg font-mono">
+              <span className="text-[10px] text-amber-400 font-bold px-2 shrink-0 uppercase">
+                IFC ELEMENTI:
               </span>
               <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar">
                 {Object.entries(SAMPLE_BIM_ELEMENTS).map(([key, item]) => (
@@ -583,10 +589,10 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                       audioSystem.playClick(650);
                       setSelectedElementKey(key);
                     }}
-                    className={`shrink-0 px-2.5 py-1 rounded-xl text-[11px] font-medium transition-all ${
+                    className={`shrink-0 px-2 py-0.5 rounded-none text-[10px] uppercase tracking-wider font-semibold transition-all border ${
                       selectedElementKey === key
-                        ? 'bg-amber-400 text-stone-950 font-bold shadow'
-                        : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                        ? 'bg-amber-400 text-stone-950 border-amber-300 font-bold shadow-sm'
+                        : 'bg-white/5 border-white/10 text-stone-300 hover:border-amber-400/40 hover:bg-white/10'
                     }`}
                   >
                     {item.name.split(' ')[0]} {item.name.split(' ')[1]}
@@ -599,28 +605,28 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
           {/* Right Column: BIM Properties & 5D Quantity Takeoff Inspector */}
           <div className="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-white/10 bg-stone-900/50 flex flex-col overflow-hidden">
             {/* Inspector Navigation Tabs */}
-            <div className="flex border-b border-white/10 bg-white/5 text-xs">
+            <div className="flex border-b border-white/10 bg-white/5 font-mono text-xs">
               <button
                 type="button"
                 onClick={() => setActiveTab('properties')}
-                className={`flex-1 py-2.5 font-semibold text-center transition-all ${
+                className={`flex-1 py-2 font-bold uppercase tracking-wider text-center transition-all ${
                   activeTab === 'properties' || activeTab === 'model'
                     ? 'text-amber-400 border-b-2 border-amber-400 bg-white/5'
                     : 'text-stone-400 hover:text-white'
                 }`}
               >
-                Proprietà Parametriche
+                Proprietà IFC
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('qto')}
-                className={`flex-1 py-2.5 font-semibold text-center transition-all ${
+                className={`flex-1 py-2 font-bold uppercase tracking-wider text-center transition-all ${
                   activeTab === 'qto'
                     ? 'text-amber-400 border-b-2 border-amber-400 bg-white/5'
                     : 'text-stone-400 hover:text-white'
                 }`}
               >
-                Computo 5D & Quantità
+                Computo 5D & QTO
               </button>
             </div>
 
@@ -629,47 +635,47 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
               {activeTab === 'qto' ? (
                 /* 5D Quantity Takeoff Tab */
                 <div className="space-y-4">
-                  <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3.5">
-                    <span className="text-[10px] font-mono text-amber-300 uppercase tracking-wider block mb-1">
+                  <div className="rounded-none bg-amber-400/10 border border-amber-400/30 p-3.5 font-mono">
+                    <span className="text-[10px] text-amber-400 uppercase tracking-wider font-bold block mb-1">
                       QUADRO ECONOMICO BIM 5D
                     </span>
                     <div className="flex items-baseline justify-between">
-                      <span className="text-xl font-bold text-white">
+                      <span className="text-xl font-black text-white">
                         € {totalBIMCost.toLocaleString('it-IT')}
                       </span>
-                      <span className="text-stone-400 font-mono text-[11px]">
-                        Vol. totale: {totalBIMVolume.toFixed(1)} m³
+                      <span className="text-stone-400 text-[11px]">
+                        Vol. tot: {totalBIMVolume.toFixed(1)} m³
                       </span>
                     </div>
                   </div>
 
-                  <h4 className="font-bold text-white uppercase tracking-wider text-[11px] text-stone-300">
+                  <h4 className="font-bold text-white uppercase tracking-wider text-[10px] font-mono text-stone-300">
                     Scomposizione WBS e Analisi Prezzi
                   </h4>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 font-mono">
                     {Object.entries(SAMPLE_BIM_ELEMENTS).map(([k, item]) => (
                       <div
                         key={k}
-                        className={`p-2.5 rounded-xl border transition-all ${
+                        className={`p-2.5 rounded-none border transition-all cursor-pointer ${
                           selectedElementKey === k
-                            ? 'bg-amber-500/15 border-amber-400/50 ring-1 ring-amber-400/40'
-                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                            ? 'bg-amber-400/15 border-amber-400 text-stone-100 shadow-sm'
+                            : 'bg-white/5 border-white/10 hover:border-white/20'
                         }`}
                         onClick={() => {
                           audioSystem.playClick(600);
                           setSelectedElementKey(k);
                         }}
                       >
-                        <div className="flex items-center justify-between font-mono text-[10px] text-amber-400 mb-0.5">
+                        <div className="flex items-center justify-between text-[10px] text-amber-400 mb-0.5">
                           <span>{item.wbsCode}</span>
                           <span className="text-emerald-400 font-bold">
                             € {item.costEstimateEur.toLocaleString('it-IT')}
                           </span>
                         </div>
-                        <div className="font-medium text-white truncate">{item.name}</div>
+                        <div className="font-medium text-white truncate font-sans">{item.name}</div>
                         <div className="text-[10px] text-stone-400 mt-0.5">
-                          Volume: {item.volumeM3} m³ • {item.lod}
+                          Vol: {item.volumeM3} m³ • {item.lod}
                         </div>
                       </div>
                     ))}
@@ -678,50 +684,50 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
               ) : (
                 /* Parametric IFC Element Properties Tab */
                 <div className="space-y-3.5">
-                  <div className="border-b border-white/10 pb-2.5">
-                    <div className="flex items-center justify-between text-[10px] font-mono text-amber-400 mb-1">
+                  <div className="border-b border-white/10 pb-2.5 font-mono">
+                    <div className="flex items-center justify-between text-[10px] text-amber-400 mb-1">
                       <span>{currentProperty.id}</span>
-                      <span className="rounded bg-amber-400/20 px-1.5 py-0.2 text-amber-300 border border-amber-400/30">
+                      <span className="rounded-none bg-amber-400/15 px-1.5 py-0.2 text-amber-300 border border-amber-400/30">
                         {currentProperty.lod}
                       </span>
                     </div>
-                    <h3 className="text-sm font-bold text-white">{currentProperty.name}</h3>
-                    <p className="text-[11px] text-stone-400 mt-0.5 font-mono">{currentProperty.category}</p>
+                    <h3 className="text-sm font-bold text-white font-sans">{currentProperty.name}</h3>
+                    <p className="text-[10px] text-stone-400 mt-0.5 font-mono uppercase">{currentProperty.category}</p>
                   </div>
 
                   {/* Properties Table */}
                   <div className="space-y-2">
-                    <div className="flex justify-between py-1.5 border-b border-white/5">
-                      <span className="text-stone-400">Codice WBS Computo:</span>
+                    <div className="flex justify-between py-1 border-b border-white/5">
+                      <span className="text-stone-400">Codice WBS:</span>
                       <span className="font-mono text-stone-200 font-semibold">{currentProperty.wbsCode}</span>
                     </div>
 
-                    <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <div className="flex justify-between py-1 border-b border-white/5">
                       <span className="text-stone-400">Materiale Parametrico:</span>
                       <span className="text-stone-200 text-right max-w-[180px] truncate" title={currentProperty.material}>
                         {currentProperty.material}
                       </span>
                     </div>
 
-                    <div className="flex justify-between py-1.5 border-b border-white/5">
-                      <span className="text-stone-400">Dimensioni di Progetto:</span>
+                    <div className="flex justify-between py-1 border-b border-white/5">
+                      <span className="text-stone-400">Dimensioni:</span>
                       <span className="font-mono text-stone-200">{currentProperty.dimensions}</span>
                     </div>
 
-                    <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <div className="flex justify-between py-1 border-b border-white/5">
                       <span className="text-stone-400">Volume Computato:</span>
                       <span className="font-mono text-amber-300 font-bold">{currentProperty.volumeM3} m³</span>
                     </div>
 
                     {currentProperty.transmittanceU && (
-                      <div className="flex justify-between py-1.5 border-b border-white/5">
-                        <span className="text-stone-400">Trasmittanza Termica (U):</span>
+                      <div className="flex justify-between py-1 border-b border-white/5">
+                        <span className="text-stone-400">Trasmittanza (U):</span>
                         <span className="font-mono text-emerald-400 font-semibold">{currentProperty.transmittanceU}</span>
                       </div>
                     )}
 
-                    <div className="flex justify-between py-1.5 border-b border-white/5">
-                      <span className="text-stone-400">Stima di Costo Associata:</span>
+                    <div className="flex justify-between py-1 border-b border-white/5">
+                      <span className="text-stone-400">Stima Costo:</span>
                       <span className="font-mono text-emerald-400 font-bold">
                         € {currentProperty.costEstimateEur.toLocaleString('it-IT')}
                       </span>
@@ -729,12 +735,12 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
                   </div>
 
                   {/* OpenBIM Certification Callout */}
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 mt-4">
-                    <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px] mb-1">
+                  <div className="rounded-none bg-stone-900 border border-white/10 p-3 mt-4">
+                    <div className="flex items-center gap-1.5 text-amber-400 font-mono font-semibold text-[10px] uppercase mb-1">
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       <span>Conformità IFC & UNI 11337</span>
                     </div>
-                    <p className="text-[10px] text-stone-400 leading-relaxed">
+                    <p className="text-[10px] text-stone-400 leading-relaxed font-light">
                       I dati geometrici ed informativi sono completamente federati ed esportabili in formato IFC aperto compatibile con qualsiasi software di computo e modellazione.
                     </p>
                   </div>
@@ -743,13 +749,13 @@ export const BIMViewerModal: React.FC<BIMViewerModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-3 bg-stone-950/80 border-t border-white/10 flex items-center justify-between text-[11px]">
-              <span className="text-stone-400">Workstation: {stationName}</span>
+            <div className="p-3 bg-stone-950 border-t border-white/10 flex items-center justify-between font-mono text-[10px]">
+              <span className="text-stone-400 uppercase">STANZA: {stationName}</span>
               <a
                 href="mailto:EfremGiannessi@gmail.com?subject=Richiesta%20Modello%20BIM%20IFC"
-                className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-0.5"
+                className="text-amber-400 hover:text-amber-300 font-bold uppercase flex items-center gap-0.5"
               >
-                <span>Richiedi File IFC</span>
+                <span>Richiedi IFC</span>
                 <ChevronRight className="h-3 w-3" />
               </a>
             </div>

@@ -117,16 +117,22 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="virtual-staging-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
     >
       <div
-        className="relative w-full max-w-5xl rounded-3xl border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-5xl rounded-none border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 z-20" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400 z-20" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 text-stone-950 font-black shadow-lg shadow-fuchsia-500/30">
+            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-none bg-amber-400/10 border border-amber-400/40 text-amber-400 font-black">
               <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
@@ -134,11 +140,11 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
                 <h2 id="virtual-staging-title" className="text-base sm:text-lg font-bold text-white tracking-wide">
                   Virtual Staging & Rendering Fotorealistico
                 </h2>
-                <span className="rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-[10px] font-bold text-fuchsia-300 border border-fuchsia-500/40">
-                  Prima / Dopo Interattivo
+                <span className="rounded-none bg-amber-400/15 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-amber-400 border border-amber-400/30">
+                  BEFORE / AFTER 3D
                 </span>
               </div>
-              <p className="text-xs text-stone-400">
+              <p className="text-xs text-stone-400 font-light">
                 Confronto interattivo in tempo reale tra stato grezzo / non arredato e allestimento architettonico 3D fotorealistico
               </p>
             </div>
@@ -150,15 +156,15 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
               audioSystem.playClick(500);
               onClose();
             }}
-            className="rounded-xl p-2 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="rounded-none border border-white/10 bg-white/5 p-1.5 text-stone-400 hover:border-amber-400/50 hover:text-white transition-colors"
             title="Chiudi Virtual Staging"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Project Selector Pills */}
-        <div className="flex flex-wrap items-center gap-2 my-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 my-3 shrink-0 font-mono">
           {STAGING_PROJECTS.map((project) => (
             <button
               key={project.id}
@@ -168,10 +174,10 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
                 setSelectedProjectId(project.id);
                 setSliderPosition(50);
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-none border text-xs uppercase tracking-wider font-semibold transition-all ${
                 selectedProjectId === project.id
-                  ? 'bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-200 shadow-md'
-                  : 'bg-white/5 border-white/10 text-stone-400 hover:bg-white/10 hover:text-stone-200'
+                  ? 'bg-amber-400/15 border-amber-400 text-amber-300 shadow-sm'
+                  : 'bg-stone-900/60 border-white/10 text-stone-400 hover:border-white/20 hover:text-stone-200'
               }`}
             >
               <span>{project.title}</span>
@@ -182,7 +188,7 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
         {/* Interactive Split Slider Container */}
         <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
           <div
-            className="relative w-full aspect-[16/9] max-h-[440px] rounded-2xl overflow-hidden select-none cursor-ew-resize border border-white/20 shadow-2xl"
+            className="relative w-full aspect-[16/9] max-h-[440px] rounded-none overflow-hidden select-none cursor-ew-resize border border-white/20 shadow-2xl"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -195,8 +201,8 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
               className="absolute inset-0 h-full w-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute top-4 right-4 rounded-xl bg-fuchsia-500/80 px-3 py-1 text-xs font-bold text-white shadow-lg backdrop-blur-md">
-              DOPO (Virtual Staging 3D)
+            <div className="absolute top-4 right-4 rounded-none bg-stone-950/90 border border-amber-400/60 px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-amber-300 shadow-lg backdrop-blur-md">
+              DOPO: Virtual Staging 3D
             </div>
 
             {/* Foreground Layer with Clip-path: "BEFORE" (Raw / Unfurnished) */}
@@ -212,41 +218,42 @@ export const VirtualStagingModal: React.FC<VirtualStagingModalProps> = ({
                 className="absolute inset-0 h-full w-full object-cover"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute top-4 left-4 rounded-xl bg-stone-900/80 px-3 py-1 text-xs font-bold text-amber-300 shadow-lg backdrop-blur-md">
-                PRIMA (Stato Grezzo)
+              <div className="absolute top-4 left-4 rounded-none bg-stone-950/90 border border-rose-500/60 px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-rose-300 shadow-lg backdrop-blur-md">
+                PRIMA: Stato Grezzo
               </div>
             </div>
 
             {/* Vertical Divider Handle Line */}
             <div
-              className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] pointer-events-none"
+              className="absolute top-0 bottom-0 w-0.5 bg-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.8)] pointer-events-none"
               style={{ left: `${sliderPosition}%` }}
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white text-stone-950 shadow-xl ring-4 ring-black/40">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-none bg-amber-400 text-stone-950 shadow-xl border border-stone-950">
                 <ArrowRightLeft className="h-4 w-4" />
               </div>
             </div>
           </div>
 
           {/* Slider Position Hint */}
-          <div className="flex items-center justify-between mt-2 text-[11px] text-stone-400 font-mono px-1">
-            <span>← Trascina a sinistra per vedere il RENDER COMPLETO</span>
-            <span>Trascina a destra per vedere lo STATO GREZZO →</span>
+          <div className="flex items-center justify-between mt-2 text-[10px] text-stone-400 font-mono px-1 uppercase tracking-wider">
+            <span>← Trascina a sinistra per RENDER COMPLETO</span>
+            <span className="text-amber-300 font-bold">{Math.round(sliderPosition)}%</span>
+            <span>Trascina a destra per STATO GREZZO →</span>
           </div>
 
           {/* Project Details Footer */}
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-white/10 text-xs">
-            <div className="rounded-xl bg-white/5 p-3 border border-white/5">
-              <span className="text-stone-400 block text-[10px] uppercase font-bold">Stile & Moodboard</span>
-              <span className="font-semibold text-white mt-0.5 block">{currentProject.style}</span>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-white/10 text-xs font-mono">
+            <div className="rounded-none bg-stone-900/60 p-3 border border-white/10">
+              <span className="text-stone-400 block text-[9px] uppercase tracking-wider font-bold">Stile & Moodboard</span>
+              <span className="font-semibold text-white mt-0.5 block font-sans text-xs">{currentProject.style}</span>
             </div>
-            <div className="rounded-xl bg-white/5 p-3 border border-white/5">
-              <span className="text-stone-400 block text-[10px] uppercase font-bold">Destinazione</span>
-              <span className="font-semibold text-white mt-0.5 block">{currentProject.zone}</span>
+            <div className="rounded-none bg-stone-900/60 p-3 border border-white/10">
+              <span className="text-stone-400 block text-[9px] uppercase tracking-wider font-bold">Destinazione</span>
+              <span className="font-semibold text-white mt-0.5 block font-sans text-xs">{currentProject.zone}</span>
             </div>
-            <div className="rounded-xl bg-white/5 p-3 border border-white/5">
-              <span className="text-stone-400 block text-[10px] uppercase font-bold">Beneficio per la Committenza</span>
-              <span className="font-semibold text-emerald-300 mt-0.5 block">Accelerazione vendite su carta del +65%</span>
+            <div className="rounded-none bg-stone-900/60 p-3 border border-white/10">
+              <span className="text-stone-400 block text-[9px] uppercase tracking-wider font-bold">Impatto sul Valore</span>
+              <span className="font-semibold text-emerald-400 mt-0.5 block font-sans text-xs">Accelerazione vendite su carta del +65%</span>
             </div>
           </div>
         </div>

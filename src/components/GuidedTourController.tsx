@@ -139,23 +139,29 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.95 }}
-        className="overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-amber-400/80 bg-stone-950/95 p-3.5 sm:p-4 shadow-[0_20px_60px_rgba(245,158,11,0.25)] backdrop-blur-2xl text-stone-100"
+        className="relative overflow-hidden rounded-none border border-amber-400/80 bg-stone-950/95 p-3.5 sm:p-4 shadow-2xl backdrop-blur-2xl text-stone-100"
       >
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400" />
+
         {/* Progress bar along top */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-stone-800">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-stone-900 border-b border-white/10">
           <div
-            className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-1000"
+            className="h-full bg-amber-400 transition-all duration-1000"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
 
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3 pt-1">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/20 text-2xl border border-amber-400/40">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-none bg-amber-400/10 text-xl border border-amber-400/40">
               {stationEmoji}
               {isSpeaking && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-stone-950 text-[10px] animate-bounce font-bold">
-                  🎙️
+                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-none bg-amber-400 text-stone-950 text-[8px] font-mono font-bold">
+                  REC
                 </span>
               )}
             </div>
@@ -164,10 +170,10 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
                   <Headphones className="h-3 w-3 animate-pulse" />
-                  AUDIO TOUR GUIDATO LIVE • {countdown}s alla prossima tappa
+                  AUDIO TOUR LIVE • [{countdown}S]
                 </span>
               </div>
-              <h3 className="text-sm sm:text-base font-bold text-white tracking-wide">
+              <h3 className="text-sm sm:text-base font-bold text-white tracking-wide font-sans">
                 {narration.narratorTitle}
               </h3>
             </div>
@@ -177,9 +183,9 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
             <button
               type="button"
               onClick={toggleSpeech}
-              className={`p-2 rounded-xl border transition-colors ${
+              className={`p-1.5 rounded-none border transition-colors ${
                 speechEnabled
-                  ? 'bg-amber-400/20 border-amber-400/40 text-amber-300'
+                  ? 'bg-amber-400/20 border-amber-400/60 text-amber-300'
                   : 'bg-white/5 border-white/10 text-stone-400 hover:text-white'
               }`}
               title={speechEnabled ? 'Disattiva voce narrante' : 'Attiva voce narrante'}
@@ -193,7 +199,7 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
                 audioSystem.playClick(600);
                 onNextStation();
               }}
-              className="p-2 rounded-xl bg-white/10 border border-white/20 text-stone-300 hover:bg-white/20 hover:text-white transition-colors"
+              className="p-1.5 rounded-none bg-white/5 border border-white/15 text-stone-300 hover:border-amber-400/40 hover:text-white transition-colors"
               title="Passa alla tappa successiva"
             >
               <SkipForward className="h-4 w-4" />
@@ -205,7 +211,7 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
                 audioSystem.playClick(500);
                 onStopTour();
               }}
-              className="p-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 transition-colors"
+              className="p-1.5 rounded-none bg-rose-500/15 border border-rose-500/40 text-rose-300 hover:bg-rose-500/25 transition-colors"
               title="Esci dal tour guidato"
             >
               <X className="h-4 w-4" />
@@ -214,18 +220,18 @@ export const GuidedTourController: React.FC<GuidedTourControllerProps> = ({
         </div>
 
         {/* Narrator Text Display */}
-        <div className="mt-2.5 rounded-xl bg-white/5 border border-white/10 p-2.5 text-xs text-stone-300 leading-relaxed">
+        <div className="mt-2.5 rounded-none bg-stone-900/70 border border-white/10 p-2.5 text-xs text-stone-300 leading-relaxed font-light">
           <p className="line-clamp-2 sm:line-clamp-3 italic">
             "{narration.audioSpeechText}"
           </p>
         </div>
 
         {/* Highlight Bullets */}
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 font-mono">
           {narration.highlightPoints.map((pt, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-900/80 border border-amber-400/30 text-[10px] font-medium text-amber-300"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none bg-stone-900 border border-amber-400/30 text-[9px] font-bold uppercase tracking-wider text-amber-300"
             >
               <CheckCircle2 className="h-2.5 w-2.5 text-amber-400" />
               {pt}

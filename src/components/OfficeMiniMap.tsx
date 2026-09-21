@@ -177,19 +177,23 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-        className="fixed bottom-20 sm:bottom-24 left-3 sm:left-6 z-30 flex flex-col w-[260px] sm:w-[290px] rounded-2xl border border-white/20 bg-stone-950/90 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl text-stone-100 overflow-hidden"
+        className="fixed bottom-20 sm:bottom-24 left-3 sm:left-6 z-30 flex flex-col w-[260px] sm:w-[290px] rounded-none sm:rounded-sm border border-white/15 bg-stone-950/95 shadow-2xl backdrop-blur-xl text-stone-100 overflow-hidden"
       >
+        {/* Architectural corner marks */}
+        <div className="absolute -top-px -left-px w-1.5 h-1.5 border-t border-l border-amber-400/80 pointer-events-none" />
+        <div className="absolute -top-px -right-px w-1.5 h-1.5 border-t border-r border-amber-400/80 pointer-events-none" />
+
         {/* Compact Header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 bg-white/5">
           <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-amber-400 opacity-75" />
+              <span className="relative inline-flex rounded-none h-2 w-2 bg-amber-400" />
             </span>
-            <span className="text-[11px] font-bold tracking-wider uppercase text-amber-300">
+            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-amber-300">
               Mappa Studio BIM
             </span>
-            <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[9px] font-mono text-emerald-400 border border-emerald-500/30">
+            <span className="rounded-none bg-emerald-500/20 px-1 py-0.2 text-[9px] font-mono text-emerald-400 border border-emerald-500/30">
               RADAR
             </span>
           </div>
@@ -203,7 +207,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                 audioSystem.playClick(600);
                 setIsExpandedModal(true);
               }}
-              className="flex h-6 w-6 items-center justify-center rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="flex h-6 w-6 items-center justify-center rounded-none text-stone-400 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/15 transition-colors"
               title="Ingrandisci planimetria a schermo intero"
             >
               <Maximize2 className="h-3.5 w-3.5" />
@@ -217,7 +221,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                 audioSystem.playClick(500);
                 onClose();
               }}
-              className="flex h-6 w-6 items-center justify-center rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="flex h-6 w-6 items-center justify-center rounded-none text-stone-400 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/15 transition-colors"
               title="Nascondi mappa (riapribile dal menu in alto)"
             >
               <X className="h-3.5 w-3.5" />
@@ -226,7 +230,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
         </div>
 
         {/* Mini Blueprint Map Canvas */}
-        <div className="relative w-full aspect-[16/11] bg-stone-900/80 p-1.5 overflow-hidden select-none">
+        <div className="relative w-full aspect-[16/11] bg-stone-900/90 p-1.5 overflow-hidden select-none">
           {/* Blueprint Architectural Grid Background */}
           <svg
             className="absolute inset-0 h-full w-full pointer-events-none opacity-20"
@@ -252,10 +256,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
               y="5"
               width="90"
               height="90"
-              rx="3"
+              rx="0"
               fill="rgba(255,255,255,0.02)"
               stroke="rgba(255,255,255,0.4)"
-              strokeWidth="1.2"
+              strokeWidth="1"
             />
             {/* Dividing partitions */}
             <line x1="5" y1="42" x2="95" y2="42" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" strokeDasharray="2 1.5" />
@@ -270,7 +274,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
               y="44"
               width="24"
               height="28"
-              rx="2"
+              rx="0"
               fill="rgba(245,158,11,0.03)"
               stroke="rgba(245,158,11,0.25)"
               strokeWidth="0.6"
@@ -310,19 +314,19 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                 onMouseEnter={() => setHoveredStationId(station.id)}
                 onMouseLeave={() => setHoveredStationId(null)}
               >
-                {/* Active Pulsing Ring */}
+                {/* Active Pulsing Box */}
                 {isCurrent && (
-                  <div className="absolute -inset-2.5 rounded-full bg-amber-400/40 animate-ping duration-1000 pointer-events-none" />
+                  <div className="absolute -inset-2 rounded-none bg-amber-400/30 animate-pulse duration-1000 pointer-events-none border border-amber-400/50" />
                 )}
 
                 <button
                   type="button"
                   id={`hud-pin-${station.id}`}
                   onClick={() => handleStationClick(idx)}
-                  className={`group relative flex items-center justify-center rounded-xl transition-all focus:outline-none ${
+                  className={`group relative flex items-center justify-center rounded-none transition-all focus:outline-none ${
                     isCurrent
-                      ? 'h-7 w-7 sm:h-8 sm:w-8 bg-amber-400 text-stone-950 font-bold shadow-lg shadow-amber-500/50 ring-2 ring-amber-300 scale-110 z-30'
-                      : 'h-5 w-5 sm:h-6 sm:w-6 bg-stone-900/90 text-white border border-white/30 hover:border-amber-400 hover:scale-125 hover:bg-stone-800'
+                      ? 'h-7 w-7 sm:h-8 sm:w-8 bg-amber-400 text-stone-950 font-bold shadow-md border border-amber-300 scale-105 z-30'
+                      : 'h-5 w-5 sm:h-6 sm:w-6 bg-stone-900/90 text-white border border-white/30 hover:border-amber-400 hover:bg-stone-800'
                   }`}
                   title={`${station.shortName} • Clicca per salto rapido`}
                 >
@@ -333,7 +337,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                 {(isHovered || isCurrent) && (
                   <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap z-30">
                     <span
-                      className={`px-1 py-0.2 rounded text-[8px] font-semibold border ${
+                      className={`px-1 py-0.2 rounded-none font-mono text-[8px] font-semibold border ${
                         isCurrent
                           ? 'bg-amber-400 text-stone-950 border-amber-300 font-bold'
                           : 'bg-stone-950/90 text-stone-200 border-white/20'
@@ -350,10 +354,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
 
         {/* Active Station Info Footer Bar */}
         <div className="px-3 py-2 bg-stone-900/90 border-t border-white/10 flex items-center justify-between text-[10px]">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <div className="flex items-center gap-1.5 min-w-0 font-mono">
+            <span className="h-1.5 w-1.5 rounded-none bg-emerald-400 animate-pulse shrink-0" />
             <span className="text-stone-300 truncate">
-              Posizione: <b className="text-amber-300 font-semibold">{currentStation.shortName}</b>
+              STAZIONE: <b className="text-amber-300 font-bold">{currentStation.shortName}</b>
             </span>
           </div>
           <button
@@ -362,9 +366,9 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
               audioSystem.playClick(600);
               setIsExpandedModal(true);
             }}
-            className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-0.5 shrink-0 ml-2"
+            className="text-amber-400 hover:text-amber-300 font-mono font-bold flex items-center gap-0.5 shrink-0 ml-2 uppercase text-[10px]"
           >
-            <span>Apri</span>
+            <span>INGRANDISCI</span>
             <ChevronRight className="h-3 w-3" />
           </button>
         </div>
@@ -378,7 +382,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
             role="dialog"
             aria-modal="true"
             aria-label="Planimetria Ufficio e Salto Rapido Postazioni"
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md"
           >
             {/* Backdrop dismiss */}
             <div
@@ -387,31 +391,37 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
               aria-hidden="true"
             />
 
-            {/* Main MiniMap Dialog Container */}
+            {/* Main MiniMap Dialog Container - Squared Architectural Frame */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 16 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative z-10 flex flex-col w-full max-w-4xl max-h-[92vh] overflow-hidden rounded-3xl border border-white/20 bg-stone-950/95 shadow-2xl backdrop-blur-2xl text-stone-100"
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.15 }}
+              className="relative z-10 flex flex-col w-full max-w-4xl max-h-[92vh] overflow-hidden rounded-none sm:rounded-sm border border-white/15 bg-stone-950/95 shadow-2xl backdrop-blur-2xl text-stone-100"
             >
+              {/* Corner marks */}
+              <div className="absolute -top-px -left-px w-2 h-2 border-t-2 border-l-2 border-amber-400/80 pointer-events-none" />
+              <div className="absolute -top-px -right-px w-2 h-2 border-t-2 border-r-2 border-amber-400/80 pointer-events-none" />
+              <div className="absolute -bottom-px -left-px w-2 h-2 border-b-2 border-l-2 border-amber-400/80 pointer-events-none" />
+              <div className="absolute -bottom-px -right-px w-2 h-2 border-b-2 border-r-2 border-amber-400/80 pointer-events-none" />
+
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-4 bg-white/5">
+              <div className="flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-3.5 bg-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold shadow-md">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-none bg-amber-400 text-stone-950 font-bold border border-amber-300 shadow-sm">
                     <Compass className="h-5 w-5 animate-[spin_12s_linear_infinite]" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-base sm:text-lg font-bold text-white tracking-wide">
+                      <h2 className="text-base sm:text-lg font-bold text-white tracking-wide uppercase">
                         Planimetria Studio BIM & Layout Ufficio
                       </h2>
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-semibold text-emerald-400 border border-emerald-500/30">
-                        LIVE RADAR
+                      <span className="rounded-none bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 border border-emerald-500/30">
+                        RADAR
                       </span>
                     </div>
-                    <p className="text-xs text-stone-400 hidden xs:block">
-                      Mappa interattiva • Clicca sui punti della pianta per il salto rapido tra postazioni distanti
+                    <p className="text-xs text-stone-400 hidden xs:block font-mono">
+                      Mappa interattiva • Clicca sui nodi per teletrasporto istantaneo tra stazioni BIM
                     </p>
                   </div>
                 </div>
@@ -424,10 +434,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                     audioSystem.playClick(500);
                     setIsExpandedModal(false);
                   }}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-stone-400 hover:bg-white/20 hover:text-white transition-all active:scale-95"
+                  className="flex h-8 w-8 items-center justify-center rounded-none bg-white/5 border border-white/10 text-stone-400 hover:bg-white/15 hover:text-white transition-all"
                   title="Riduci a mini-mappa"
                 >
-                  <Minimize2 className="h-5 w-5" />
+                  <Minimize2 className="h-4 w-4" />
                 </button>
               </div>
 
@@ -451,7 +461,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                   </div>
 
                   {/* SVG Blueprint Canvas */}
-                  <div className="relative w-full aspect-[16/11] max-h-[380px] sm:max-h-[420px] rounded-2xl border border-white/15 bg-stone-950/80 p-2 overflow-hidden shadow-inner select-none">
+                  <div className="relative w-full aspect-[16/11] max-h-[380px] sm:max-h-[420px] rounded-none border border-white/15 bg-stone-950/80 p-2 overflow-hidden shadow-inner select-none">
                     {/* Architectural Blueprint Grid Background */}
                     <svg
                       className="absolute inset-0 h-full w-full pointer-events-none opacity-20"
@@ -481,7 +491,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                         y="4"
                         width="92"
                         height="92"
-                        rx="3"
+                        rx="0"
                         fill="rgba(255,255,255,0.02)"
                         stroke="rgba(255,255,255,0.5)"
                         strokeWidth="1.2"
@@ -505,7 +515,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                         y="44"
                         width="24"
                         height="28"
-                        rx="2"
+                        rx="0"
                         fill="rgba(245,158,11,0.03)"
                         stroke="rgba(245,158,11,0.25)"
                         strokeWidth="0.6"
@@ -568,11 +578,11 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                           onMouseEnter={() => setHoveredStationId(station.id)}
                           onMouseLeave={() => setHoveredStationId(null)}
                         >
-                          {/* Pulsing Radar Ring for Current Location */}
+                          {/* Pulsing Radar Box for Current Location */}
                           {isCurrent && (
                             <>
-                              <div className="absolute -inset-4 rounded-full bg-amber-400/30 animate-ping duration-1000 pointer-events-none" />
-                              <div className="absolute -inset-2 rounded-full bg-amber-400/20 animate-pulse pointer-events-none" />
+                              <div className="absolute -inset-3 rounded-none bg-amber-400/25 animate-pulse duration-1000 pointer-events-none border border-amber-400/50" />
+                              <div className="absolute -inset-1.5 rounded-none bg-amber-400/15 pointer-events-none" />
                             </>
                           )}
 
@@ -584,10 +594,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                               handleStationClick(idx);
                               setIsExpandedModal(false);
                             }}
-                            className={`group relative flex items-center justify-center rounded-2xl p-1.5 transition-all duration-300 focus:outline-none ${
+                            className={`group relative flex items-center justify-center rounded-none p-1.5 transition-all focus:outline-none ${
                               isCurrent
-                                ? 'h-10 w-10 sm:h-12 sm:w-12 bg-amber-500 text-stone-950 shadow-xl shadow-amber-500/40 ring-4 ring-amber-400/60 scale-110 z-30 font-bold'
-                                : 'h-8 w-8 sm:h-9 sm:w-9 bg-stone-900/90 text-white border border-white/30 hover:border-amber-400 hover:scale-125 hover:bg-stone-800 shadow-md'
+                                ? 'h-9 w-9 sm:h-11 sm:w-11 bg-amber-400 text-stone-950 border border-amber-300 shadow-xl scale-105 z-30 font-bold'
+                                : 'h-8 w-8 sm:h-9 sm:w-9 bg-stone-900/90 text-white border border-white/30 hover:border-amber-400 hover:bg-stone-800 shadow-md'
                             }`}
                             title={`${station.shortName} • Clicca per salto rapido`}
                           >
@@ -597,7 +607,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
 
                             {/* Pin Status dot */}
                             <span
-                              className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-stone-950 ${
+                              className={`absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-none border border-stone-950 ${
                                 isCurrent ? 'bg-emerald-400 animate-pulse' : 'bg-stone-500 group-hover:bg-amber-400'
                               }`}
                             />
@@ -606,10 +616,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                           {/* Station Label Chip */}
                           <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap z-20">
                             <span
-                              className={`px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold border ${
+                              className={`px-1.5 py-0.5 rounded-none font-mono text-[9px] sm:text-[10px] font-semibold border ${
                                 isCurrent
                                   ? 'bg-amber-400 text-stone-950 border-amber-300 font-bold shadow-md'
-                                  : 'bg-stone-950/80 text-stone-300 border-white/20'
+                                  : 'bg-stone-950/90 text-stone-300 border-white/20'
                               }`}
                             >
                               {station.shortName}
@@ -618,11 +628,11 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
 
                           {/* Hover Tooltip Card */}
                           {isHovered && !isCurrent && (
-                            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 rounded-xl border border-amber-400/40 bg-stone-900/95 p-2.5 text-left text-xs text-white shadow-2xl backdrop-blur-xl z-40">
+                            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 rounded-none border border-amber-400/50 bg-stone-950/95 p-2.5 text-left text-xs text-white shadow-2xl backdrop-blur-xl z-40">
                               <div className="flex items-center justify-between text-[10px] text-amber-300 font-mono mb-1">
                                 <span>{node.roomCode}</span>
                                 <span className="text-emerald-400 font-bold">
-                                  {distance} m di distanza
+                                  {distance} m
                                 </span>
                               </div>
                               <div className="font-semibold text-white flex items-center gap-1 text-[11px]">
@@ -632,11 +642,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                               <p className="text-[10px] text-stone-400 line-clamp-2 mt-0.5">
                                 {station.tagline}
                               </p>
-                              <div className="mt-1.5 flex items-center gap-1 text-[9px] text-amber-400 font-semibold">
+                              <div className="mt-1.5 flex items-center gap-1 font-mono text-[9px] text-amber-400 font-semibold uppercase">
                                 <Zap className="h-3 w-3" />
-                                <span>Clicca per teletrasportarti</span>
+                                <span>Teletrasporto</span>
                               </div>
-                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-2 w-2 rotate-45 border-r border-b border-amber-400/40 bg-stone-900/95" />
                             </div>
                           )}
                         </div>
@@ -648,31 +657,31 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                   <div className="w-full mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-stone-400 px-1">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-white font-medium">Tu Sei Qui (Attivo)</span>
+                        <span className="h-2 w-2 rounded-none bg-emerald-400 animate-pulse" />
+                        <span className="text-white font-medium">TU SEI QUI (ATTIVO)</span>
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-stone-500" />
-                        <span>Postazioni Raggiungibili</span>
+                        <span className="h-2 w-2 rounded-none bg-stone-500" />
+                        <span>POSTAZIONI DISPONIBILI</span>
                       </span>
                     </div>
-                    <span className="text-amber-400/80 font-mono">
-                      Clicca su una stanza per il salto rapido
+                    <span className="text-amber-400/80 font-mono uppercase text-[9px]">
+                      Clicca su un nodo per salto rapido
                     </span>
                   </div>
                 </div>
 
                 {/* Right Column: Quick Jumping Station Browser */}
-                <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 p-4 sm:p-5 flex flex-col bg-stone-950/60">
+                <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 p-4 sm:p-5 flex flex-col bg-stone-950/70">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Zap className="h-4 w-4 text-amber-400" />
-                      <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                      <h3 className="text-xs sm:text-sm font-mono font-bold text-white uppercase tracking-wider">
                         Salto Rapido Postazioni
                       </h3>
                     </div>
                     <span className="text-[11px] font-mono text-stone-400">
-                      {stations.length} Hub
+                      {stations.length} HUB
                     </span>
                   </div>
 
@@ -683,10 +692,10 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                         key={cat.id}
                         type="button"
                         onClick={() => setSelectedCategory(cat.id)}
-                        className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-all ${
+                        className={`px-2 py-1 rounded-none font-mono text-[10px] font-semibold uppercase transition-all border ${
                           selectedCategory === cat.id
-                            ? 'bg-amber-400 text-stone-950 font-bold'
-                            : 'bg-white/5 text-stone-400 hover:text-white hover:bg-white/10'
+                            ? 'bg-amber-400 text-stone-950 font-bold border-amber-300'
+                            : 'bg-white/5 border-white/10 text-stone-400 hover:text-white hover:bg-white/10 hover:border-white/20'
                         }`}
                       >
                         {cat.label}
@@ -695,7 +704,7 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                   </div>
 
                   {/* Stations List for Distant Jumping */}
-                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar max-h-[260px] lg:max-h-none">
+                  <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar max-h-[260px] lg:max-h-none">
                     {stations.map((station, idx) => {
                       const node = STATION_MAP_NODES[station.id];
                       const isCurrent = idx === currentStationIndex;
@@ -715,16 +724,16 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                           }}
                           onMouseEnter={() => setHoveredStationId(station.id)}
                           onMouseLeave={() => setHoveredStationId(null)}
-                          className={`group w-full flex items-center justify-between p-2.5 rounded-xl border text-left transition-all ${
+                          className={`group w-full flex items-center justify-between p-2.5 rounded-none border text-left transition-all ${
                             isCurrent
-                              ? 'bg-amber-500/15 border-amber-500/50 shadow-md ring-1 ring-amber-400/40'
+                              ? 'bg-amber-500/15 border-amber-400/50 shadow-sm ring-1 ring-amber-400/40'
                               : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-amber-400/40'
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
                             <div
-                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm ${
-                                isCurrent ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-white/10 text-white'
+                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-none text-sm border ${
+                                isCurrent ? 'bg-amber-400 text-stone-950 font-bold border-amber-300' : 'bg-white/10 text-white border-white/10'
                               }`}
                             >
                               {station.emoji}
@@ -739,12 +748,12 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                                   {station.shortName}
                                 </span>
                                 {isCurrent && (
-                                  <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[8px] font-bold text-emerald-400 border border-emerald-500/30">
+                                  <span className="rounded-none bg-emerald-500/20 px-1.5 py-0.2 font-mono text-[8px] font-bold text-emerald-400 border border-emerald-500/30">
                                     QUI
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[10px] text-stone-400 truncate">
+                              <p className="text-[10px] text-stone-400 truncate font-mono">
                                 {node?.zone || station.category}
                               </p>
                             </div>
@@ -767,9 +776,9 @@ export const OfficeMiniMap: React.FC<OfficeMiniMapProps> = ({
                   </div>
 
                   {/* Footer Hint */}
-                  <div className="mt-3 pt-3 border-t border-white/10 text-[10px] text-stone-400 flex items-center justify-between">
-                    <span>Premi <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-white">ESC</kbd> o <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-white">M</kbd> per chiudere</span>
-                    <span className="text-amber-400 font-semibold">{stations.length} Aree Esplorabili</span>
+                  <div className="mt-3 pt-3 border-t border-white/10 font-mono text-[10px] text-stone-400 flex items-center justify-between">
+                    <span>Premi <kbd className="px-1.5 py-0.5 rounded-none bg-white/10 font-mono text-white border border-white/15">ESC</kbd> o <kbd className="px-1.5 py-0.5 rounded-none bg-white/10 font-mono text-white border border-white/15">M</kbd></span>
+                    <span className="text-amber-400 font-semibold">{stations.length} HUB</span>
                   </div>
                 </div>
               </div>

@@ -68,24 +68,32 @@ Inviato dallo Studio Virtuale Interattivo 360°`;
       role="dialog"
       aria-modal="true"
       aria-labelledby="audit-booking-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
     >
       <div
-        className="relative w-full max-w-xl rounded-3xl border border-white/20 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-xl rounded-none border border-white/15 bg-stone-950/95 p-5 sm:p-7 shadow-2xl backdrop-blur-2xl text-stone-100 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Architectural corner marks */}
+        <div className="pointer-events-none absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-stone-950 font-black shadow-lg shadow-amber-500/30">
+            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-none bg-amber-400/10 border border-amber-400/40 text-amber-400 font-black">
               <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
-              <h2 id="audit-booking-title" className="text-base sm:text-lg font-bold text-white tracking-wide">
-                Richiesta Audit BIM & Consulenza Dedicata
-              </h2>
-              <p className="text-xs text-stone-400">
-                Invia direttamente la tua richiesta a Efrem Giannessi (risposta entro 24-48 ore)
+              <div className="flex items-center gap-2">
+                <h2 id="audit-booking-title" className="text-base sm:text-lg font-bold text-white tracking-wide">
+                  Richiesta Audit BIM & Consulenza Dedicata
+                </h2>
+              </div>
+              <p className="text-xs text-stone-400 font-light">
+                Invia direttamente la richiesta a Efrem Giannessi (riscontro entro 24-48 ore)
               </p>
             </div>
           </div>
@@ -96,57 +104,57 @@ Inviato dallo Studio Virtuale Interattivo 360°`;
               audioSystem.playClick(500);
               onClose();
             }}
-            className="rounded-xl p-2 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="rounded-none border border-white/10 bg-white/5 p-1.5 text-stone-400 hover:border-amber-400/50 hover:text-white transition-colors"
             title="Chiudi modulo"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content Body */}
         {isSubmitted ? (
           <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-            <div className="h-14 w-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
-              <CheckCircle2 className="h-8 w-8" />
+            <div className="h-12 w-12 rounded-none bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
+              <CheckCircle2 className="h-6 w-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Client di Posta Aperto!</h3>
-            <p className="text-xs text-stone-300 max-w-sm">
-              La tua richiesta è stata precompilata nel tuo programma email. Clicca invia per recapitare il messaggio direttamente a <strong>EfremGiannessi@gmail.com</strong>.
+            <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider">Client di Posta Aperto</h3>
+            <p className="text-xs text-stone-300 max-w-sm font-light">
+              La tua richiesta è stata precompilata nel tuo programma email. Invia il messaggio a <strong>EfremGiannessi@gmail.com</strong>.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3.5 my-3 overflow-y-auto min-h-0">
+          <form onSubmit={handleSubmit} className="space-y-3.5 my-3 overflow-y-auto min-h-0 font-sans">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-[11px] font-semibold text-stone-300 uppercase block mb-1">
+                <label className="text-[10px] font-bold font-mono uppercase tracking-wider text-stone-300 block mb-1">
                   Nome e Cognome / Studio
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-500" />
                   <input
                     type="text"
                     required
                     placeholder="Arch. Mario Rossi"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl border border-white/15 bg-white/5 pl-9 pr-3 py-2 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-none border border-white/15 bg-white/5 pl-8 pr-3 py-2 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-stone-300 uppercase block mb-1">
+                <label className="text-[10px] font-bold font-mono uppercase tracking-wider text-stone-300 block mb-1">
                   Email di Contatto
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-500" />
                   <input
                     type="email"
                     required
                     placeholder="mario.rossi@studio.it"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl border border-white/15 bg-white/5 pl-9 pr-3 py-2 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-none border border-white/15 bg-white/5 pl-8 pr-3 py-2 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none"
                   />
                 </div>
               </div>
@@ -154,13 +162,13 @@ Inviato dallo Studio Virtuale Interattivo 360°`;
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-[11px] font-semibold text-stone-300 uppercase block mb-1">
+                <label className="text-[10px] font-bold font-mono uppercase tracking-wider text-stone-300 block mb-1">
                   Ambito di Consulenza
                 </label>
                 <select
                   value={serviceType}
                   onChange={(e) => setServiceType(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-stone-900 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full rounded-none border border-white/15 bg-stone-900 px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
                 >
                   <option value="BIM 5D & Computo Metrico">Progettazione BIM 5D & Computo</option>
                   <option value="Sviluppo Plugin Revit & pyRevit">Sviluppo Plugin Revit & pyRevit</option>
@@ -171,13 +179,13 @@ Inviato dallo Studio Virtuale Interattivo 360°`;
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-stone-300 uppercase block mb-1">
+                <label className="text-[10px] font-bold font-mono uppercase tracking-wider text-stone-300 block mb-1">
                   Tipologia di Immobile / Opera
                 </label>
                 <select
                   value={projectType}
                   onChange={(e) => setProjectType(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-stone-900 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full rounded-none border border-white/15 bg-stone-900 px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
                 >
                   <option value="Edilizia Residenziale">Edilizia Residenziale (Ville / Condomini)</option>
                   <option value="Complesso Commerciale / Uffici">Terziario / Uffici / Negozi</option>
@@ -189,26 +197,26 @@ Inviato dallo Studio Virtuale Interattivo 360°`;
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-stone-300 uppercase block mb-1">
-                Descrizione Progetto / Domande
+              <label className="text-[10px] font-bold font-mono uppercase tracking-wider text-stone-300 block mb-1">
+                Descrizione Progetto / Specifiche
               </label>
               <textarea
                 rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Descrivi brevemente superfici previste, tempistiche o necessità particolari..."
-                className="w-full rounded-xl border border-white/15 bg-white/5 p-3 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none resize-none"
+                className="w-full rounded-none border border-white/15 bg-white/5 p-3 text-xs text-white placeholder:text-stone-500 focus:border-amber-400 focus:outline-none resize-none"
               />
             </div>
 
-            <div className="pt-2 flex items-center justify-between">
-              <span className="text-[10px] text-stone-400">
-                Email diretta: <strong>EfremGiannessi@gmail.com</strong>
+            <div className="pt-2 flex items-center justify-between border-t border-white/10">
+              <span className="text-[10px] font-mono text-stone-400">
+                REFERENTE: <strong>EfremGiannessi@gmail.com</strong>
               </span>
               <button
                 type="submit"
                 id="btn-submit-audit-form"
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-bold py-2 px-4 text-xs shadow-lg shadow-amber-500/30 transition-all active:scale-95"
+                className="flex items-center gap-2 rounded-none bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold py-2 px-4 text-xs font-mono uppercase tracking-wider transition-all active:scale-95 shadow-md"
               >
                 <Send className="h-3.5 w-3.5" />
                 <span>Genera Email & Invia</span>

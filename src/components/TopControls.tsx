@@ -3,27 +3,25 @@ import { LightingMode, WeatherIntensity, TransitionStyle } from '../types';
 import { TimeSyncInfo } from '../utils/timeSync';
 import {
   Volume2,
-  Volume1,
   VolumeX,
+  Volume1,
+  Maximize2,
+  Minimize2,
   Sun,
   Sunset,
   Moon,
+  Compass,
   Play,
-  Pause,
+  Headphones,
+  Github,
+  Map,
   Eye,
   EyeOff,
-  Maximize2,
-  Minimize2,
-  Github,
-  Sparkles,
-  Map,
   Sliders,
   Box,
   Split,
-  Headphones,
-  Compass,
   Clock,
-  Wind,
+  Sparkles,
   Calculator,
   Terminal,
   Presentation,
@@ -49,7 +47,7 @@ interface TopControlsProps {
   isAutoSync?: boolean;
   onToggleAutoSync?: (active: boolean) => void;
   onOpenTimeSyncModal?: () => void;
-  timeInfo?: TimeSyncInfo;
+  timeInfo?: TimeSyncInfo | null;
   weatherIntensity?: WeatherIntensity;
   onToggleWeatherIntensity?: () => void;
   onOpenBIMEstimator?: () => void;
@@ -117,6 +115,15 @@ export const TopControls: React.FC<TopControlsProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
   const handleToggleMute = () => {
     const newMuteState = audioSystem.toggleMute();
     setIsMuted(newMuteState);
@@ -162,13 +169,17 @@ export const TopControls: React.FC<TopControlsProps> = ({
   return (
     <header
       aria-label="Controlli vista ufficio"
-      className="fixed top-2 sm:top-4 left-0 right-0 z-30 flex items-center justify-between px-2 sm:px-6 pt-safe pointer-events-none gap-1.5"
+      className="fixed top-2 sm:top-3 left-0 right-0 z-30 flex items-center justify-between px-2 sm:px-6 pt-safe pointer-events-none gap-1.5"
     >
-      {/* Brand & Title */}
+      {/* Brand & Studio Identification - Squared Architectural Box */}
       <div
-        className="flex items-center gap-2 sm:gap-3 pointer-events-auto rounded-xl sm:rounded-2xl border border-white/15 bg-stone-950/85 px-2.5 sm:px-3.5 py-1.5 sm:py-2 shadow-xl backdrop-blur-xl"
+        className="relative flex items-center gap-2 sm:gap-3 pointer-events-auto rounded-none sm:rounded-sm border border-white/15 bg-stone-950/90 px-2.5 sm:px-3.5 py-1.5 sm:py-2 shadow-2xl backdrop-blur-xl"
       >
-        <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-stone-950 font-black text-xs sm:text-sm shadow-md">
+        {/* Architectural corner marks */}
+        <div className="absolute -top-px -left-px w-1.5 h-1.5 border-t border-l border-amber-400/80 pointer-events-none" />
+        <div className="absolute -top-px -right-px w-1.5 h-1.5 border-t border-r border-amber-400/80 pointer-events-none" />
+
+        <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-none bg-amber-400 text-stone-950 font-mono font-bold text-xs sm:text-sm shadow-sm border border-amber-300">
           EG
         </div>
         <div>
@@ -176,18 +187,24 @@ export const TopControls: React.FC<TopControlsProps> = ({
             <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">
               Efrem Giannessi
             </span>
-            <span className="hidden xs:inline rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[8px] sm:text-[9px] font-bold text-amber-300 border border-amber-500/30">
+            <span className="hidden xs:inline rounded-none bg-amber-500/15 px-1.5 py-0.2 font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/30">
               BIM 5D • 360°
             </span>
           </div>
-          <p className="hidden sm:block text-[10px] text-stone-400">Progettazione BIM 5D • Computo Industriale • Rendering</p>
+          <p className="hidden sm:block font-mono text-[9px] text-stone-400 uppercase tracking-wide">
+            Autodesk Revit • Computo • Sviluppo Plugin
+          </p>
         </div>
       </div>
 
-      {/* Center/Right Control Bar */}
-      <div className="flex items-center gap-1 sm:gap-2 pointer-events-auto rounded-xl sm:rounded-2xl border border-white/15 bg-stone-950/85 p-1 sm:p-1.5 shadow-xl backdrop-blur-xl">
+      {/* Center/Right Control Bar - Squared Architectural Box */}
+      <div className="relative flex items-center gap-1 sm:gap-1.5 pointer-events-auto rounded-none sm:rounded-sm border border-white/15 bg-stone-950/90 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl">
+        {/* Architectural corner marks */}
+        <div className="absolute -top-px -right-px w-1.5 h-1.5 border-t border-r border-amber-400/80 pointer-events-none" />
+        <div className="absolute -bottom-px -right-px w-1.5 h-1.5 border-b border-r border-amber-400/80 pointer-events-none" />
+
         {/* Lighting Mode Selector & Real-Time Sync */}
-        <div className="flex items-center rounded-lg sm:rounded-xl bg-white/5 p-0.5 border border-white/10">
+        <div className="flex items-center rounded-none bg-stone-900/80 p-0.5 border border-white/10">
           <button
             type="button"
             id="lighting-day"
@@ -196,13 +213,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('day');
             }}
             title="Luce Giorno (07:00 - 18:00)"
-            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-none text-xs transition-all ${
               lightingMode === 'day'
-                ? 'bg-amber-400 text-stone-950 shadow font-semibold'
+                ? 'bg-amber-400 text-stone-950 font-bold border border-amber-300 shadow-sm'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Sun className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
@@ -212,13 +229,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('sunset');
             }}
             title="Luce Tramonto / Golden Hour (18:00 - 21:00)"
-            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-none text-xs transition-all ${
               lightingMode === 'sunset'
-                ? 'bg-amber-600 text-white shadow font-semibold'
+                ? 'bg-amber-600 text-white font-bold border border-amber-500 shadow-sm'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Sunset className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Sunset className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
@@ -228,13 +245,13 @@ export const TopControls: React.FC<TopControlsProps> = ({
               onSelectLightingMode('night');
             }}
             title="Luce Notte (21:00 - 07:00)"
-            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md sm:rounded-lg text-xs transition-all ${
+            className={`flex h-7 w-7 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-none text-xs transition-all ${
               lightingMode === 'night'
-                ? 'bg-indigo-600 text-white shadow font-semibold'
+                ? 'bg-indigo-600 text-white font-bold border border-indigo-500 shadow-sm'
                 : 'text-stone-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Moon className="h-3.5 w-3.5" />
           </button>
 
           {/* Global Light-Time Synchronization Button */}
@@ -252,9 +269,9 @@ export const TopControls: React.FC<TopControlsProps> = ({
                     onToggleAutoSync(!isAutoSync);
                   }
                 }}
-                className={`flex items-center gap-1 rounded-md sm:rounded-lg px-1.5 sm:px-2 py-1 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1 rounded-none px-1.5 sm:px-2 py-1 text-xs font-semibold transition-all ${
                   isAutoSync
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/40'
                     : 'text-stone-400 hover:text-stone-200 hover:bg-white/10'
                 }`}
                 title={`Sincronizzazione Oraria Globale: ${isAutoSync ? 'ATTIVA' : 'MANUALE'} (${timeInfo.localTimeStr} • ${timeInfo.periodTitle}). Clicca per aprire il pannello orario.`}
@@ -262,7 +279,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
                 <Clock className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${isAutoSync ? 'text-emerald-400 animate-pulse' : 'text-stone-400'}`} />
                 <span className="font-mono text-[11px] sm:text-xs font-bold">{timeInfo.localTimeStr}</span>
                 <span
-                  className={`hidden md:inline rounded px-1 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+                  className={`hidden md:inline rounded-none px-1 py-0.2 font-mono text-[9px] font-bold uppercase tracking-wider ${
                     isAutoSync ? 'bg-emerald-400 text-stone-950' : 'bg-white/10 text-stone-400'
                   }`}
                 >
@@ -281,9 +298,9 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(weatherIntensity === 'off' ? 700 : 550);
             onToggleWeatherIntensity?.();
           }}
-          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+          className={`flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-98 ${
             weatherIntensity === 'vivid'
-              ? 'bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-md shadow-amber-500/20'
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-sm'
               : weatherIntensity === 'subtle'
               ? 'bg-white/10 text-stone-200 hover:bg-white/20 hover:text-white border border-white/15'
               : 'bg-white/5 text-stone-500 hover:text-stone-300 border border-white/5'
@@ -294,13 +311,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               : weatherIntensity === 'subtle'
               ? 'SOTTILE (Attivo)'
               : 'DISATTIVATO'
-          } (${
-            lightingMode === 'day'
-              ? 'Polvere solare fluttuante & fasci zenitali'
-              : lightingMode === 'sunset'
-              ? 'Raggi radenti ambrati & pulviscolo dorato'
-              : 'Nebbia notturna blu & particelle stellari'
-          }). Clicca per commutare (Sottile / Intenso / Off).`}
+          }. Clicca per commutare.`}
         >
           <Sparkles
             className={`h-3.5 w-3.5 ${
@@ -315,7 +326,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
             {weatherIntensity === 'off' ? 'Meteo Off' : 'Meteo'}
           </span>
           <span
-            className={`rounded px-1 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+            className={`rounded-none px-1 py-0.2 font-mono text-[9px] font-bold uppercase tracking-wider ${
               weatherIntensity === 'vivid'
                 ? 'bg-amber-400 text-stone-950'
                 : weatherIntensity === 'subtle'
@@ -335,15 +346,15 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(720);
             onToggle360Mode();
           }}
-          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+          className={`flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-98 ${
             is360Mode
-              ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-stone-950 font-bold shadow-lg shadow-amber-500/30 ring-2 ring-amber-300'
+              ? 'bg-amber-400 text-stone-950 font-bold border border-amber-300 shadow-sm'
               : 'bg-white/10 text-stone-300 hover:bg-white/20 hover:text-white border border-white/15'
           }`}
           title={is360Mode ? 'Passa alla visuale standard' : 'Attiva Tour Immersivo a 360° Sferico'}
         >
           <Compass className={`h-3.5 w-3.5 ${is360Mode ? 'text-stone-950 animate-spin' : 'text-amber-400'}`} />
-          <span className="font-bold">360°</span>
+          <span className="font-mono font-bold">360°</span>
         </button>
 
         {/* Guided Audio Tour Toggle */}
@@ -354,9 +365,9 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(650);
             onToggleAutoTour();
           }}
-          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+          className={`flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-all ${
             isAutoTouring
-              ? 'bg-amber-400 text-stone-950 font-bold shadow-md ring-2 ring-amber-300 animate-pulse'
+              ? 'bg-amber-400 text-stone-950 font-bold border border-amber-300 shadow-sm'
               : 'text-stone-300 hover:bg-white/10 hover:text-white border border-white/10'
           }`}
           title={isAutoTouring ? 'Pausa Audio Tour Guidato' : 'Avvia Audio Tour Guidato con Voce Narrante'}
@@ -366,7 +377,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
           ) : (
             <Play className="h-3.5 w-3.5 text-amber-400" />
           )}
-          <span className="hidden md:inline">Audio Tour</span>
+          <span className="hidden md:inline font-mono">Audio Tour</span>
         </button>
 
         {/* BIM 3D WebGL Quick Trigger */}
@@ -377,7 +388,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(700);
             onOpenBIMViewer();
           }}
-          className="hidden sm:flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all active:scale-95"
+          className="hidden sm:flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all active:scale-98 font-mono"
           title="Apri Modello 3D BIM Interattivo WebGL"
         >
           <Box className="h-3.5 w-3.5 text-amber-400" />
@@ -392,11 +403,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(700);
             onOpenCadCompare();
           }}
-          className="hidden sm:flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 transition-all active:scale-95"
+          className="hidden sm:flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 transition-all active:scale-98 font-mono"
           title="Confronta DWG 2D e BIM 3D Split-Screen"
         >
           <Split className="h-3.5 w-3.5 text-sky-400" />
-          <span className="hidden lg:inline">CAD / BIM</span>
+          <span className="hidden lg:inline">CAD/BIM</span>
         </button>
 
         {/* BIM 5D Parametric Cost & ROI Estimator Button */}
@@ -408,7 +419,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(720);
               onOpenBIMEstimator();
             }}
-            className="hidden md:flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all active:scale-95"
+            className="hidden md:flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all active:scale-98 font-mono"
             title="Calcola Preventivo e ROI BIM 5D Parametrico"
           >
             <Calculator className="h-3.5 w-3.5 text-amber-400" />
@@ -425,11 +436,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(700);
               onOpenRevitConsole();
             }}
-            className="hidden lg:flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/25 transition-all active:scale-95"
+            className="hidden lg:flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/25 transition-all active:scale-98 font-mono"
             title="Console Scripting pyRevit e C# Add-in"
           >
             <Terminal className="h-3.5 w-3.5 text-indigo-400" />
-            <span className="hidden xl:inline">Console Revit</span>
+            <span className="hidden xl:inline">Revit Console</span>
           </button>
         )}
 
@@ -442,11 +453,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(720);
               onOpenVirtualStaging();
             }}
-            className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold bg-fuchsia-500/15 border border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/25 transition-all active:scale-95"
+            className="flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold bg-fuchsia-500/15 border border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/25 transition-all active:scale-98 font-mono"
             title="Virtual Staging 3D e Rendering Fotorealistico Prima/Dopo"
           >
             <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
-            <span className="hidden sm:inline">Virtual Staging</span>
+            <span className="hidden sm:inline">Staging</span>
           </button>
         )}
 
@@ -459,15 +470,15 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(650);
               onTogglePitchMode();
             }}
-            className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+            className={`flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition-all active:scale-98 ${
               isPitchMode
-                ? 'bg-rose-500 text-white font-bold shadow-lg shadow-rose-500/30 ring-2 ring-rose-400'
+                ? 'bg-rose-500 text-white font-bold border border-rose-400 shadow-sm'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white border border-white/15'
             }`}
             title={isPitchMode ? 'Disattiva modalità Pitch Meeting' : 'Attiva Laser Pointer e Annotazioni Live per Presentazioni'}
           >
             <Presentation className={`h-3.5 w-3.5 ${isPitchMode ? 'text-white animate-pulse' : 'text-rose-400'}`} />
-            <span className="hidden sm:inline">Pitch Mode</span>
+            <span className="hidden sm:inline font-mono">Pitch</span>
           </button>
         )}
 
@@ -480,15 +491,15 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(600);
               onToggleRainAudio();
             }}
-            className={`flex items-center gap-1 rounded-xl px-2 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+            className={`flex items-center gap-1 rounded-none px-2 py-1.5 text-xs font-semibold transition-all active:scale-98 ${
               isRainAudioActive
-                ? 'bg-sky-500/30 text-sky-200 border border-sky-400/50 shadow-sm'
-                : 'text-stone-400 hover:text-stone-200 hover:bg-white/10'
+                ? 'bg-sky-500/20 text-sky-200 border border-sky-400/50 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/10 border border-white/10'
             }`}
-            title={isRainAudioActive ? 'Disattiva pioggia acustica rilassante sui vetri' : 'Attiva soundscape pioggia e brezza naturale'}
+            title={isRainAudioActive ? 'Disattiva pioggia acustica sui vetri' : 'Attiva soundscape pioggia e brezza'}
           >
             <CloudRain className={`h-3.5 w-3.5 ${isRainAudioActive ? 'text-sky-300 animate-pulse' : 'text-stone-400'}`} />
-            <span className="hidden xl:inline text-[11px]">Audio Pioggia</span>
+            <span className="hidden xl:inline font-mono text-[10px]">Pioggia</span>
           </button>
         )}
 
@@ -501,11 +512,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
               audioSystem.playClick(750);
               onOpenBookingModal();
             }}
-            className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-400 text-stone-950 shadow-md shadow-amber-500/20 hover:from-amber-400 hover:to-amber-300 transition-all active:scale-95"
+            className="flex items-center gap-1.5 rounded-none px-2 sm:px-3 py-1.5 text-xs font-bold bg-amber-400 text-stone-950 hover:bg-amber-300 border border-amber-300 shadow-sm transition-all active:scale-98"
             title="Richiedi Consulenza o Audit BIM a Efrem Giannessi"
           >
             <Mail className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Richiedi Audit</span>
+            <span className="hidden sm:inline font-mono">RICHIEDI AUDIT</span>
           </button>
         )}
 
@@ -520,11 +531,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
               const nextIndex = (styles.indexOf(transitionStyle) + 1) % styles.length;
               onSelectTransitionStyle(styles[nextIndex]);
             }}
-            className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/15 border border-amber-400/30 hover:bg-amber-500/25 transition-all active:scale-95"
+            className="flex items-center gap-1 rounded-none px-2 py-1.5 text-xs font-mono font-semibold text-amber-300 bg-stone-900/80 border border-amber-400/40 hover:bg-amber-500/20 transition-all active:scale-98"
             title={`Effetto Transizione: ${transitionStyle}. Clicca per alternare (Motion Blur / Cross Dissolve / Warp Zoom)`}
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-            <span className="hidden xl:inline capitalize text-[11px]">{transitionStyle.replace('-', ' ')}</span>
+            <span className="hidden xl:inline uppercase text-[10px]">{transitionStyle.replace('-', ' ')}</span>
           </button>
         )}
 
@@ -536,10 +547,10 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(580);
             onToggleShowHotspots();
           }}
-          className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
+          className={`flex h-8 w-8 items-center justify-center rounded-none border transition-all ${
             showHotspots
-              ? 'text-amber-400 bg-amber-500/15'
-              : 'text-stone-400 hover:text-white hover:bg-white/10'
+              ? 'text-amber-400 bg-amber-500/15 border-amber-400/40'
+              : 'text-stone-400 hover:text-white hover:bg-white/10 border-white/10'
           }`}
           title={showHotspots ? 'Nascondi punti interattivi' : 'Mostra punti interattivi'}
         >
@@ -554,17 +565,17 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(620);
             onToggleMiniMap();
           }}
-          className={`flex items-center gap-1.5 rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-all ${
+          className={`flex items-center gap-1.5 rounded-none px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-all ${
             showMiniMap
-              ? 'bg-amber-400 text-stone-950 font-bold shadow-lg shadow-amber-500/25 ring-2 ring-amber-300'
+              ? 'bg-amber-400 text-stone-950 font-bold border border-amber-300 shadow-sm'
               : 'bg-white/10 text-stone-200 hover:bg-white/20 hover:text-white border border-white/20'
           }`}
           title={showMiniMap ? 'Nascondi mini-mappa planimetria (M)' : 'Mostra mini-mappa planimetria (M)'}
         >
           <Map className={`h-3.5 w-3.5 ${showMiniMap ? 'text-stone-950' : 'text-amber-400'}`} />
-          <span className="inline font-semibold">Mappa</span>
+          <span className="inline font-mono font-semibold">MAPPA</span>
           <span
-            className={`hidden sm:inline-block rounded px-1 text-[9px] font-mono ${
+            className={`hidden sm:inline-block rounded-none px-1 text-[9px] font-mono ${
               showMiniMap ? 'bg-stone-950/20 text-stone-900' : 'bg-white/15 text-stone-400'
             }`}
           >
@@ -572,26 +583,26 @@ export const TopControls: React.FC<TopControlsProps> = ({
           </span>
         </button>
 
-        {/* Master Volume & Mute Toggle Control */}
+        {/* Master Volume & Mute Toggle Control - Squared Box */}
         <div
           ref={volumeContainerRef}
           className="relative flex items-center"
         >
-          <div className="flex items-center rounded-xl bg-white/10 border border-white/15 p-0.5 shadow-sm transition-all hover:border-white/30">
+          <div className="flex items-center rounded-none bg-stone-900/80 border border-white/15 p-0.5 shadow-sm transition-all hover:border-white/30">
             {/* Quick Mute Toggle Button */}
             <button
               type="button"
               id="btn-toggle-sound-mute"
               onClick={handleToggleMute}
-              className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${
+              className={`flex h-7 w-7 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-none transition-all ${
                 isMuted || masterVolume === 0
-                  ? 'bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 ring-1 ring-rose-500/40'
-                  : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 ring-1 ring-emerald-500/40'
+                  ? 'bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40'
+                  : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40'
               }`}
               title={
                 isMuted || masterVolume === 0
-                  ? 'Audio Silenziato • Clicca per riattivare suono e ambiente ufficio'
-                  : 'Silenzia Audio Subito • Clicca per silenziare ambiente ufficio'
+                  ? 'Audio Silenziato • Clicca per riattivare'
+                  : 'Silenzia Audio • Clicca per silenziare'
               }
             >
               {getVolumeIcon()}
@@ -607,7 +618,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
                 aria-label="Volume Master Ambiente Ufficio"
                 value={isMuted ? 0 : masterVolume}
                 onChange={(e) => handleVolumeChange(Number(e.target.value))}
-                className="w-16 h-1.5 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-amber-400 focus:outline-none"
+                className="w-16 h-1.5 bg-stone-800 rounded-none appearance-none cursor-pointer accent-amber-400 focus:outline-none"
               />
               <span className="w-8 text-[10px] font-mono text-stone-300 select-none text-right">
                 {isMuted || masterVolume === 0 ? 'MUTO' : `${masterVolume}%`}
@@ -619,7 +630,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               type="button"
               id="btn-volume-slider-toggle"
               onClick={() => setIsVolumePopoverOpen((prev) => !prev)}
-              className={`lg:hidden flex h-8 w-6 items-center justify-center transition-colors ${
+              className={`lg:hidden flex h-7 w-6 items-center justify-center transition-colors ${
                 isVolumePopoverOpen ? 'text-amber-400' : 'text-stone-400 hover:text-white'
               }`}
               title="Regola livello volume master"
@@ -628,23 +639,23 @@ export const TopControls: React.FC<TopControlsProps> = ({
             </button>
           </div>
 
-          {/* Master Volume Floating Popover (presets & detailed volume adjustment) */}
+          {/* Master Volume Floating Popover - Squared Box */}
           {isVolumePopoverOpen && (
             <div
               id="master-volume-popover"
-              className="absolute top-full right-0 mt-2 z-50 w-56 rounded-2xl border border-white/20 bg-stone-950/95 p-3.5 shadow-2xl backdrop-blur-xl text-stone-100 animate-in fade-in zoom-in-95 duration-150"
+              className="absolute top-full right-0 mt-2 z-50 w-56 rounded-none border border-white/15 bg-stone-950/95 p-3 shadow-2xl backdrop-blur-xl text-stone-100 animate-in fade-in duration-100"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   {getVolumeIcon()}
-                  <span className="text-xs font-bold text-white tracking-wide">
+                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
                     Volume Master
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={handleToggleMute}
-                  className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase transition-all ${
+                  className={`px-1.5 py-0.5 rounded-none text-[9px] font-mono font-bold uppercase transition-all ${
                     isMuted || masterVolume === 0
                       ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
                       : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
@@ -655,10 +666,10 @@ export const TopControls: React.FC<TopControlsProps> = ({
               </div>
 
               {/* Slider inside Popover */}
-              <div className="py-2">
-                <div className="flex items-center justify-between text-[10px] text-stone-400 mb-1">
-                  <span>Livello sonoro studio</span>
-                  <span className="font-mono text-amber-300 font-bold">
+              <div className="py-1.5">
+                <div className="flex items-center justify-between font-mono text-[9px] text-stone-400 mb-1">
+                  <span>LIVELLO SONORO</span>
+                  <span className="text-amber-300 font-bold">
                     {isMuted || masterVolume === 0 ? '0%' : `${masterVolume}%`}
                   </span>
                 </div>
@@ -670,30 +681,28 @@ export const TopControls: React.FC<TopControlsProps> = ({
                   aria-label="Controllo volume master"
                   value={isMuted ? 0 : masterVolume}
                   onChange={(e) => handleVolumeChange(Number(e.target.value))}
-                  className="w-full h-2 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                  className="w-full h-1.5 bg-stone-800 rounded-none appearance-none cursor-pointer accent-amber-400"
                 />
               </div>
 
-              {/* Quick presets buttons */}
-              <div className="grid grid-cols-4 gap-1.5 mt-2 pt-2 border-t border-white/10 text-[10px]">
+              {/* Quick presets buttons - Squared */}
+              <div className="grid grid-cols-4 gap-1 mt-2 pt-2 border-t border-white/10 text-[10px] font-mono">
                 <button
                   type="button"
-                  onClick={() => {
-                    handleToggleMute();
-                  }}
-                  className={`py-1 rounded text-center font-medium transition-colors ${
-                    isMuted ? 'bg-rose-500 text-white font-bold' : 'bg-white/5 hover:bg-white/10 text-stone-300'
+                  onClick={handleToggleMute}
+                  className={`py-1 rounded-none border text-center font-medium transition-colors ${
+                    isMuted ? 'bg-rose-500 text-white font-bold border-rose-400' : 'bg-stone-900 border-white/10 hover:border-white/20 text-stone-300'
                   }`}
                 >
-                  Muto
+                  MUTO
                 </button>
                 <button
                   type="button"
                   onClick={() => handleVolumeChange(30)}
-                  className={`py-1 rounded text-center font-medium transition-colors ${
+                  className={`py-1 rounded-none border text-center font-medium transition-colors ${
                     !isMuted && masterVolume === 30
-                      ? 'bg-amber-400 text-stone-950 font-bold'
-                      : 'bg-white/5 hover:bg-white/10 text-stone-300'
+                      ? 'bg-amber-400 text-stone-950 font-bold border-amber-300'
+                      : 'bg-stone-900 border-white/10 hover:border-white/20 text-stone-300'
                   }`}
                 >
                   30%
@@ -701,10 +710,10 @@ export const TopControls: React.FC<TopControlsProps> = ({
                 <button
                   type="button"
                   onClick={() => handleVolumeChange(65)}
-                  className={`py-1 rounded text-center font-medium transition-colors ${
+                  className={`py-1 rounded-none border text-center font-medium transition-colors ${
                     !isMuted && masterVolume === 65
-                      ? 'bg-amber-400 text-stone-950 font-bold'
-                      : 'bg-white/5 hover:bg-white/10 text-stone-300'
+                      ? 'bg-amber-400 text-stone-950 font-bold border-amber-300'
+                      : 'bg-stone-900 border-white/10 hover:border-white/20 text-stone-300'
                   }`}
                 >
                   65%
@@ -712,35 +721,31 @@ export const TopControls: React.FC<TopControlsProps> = ({
                 <button
                   type="button"
                   onClick={() => handleVolumeChange(100)}
-                  className={`py-1 rounded text-center font-medium transition-colors ${
+                  className={`py-1 rounded-none border text-center font-medium transition-colors ${
                     !isMuted && masterVolume === 100
-                      ? 'bg-amber-400 text-stone-950 font-bold'
-                      : 'bg-white/5 hover:bg-white/10 text-stone-300'
+                      ? 'bg-amber-400 text-stone-950 font-bold border-amber-300'
+                      : 'bg-stone-900 border-white/10 hover:border-white/20 text-stone-300'
                   }`}
                 >
                   100%
                 </button>
               </div>
-
-              <p className="mt-2.5 text-[9px] text-stone-400 text-center">
-                Silenzia o regola istantaneamente l'ambiente acustico dello studio
-              </p>
             </div>
           )}
         </div>
 
-        {/* Fullscreen button */}
+        {/* Fullscreen button - Squared */}
         <button
           type="button"
           id="btn-toggle-fullscreen"
           onClick={handleToggleFullscreen}
-          className="flex h-8 w-8 items-center justify-center rounded-xl text-stone-300 hover:bg-white/10 hover:text-white transition-all"
+          className="flex h-7 w-7 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-none text-stone-300 hover:bg-white/10 hover:text-white border border-white/10 transition-all"
           title={isFullscreen ? 'Esci da schermo intero' : 'Schermo intero'}
         >
-          {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
         </button>
 
-        {/* Publish to GitHub Guide Button */}
+        {/* Publish to GitHub Guide Button - Squared */}
         <button
           type="button"
           id="btn-open-github"
@@ -748,11 +753,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
             audioSystem.playClick(800);
             onOpenGitHubModal();
           }}
-          className="flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all"
+          className="flex items-center gap-1.5 rounded-none bg-stone-900 hover:bg-stone-800 border border-white/20 px-2 sm:px-2.5 py-1.5 text-xs font-mono font-semibold text-white shadow-sm transition-all"
           title="Istruzioni per pubblicare su GitHub"
         >
           <Github className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Pubblica su GitHub</span>
+          <span className="hidden sm:inline">GITHUB</span>
         </button>
       </div>
     </header>

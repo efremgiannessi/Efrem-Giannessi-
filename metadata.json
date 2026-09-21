@@ -1,6 +1,6 @@
 {
-  "name": "Efrem Giannessi | BIM 5D, Revit & Sviluppo Plugin",
-  "description": "Studio Virtuale di Efrem Giannessi: Progettazione BIM 5D, Modellazione Autodesk Revit, Sviluppo Plugin & API per Revit (C#, pyRevit, Python), Computo Metrico Industriale e Rendering con video interattivi a 360°.",
+  "name": "Efrem Giannessi | BIM Revit, Computi Metrici & Project Management",
+  "description": "Profilo professionale di Efrem Giannessi: Modellazione BIM con Revit, Computi Metrici e Stime, Proposte Commerciali, Contrattualistica, Coordinamento e Competenze Tecniche Avanzate.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
