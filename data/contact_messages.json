@@ -1,5 +1,23 @@
 [
   {
+    "id": "MSG-MUCMPNZV-UQQ0",
+    "timestamp": "2026-09-22T12:07:03.355Z",
+    "name": "Test Recapito",
+    "email": "test@recapito.it",
+    "subject": "Verifica Recapito Gmail",
+    "message": "Messaggio per verificare ricezione su EfremGiannessi@gmail.com",
+    "source": "modulo-contatto-diretto"
+  },
+  {
+    "id": "MSG-MUCMGRFY-KUJY",
+    "timestamp": "2026-09-22T12:00:07.918Z",
+    "name": "test",
+    "email": "e.giannessi@bianchiprecastgroup.com",
+    "subject": "Richiesta generale",
+    "message": "prova",
+    "source": "modulo-contatto-diretto"
+  },
+  {
     "id": "MSG-MUCLFXWE-HJ2M",
     "timestamp": "2026-09-22T11:31:30.014Z",
     "name": "Mario Rossi",

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { audioSystem } from '../utils/audioSynthesizer';
 import { SECTIONS_CONFIG } from './ReadingProgressBar';
 import { GraphicTheme } from '../webgl/SceneManager';
-import { Shuffle } from 'lucide-react';
+import { Shuffle, Play } from 'lucide-react';
 
 interface ActiveTheoryNavProps {
   onScrollToSection?: (id: string) => void;
   onRandomTheme?: () => void;
+  onReplayIntro?: () => void;
   activeTheme?: GraphicTheme;
   // Optional legacy props kept for backwards compatibility
   onOpenRevitModal?: () => void;
@@ -18,6 +19,7 @@ interface ActiveTheoryNavProps {
 export const ActiveTheoryNav: React.FC<ActiveTheoryNavProps> = ({
   onScrollToSection,
   onRandomTheme,
+  onReplayIntro,
   activeTheme,
 }) => {
   const [progress, setProgress] = useState<number>(0);
@@ -139,6 +141,22 @@ export const ActiveTheoryNav: React.FC<ActiveTheoryNavProps> = ({
                 [{activeTheme.code}]
               </span>
             )}
+          </button>
+        )}
+
+        {/* Pulsante Rivedi Splash Screen Intro a Tutto Schermo */}
+        {onReplayIntro && (
+          <button
+            onClick={() => {
+              audioSystem.playClick(750);
+              onReplayIntro();
+            }}
+            onMouseEnter={() => audioSystem.playTechHover()}
+            title="Rivedi la Spettacolare Splash Screen 3D Introduttiva"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-stone-900/80 hover:bg-white/10 border border-white/20 hover:border-cyan-400 text-stone-300 hover:text-cyan-300 text-[10px] sm:text-[11px] font-bold font-mono tracking-wider transition-all cursor-pointer shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+          >
+            <Play className="w-3 h-3 text-cyan-400 fill-cyan-400" />
+            <span className="hidden sm:inline">INTRO 3D</span>
           </button>
         )}
 

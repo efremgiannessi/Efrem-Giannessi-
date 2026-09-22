@@ -64,6 +64,32 @@ function driveGalleryDevPlugin(): Plugin {
                 `[CONTACT DEV] ${timestamp} | ID: ${id} | From: ${name} <${email}> | Subject: ${subject}`
               );
 
+              // Forward to FormSubmit to deliver email to EfremGiannessi@gmail.com
+              fetch('https://formsubmit.co/ajax/EfremGiannessi@gmail.com', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  Origin: 'https://ais-dev-4zmcvnov55hkto7mxnrk75-24804182841.europe-west2.run.app',
+                  Referer: 'https://ais-dev-4zmcvnov55hkto7mxnrk75-24804182841.europe-west2.run.app/',
+                },
+                body: JSON.stringify({
+                  name: String(name).trim(),
+                  email: String(email).trim(),
+                  _subject: `[Portfolio BIM] ${subject} - da ${name}`,
+                  _replyto: String(email).trim(),
+                  _template: 'table',
+                  _captcha: 'false',
+                  protocollo: id,
+                  argomento: subject,
+                  messaggio: message,
+                  dataOra: timestamp,
+                }),
+              })
+                .then((r) => r.json())
+                .then((d) => console.log('[API dev] FormSubmit dispatch:', d))
+                .catch((e) => console.warn('[API dev] FormSubmit error:', e));
+
               res.setHeader('Content-Type', 'application/json');
               res.end(
                 JSON.stringify({

@@ -9,6 +9,7 @@ import { RenderingSection } from './components/RenderingSection';
 import { PyRevitPythonSection } from './components/PyRevitPythonSection';
 import { ProfessionalProfileSection } from './components/ProfessionalProfileSection';
 import { TechnicalSkillsSection } from './components/TechnicalSkillsSection';
+import { IndustrialQuantityCostingSection } from './components/IndustrialQuantityCostingSection';
 import { CertificationsSection } from './components/CertificationsSection';
 import { VirtualStagingGallerySection } from './components/VirtualStagingGallerySection';
 import { ActiveTheoryContact } from './components/ActiveTheoryContact';
@@ -16,6 +17,7 @@ import { AutoGalleryShowcaseSection } from './components/AutoGalleryShowcaseSect
 import { ActiveTheoryRevitModal } from './components/ActiveTheoryRevitModal';
 import { ActiveTheoryAuditModal } from './components/ActiveTheoryAuditModal';
 import { ActiveTheoryCursor } from './components/ActiveTheoryCursor';
+import { ActiveTheorySplashScreen } from './components/ActiveTheorySplashScreen';
 import { SceneManager, GraphicTheme, GRAPHIC_THEMES } from './webgl/SceneManager';
 import { SmoothScroll } from './webgl/SmoothScroll';
 import { Sparkles, ArrowDown, ArrowUp, Activity } from 'lucide-react';
@@ -23,6 +25,9 @@ import { Sparkles, ArrowDown, ArrowUp, Activity } from 'lucide-react';
 export function App() {
   const [sceneManager, setSceneManager] = useState<SceneManager | null>(null);
   const scrollerRef = useRef<SmoothScroll | null>(null);
+
+  // Fullscreen 3D Intro Splash Screen State
+  const [showSplash, setShowSplash] = useState<boolean>(true);
 
   // Graphic Theme State & Shift Notification
   const [activeTheme, setActiveTheme] = useState<GraphicTheme>(GRAPHIC_THEMES[0]);
@@ -153,6 +158,11 @@ export function App() {
 
   return (
     <div className="relative min-h-screen bg-[#050508] text-stone-100 overflow-x-hidden selection:bg-cyan-400 selection:text-stone-950">
+      {/* 0. Fullscreen Monumental 3D Splash Screen Intro */}
+      {showSplash && (
+        <ActiveTheorySplashScreen onComplete={() => setShowSplash(false)} />
+      )}
+
       {/* 1. Interactive 3D WebGL Three.js Canvas */}
       <ActiveTheoryScene onSceneReady={handleSceneReady} />
 
@@ -172,6 +182,7 @@ export function App() {
       <ActiveTheoryNav
         onScrollToSection={handleScrollTo}
         onRandomTheme={handleRandomTheme}
+        onReplayIntro={() => setShowSplash(true)}
         activeTheme={activeTheme}
         onCycleTheme={handleManualCycleTheme}
         onSelectTheme={handleSelectTheme}
@@ -183,6 +194,7 @@ export function App() {
         onRandomTheme={handleRandomTheme}
         onCycleTheme={handleManualCycleTheme}
         onSelectTheme={handleSelectTheme}
+        onReplayIntro={() => setShowSplash(true)}
       />
 
       {/* 3.5 Real-time Graphic Shift Toast Alert */}
@@ -233,8 +245,11 @@ export function App() {
           onContactClick={() => handleScrollTo('contact')}
         />
 
-        {/* 2. Competenze Tecniche (5 Separate Modules) */}
+        {/* 2. Competenze Tecniche (6 Moduli con Computi, Costi & Opere) */}
         <TechnicalSkillsSection />
+
+        {/* 2.5 Focus Approfondito: Computi Metrici Industriali, Analisi Costi e Opere Complementari */}
+        <IndustrialQuantityCostingSection />
 
         {/* 3. Formazione e Certificazioni (5 Specific Certificates) */}
         <CertificationsSection />

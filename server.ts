@@ -78,6 +78,34 @@ async function startServer() {
       );
       saveContactMessage(newMsg);
 
+      // Forward to FormSubmit in background to deliver directly to Gmail
+      fetch('https://formsubmit.co/ajax/EfremGiannessi@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          Origin: 'https://ais-dev-4zmcvnov55hkto7mxnrk75-24804182841.europe-west2.run.app',
+          Referer: 'https://ais-dev-4zmcvnov55hkto7mxnrk75-24804182841.europe-west2.run.app/',
+        },
+        body: JSON.stringify({
+          name: newMsg.name,
+          email: newMsg.email,
+          _subject: `[Portfolio BIM] ${newMsg.subject} - da ${newMsg.name}`,
+          _replyto: newMsg.email,
+          _template: 'table',
+          _captcha: 'false',
+          protocollo: id,
+          argomento: newMsg.subject,
+          messaggio: newMsg.message,
+          dataOra: timestamp,
+        }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          console.log('[API] FormSubmit delivery status:', data);
+        })
+        .catch((e) => console.warn('[API] FormSubmit background dispatch error:', e));
+
       return res.status(200).json({
         success: true,
         id,

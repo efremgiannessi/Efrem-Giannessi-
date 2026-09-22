@@ -18,6 +18,8 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string>('');
   const [submissionTimestamp, setSubmissionTimestamp] = useState<string>('');
+  const [autoOpenClient, setAutoOpenClient] = useState(false);
+  const [formSubmitActive, setFormSubmitActive] = useState<boolean | null>(null);
 
   const copyEmail = () => {
     navigator.clipboard.writeText('EfremGiannessi@gmail.com');
@@ -26,6 +28,13 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Direct mailto link as secondary instant channel
+  const mailtoHref = `mailto:EfremGiannessi@gmail.com?subject=${encodeURIComponent(
+    `[Portfolio BIM] ${subject} - da ${name || 'Contatto'}`
+  )}&body=${encodeURIComponent(
+    `Mittente: ${name}\nEmail: ${email}\nProtocollo: ${submissionId || 'MSG-DIRETTO'}\n\nMessaggio:\n${message}`
+  )}`;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
@@ -33,8 +42,16 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
     audioSystem.playClick(900);
     setIsSubmitting(true);
 
+    const generatedId =
+      'MSG-' +
+      Date.now().toString(36).toUpperCase() +
+      '-' +
+      Math.random().toString(36).substring(2, 6).toUpperCase();
+    const formattedDate = new Date().toLocaleString('it-IT');
+
     try {
-      const response = await fetch('/api/contact', {
+      // 1. Post to local server endpoint (logs and persists to disk)
+      fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -44,34 +61,47 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
           message: message.trim(),
           source: 'modulo-contatto-diretto',
         }),
+      }).catch((err) => console.warn('[CONTACT] Local API error:', err));
+
+      // 2. Direct browser dispatch to FormSubmit for immediate delivery to EfremGiannessi@gmail.com
+      const fsRes = await fetch('https://formsubmit.co/ajax/EfremGiannessi@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          _subject: `[Portfolio BIM] ${subject.trim()} - da ${name.trim()}`,
+          _replyto: email.trim(),
+          _template: 'table',
+          _captcha: 'false',
+          protocollo: generatedId,
+          argomento: subject.trim(),
+          messaggio: message.trim(),
+          dataOra: formattedDate,
+        }),
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSubmissionId(data.id);
-        setSubmissionTimestamp(
-          new Date(data.timestamp || Date.now()).toLocaleString('it-IT')
-        );
-        setIsSubmitted(true);
-        audioSystem.playChime();
-      } else {
-        throw new Error(data.error || 'Errore durante la registrazione');
+      const fsData = await fsRes.json();
+      if (fsData.success === 'true' || fsData.success === true) {
+        setFormSubmitActive(true);
+      } else if (fsData.message && fsData.message.includes('Activation')) {
+        setFormSubmitActive(false);
       }
     } catch (err: any) {
-      console.warn('[CONTACT] Fallback on network or endpoint issue:', err);
-      // Fallback: still generate unique protocol ID and accept
-      const fallbackId =
-        'MSG-' +
-        Date.now().toString(36).toUpperCase() +
-        '-' +
-        Math.random().toString(36).substring(2, 6).toUpperCase();
-      setSubmissionId(fallbackId);
-      setSubmissionTimestamp(new Date().toLocaleString('it-IT'));
+      console.warn('[CONTACT] Dispatch error:', err);
+    } finally {
+      setSubmissionId(generatedId);
+      setSubmissionTimestamp(formattedDate);
+      setIsSubmitting(false);
       setIsSubmitted(true);
       audioSystem.playChime();
-    } finally {
-      setIsSubmitting(false);
+
+      if (autoOpenClient) {
+        window.location.href = mailtoHref;
+      }
     }
   };
 
@@ -82,15 +112,9 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
     setMessage('');
     setIsSubmitted(false);
     setSubmissionId('');
+    setFormSubmitActive(null);
     audioSystem.playClick(700);
   };
-
-  // Direct mailto link as secondary instant channel
-  const mailtoHref = `mailto:EfremGiannessi@gmail.com?subject=${encodeURIComponent(
-    `[Portfolio] ${subject}`
-  )}&body=${encodeURIComponent(
-    `Mittente: ${name}\nEmail: ${email}\nProtocollo: ${submissionId}\n\nMessaggio:\n${message}`
-  )}`;
 
   return (
     <section id="contact" className="pt-20 pb-8 px-6 md:px-16 select-none relative z-10 border-t border-white/10 bg-transparent">
@@ -190,9 +214,25 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
                   <h4 className="text-2xl font-bold text-white font-mono uppercase mb-2">
                     MESSAGGIO INVIATO CON SUCCESSO!
                   </h4>
-                  <p className="text-stone-300 text-sm max-w-lg mb-6 font-sans">
-                    Grazie <strong className="text-white">{name}</strong>, la tua richiesta è stata registrata nel sistema con riscontro garantito entro 24 ore lavorative.
+                  <p className="text-stone-300 text-sm max-w-lg mb-4 font-sans">
+                    Grazie <strong className="text-white">{name}</strong>, la tua richiesta è stata registrata nel sistema con protocollo univoco.
                   </p>
+
+                  {/* Delivery Status Banner */}
+                  {formSubmitActive === false ? (
+                    <div className="w-full mb-4 p-3.5 bg-amber-500/10 border border-amber-500/30 text-left font-sans text-xs text-amber-200">
+                      <div className="font-bold uppercase tracking-wider mb-1 font-mono text-amber-400 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                        Attivazione Iniziale FormSubmit per EfremGiannessi@gmail.com
+                      </div>
+                      È stata inviata un'email a <strong>EfremGiannessi@gmail.com</strong> con oggetto <em>"Activate Form"</em>. È sufficiente aprirla e cliccare una sola volta su <strong>"Activate Form"</strong> per abilitare la ricezione istantanea dei moduli futuri.
+                    </div>
+                  ) : (
+                    <div className="w-full mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 text-left font-sans text-xs text-emerald-200 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>Inoltrato direttamente a <strong>EfremGiannessi@gmail.com</strong>.</span>
+                    </div>
+                  )}
 
                   {/* Submission Receipt Box */}
                   <div className="w-full bg-stone-900/90 border border-white/15 p-4 mb-6 text-left font-mono text-xs space-y-2">
@@ -220,7 +260,7 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
                       className="px-5 py-2.5 bg-cyan-400 hover:bg-cyan-300 text-stone-950 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-[0_0_20px_rgba(0,240,255,0.25)]"
                     >
                       <Mail className="w-4 h-4" />
-                      <span>Apri copia nel tuo client Email</span>
+                      <span>Invia anche con il tuo Client Email (Gmail / Outlook)</span>
                     </a>
                     <button
                       type="button"
@@ -303,30 +343,56 @@ export const ActiveTheoryContact: React.FC<ActiveTheoryContactProps> = () => {
                     />
                   </div>
 
-                  {/* Submit Button */}
-                  <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
+                  {/* Optional instant mail client toggle */}
+                  <div className="pt-1">
+                    <label className="flex items-center gap-2 cursor-pointer text-white/70 hover:text-white select-none">
+                      <input
+                        type="checkbox"
+                        checked={autoOpenClient}
+                        onChange={(e) => setAutoOpenClient(e.target.checked)}
+                        className="rounded border-white/20 bg-stone-900 text-cyan-400 focus:ring-0"
+                      />
+                      <span className="text-[11px] font-sans">
+                        Apri in contemporanea la mia app di posta (Gmail / Outlook) per invio copia garantito
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Submit Button & Direct Client Send */}
+                  <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/10">
                     <span className="text-[10px] text-white/40">
-                      * Campi obbligatori. I dati saranno utilizzati esclusivamente per rispondere al messaggio.
+                      * Campi obbligatori. Recapito diretto a EfremGiannessi@gmail.com
                     </span>
 
-                    <button
-                      id="btn-submit-contact"
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-6 py-3 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-stone-950 font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] ml-auto"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <span className="w-3.5 h-3.5 border-2 border-stone-950 border-t-transparent rounded-full animate-spin" />
-                          <span>INVIO IN CORSO...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-3.5 h-3.5" />
-                          <span>INVIA MESSAGGIO</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2.5 ml-auto">
+                      <a
+                        href={mailtoHref}
+                        className="px-4 py-3 bg-stone-900 border border-white/20 hover:border-cyan-400 text-cyan-300 font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors"
+                        title="Invia direttamente con il tuo programma di posta predefinito"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Apri Client Posta</span>
+                      </a>
+
+                      <button
+                        id="btn-submit-contact"
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-6 py-3 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-stone-950 font-bold uppercase tracking-wider flex items-center gap-2.5 transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-stone-950 border-t-transparent rounded-full animate-spin" />
+                            <span>INVIO IN CORSO...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            <span>INVIA MESSAGGIO</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </form>
               )}

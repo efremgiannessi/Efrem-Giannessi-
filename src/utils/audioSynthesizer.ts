@@ -403,6 +403,221 @@ class AudioSynthesizer {
     }
   }
 
+  // Cinematic Sub-Bass rumble for monumental intro initialization
+  public playIntroRumble() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(45, now);
+      osc.frequency.exponentialRampToValueAtTime(65, now + 0.8);
+      osc.frequency.exponentialRampToValueAtTime(35, now + 2.0);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(90, now);
+      filter.frequency.linearRampToValueAtTime(180, now + 0.8);
+      filter.frequency.exponentialRampToValueAtTime(60, now + 2.0);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.4);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 2.0);
+    } catch {
+      // ignore
+    }
+  }
+
+  // High-tech laser sweep / scanline sound
+  public playLaserScan() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.exponentialRampToValueAtTime(3200, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(400, now + 0.18);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.04, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Telemetry boot beep with frequency parameter
+  public playBootBeep(freq = 1400) {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Epic warp-out whoosh on entering the site
+  public playWarpOut() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+
+      // 1. Bass drop whoosh
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(35, now + 0.8);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, now);
+      filter.frequency.exponentialRampToValueAtTime(80, now + 0.8);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.8);
+
+      // 2. High harmonic chord release (C5, G5, E6)
+      const chordNotes = [523.25, 783.99, 1318.51, 2093.0];
+      chordNotes.forEach((freq, idx) => {
+        const chordOsc = this.ctx!.createOscillator();
+        const chordGain = this.ctx!.createGain();
+
+        chordOsc.type = 'sine';
+        chordOsc.frequency.setValueAtTime(freq, now + idx * 0.04);
+
+        chordGain.gain.setValueAtTime(0.001, now);
+        chordGain.gain.linearRampToValueAtTime(0.05, now + idx * 0.04 + 0.03);
+        chordGain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.04 + 0.9);
+
+        chordOsc.connect(chordGain);
+        chordGain.connect(this.masterGain!);
+
+        chordOsc.start(now + idx * 0.04);
+        chordOsc.stop(now + idx * 0.04 + 0.95);
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  // Interactive shockwave dispersion ripple sound
+  public playShockwave() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.25);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(600, now);
+      filter.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Telemetry harmonic arpeggio when interacting with frequency chips
+  public playTelemetryArp(baseFreq: number = 880) {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const ratios = [1, 1.25, 1.5, 2.0];
+      ratios.forEach((r, i) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * r, now + i * 0.035);
+
+        gain.gain.setValueAtTime(0.001, now + i * 0.035);
+        gain.gain.linearRampToValueAtTime(0.035, now + i * 0.035 + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.035 + 0.18);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+
+        osc.start(now + i * 0.035);
+        osc.stop(now + i * 0.035 + 0.19);
+      });
+    } catch {
+      // ignore
+    }
+  }
+
   // Switch continuous ambience based on station type
   public updateStationAmbience(ambience: string) {
     this.currentAmbienceType = ambience;

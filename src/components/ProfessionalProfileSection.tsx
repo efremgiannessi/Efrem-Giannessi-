@@ -37,11 +37,11 @@ export const ProfessionalProfileSection: React.FC<ProfessionalProfileSectionProp
     },
     {
       code: 'MOD // 03',
-      title: 'Computi Metrici e Stime',
+      title: 'Computi Metrici Estimativi & Stime Industriali',
       icon: <Calculator className="w-5 h-5 text-amber-400" />,
       description:
-        'Competenza nella redazione di computi metrici estimativi per prefabbricati industriali e opere accessorie “chiavi in mano”, nonché nella gestione di computi per infrastrutture complesse.',
-      tag: 'COST ESTIMATING & QTO',
+        'Competenza specialistica nella redazione di computi metrici estimativi per prefabbricati industriali, analisi puntuale dei costi di produzione e coordinamento delle opere complementari per la consegna dell’edificio "chiavi in mano".',
+      tag: 'BIM 5D // COST CONTROL & FIT-OUT',
     },
     {
       code: 'MOD // 04',

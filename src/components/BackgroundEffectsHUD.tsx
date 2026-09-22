@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Eye,
   Check,
+  Play,
 } from 'lucide-react';
 
 const PATTERN_DESCRIPTIONS: Record<number, string> = {
@@ -38,6 +39,7 @@ interface BackgroundEffectsHUDProps {
   onRandomTheme: () => void;
   onCycleTheme: () => void;
   onSelectTheme: (index: number) => void;
+  onReplayIntro?: () => void;
 }
 
 export const BackgroundEffectsHUD: React.FC<BackgroundEffectsHUDProps> = ({
@@ -45,6 +47,7 @@ export const BackgroundEffectsHUD: React.FC<BackgroundEffectsHUDProps> = ({
   onRandomTheme,
   onCycleTheme,
   onSelectTheme,
+  onReplayIntro,
 }) => {
   const [isOpenList, setIsOpenList] = useState<boolean>(false);
   const [isAutoRandom, setIsAutoRandom] = useState<boolean>(false);
@@ -338,7 +341,7 @@ export const BackgroundEffectsHUD: React.FC<BackgroundEffectsHUDProps> = ({
             </button>
           </div>
 
-          {/* Secondary Controls (Auto-Random & View All) */}
+          {/* Secondary Controls (Auto-Random, View All, Replay Intro) */}
           <div className="grid grid-cols-2 gap-2 text-[10px]">
             {/* Auto-Random Toggle */}
             <button
@@ -357,7 +360,7 @@ export const BackgroundEffectsHUD: React.FC<BackgroundEffectsHUDProps> = ({
               <span>AUTO: {isAutoRandom ? 'ATTIVO (14s)' : 'OFF'}</span>
             </button>
 
-            {/* All 12 Effects Drawer Button */}
+            {/* All Themes Drawer Button */}
             <button
               onClick={() => {
                 audioSystem.playClick(520);
@@ -369,12 +372,30 @@ export const BackgroundEffectsHUD: React.FC<BackgroundEffectsHUDProps> = ({
                   ? 'bg-cyan-950/50 border-cyan-400 text-cyan-300'
                   : 'bg-white/5 border-white/10 text-stone-300 hover:border-white/25 hover:text-white'
               }`}
-              title="Visualizza e seleziona tra tutti i 12 effetti matematici"
+              title={`Visualizza e seleziona tra tutti i ${GRAPHIC_THEMES.length} effetti matematici`}
             >
               <Layers className="w-3 h-3 text-cyan-400" />
-              <span>TUTTI (12)</span>
+              <span>TUTTI ({GRAPHIC_THEMES.length})</span>
             </button>
           </div>
+
+          {/* Replay 3D Intro Splash Screen */}
+          {onReplayIntro && (
+            <div className="mt-2 pt-2 border-t border-white/10">
+              <button
+                onClick={() => {
+                  audioSystem.playClick(850);
+                  onReplayIntro();
+                }}
+                onMouseEnter={() => audioSystem.playTechHover()}
+                className="w-full py-1.5 px-2 bg-cyan-950/30 hover:bg-cyan-900/50 border border-cyan-400/40 hover:border-cyan-400 text-cyan-300 hover:text-white font-mono text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-[0_0_10px_rgba(0,240,255,0.15)]"
+                title="Rivedi la fantasmagorica Splash Screen introduttiva a tutto schermo"
+              >
+                <Play className="w-3 h-3 fill-cyan-400 text-cyan-400" />
+                <span>RIVEDI SPLASH SCREEN INTRO 3D</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
     </aside>

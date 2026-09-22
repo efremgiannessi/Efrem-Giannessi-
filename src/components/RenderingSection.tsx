@@ -11,69 +11,60 @@ import {
   Sliders,
 } from 'lucide-react';
 import { audioSystem } from '../utils/audioSynthesizer';
+import {
+  RenderPresetData,
+  formatDriveOrDirectUrl,
+  extractDriveId,
+} from './RenderingImageManagerModal';
+
+const DEFAULT_RENDER_PRESETS: RenderPresetData[] = [
+  {
+    id: 'ext-villa',
+    title: 'Esterno Residenziale & Paesaggio',
+    category: 'ESTERNI // FOTOREALISMO',
+    software: 'Twinmotion / Unreal Engine + Revit',
+    description:
+      'Studio della luce naturale zenitale e tramonto, ambientazione con vegetazione autoctona dinamica e riflessi fisici su superfici vetrate e calcestruzzo a vista.',
+    resolution: '4K Ultra-HD (3840x2160)',
+    pbrImage: 'https://lh3.googleusercontent.com/d/1c2TkqbRPV_PApjYrt1PcMue4rMU8EHf2=w2048',
+    nightImage: 'https://lh3.googleusercontent.com/d/15STZ7yfKexRqGGA4P7eLcCGbp-Dgr8iV=w2048',
+    clayImage: 'https://lh3.googleusercontent.com/d/1hGIgUaSTBdFCOfM8Rzgo08E47esVAtiT=w2048',
+    specs: ['Illuminazione HDRI Fisica', 'Materiali PBR Calibrati', 'Vegetazione 3D Scatter'],
+  },
+  {
+    id: 'int-living',
+    title: 'Interior Design & Spazi Living',
+    category: 'INTERNI // VIRTUAL STAGING',
+    software: 'Autodesk Revit + Twinmotion',
+    description:
+      'Inserimento di arredi di design su misura, studio illuminotecnico con sorgenti IES realistiche e valorizzazione dei contrasti tra legni caldi e pietre naturali.',
+    resolution: 'UHD Print Ready (300 DPI)',
+    pbrImage: 'https://lh3.googleusercontent.com/d/1tqrfRuGxsxo2ySxrxMHTdK8vh9usf_fK=w2048',
+    nightImage: 'https://lh3.googleusercontent.com/d/1takxvmx2Kks7ksUpYFmLavbLFhKKCofq=w2048',
+    clayImage: 'https://lh3.googleusercontent.com/d/1j5pTCnLXkWainw1vF5UsJpQ9JinStxvS=w2048',
+    specs: ['Luci IES Artificiali', 'Finiture e Tessuti Materici', 'Occlusione Ambientale Accurata'],
+  },
+  {
+    id: 'ind-complex',
+    title: 'Hub Commerciale & Direzionale',
+    category: 'COMMERCIALE & RETAIL // STILE ITALIANO',
+    software: 'BIM Revit + Twinmotion / Unreal Engine',
+    description:
+      'Complessi commerciali e direzionali stile italiano ispirati alle eccellenze di Milano CityLife e Porta Nuova: piazze pedonali, vetrate strutturali, facciate continue e grande impatto visivo scenografico.',
+    resolution: '4K Panoramic Walkthrough',
+    pbrImage: 'https://lh3.googleusercontent.com/d/16l6TzCl2RIOnU7kKpfaieUvsCKyDzRyG=w2048',
+    nightImage: 'https://lh3.googleusercontent.com/d/1hHrAm8IP59tPl6pZJeNuHqXmsRgE-6gF=w2048',
+    clayImage: 'https://lh3.googleusercontent.com/d/199FYXsBhYByWfFqhQawHwK22D4b1_rYh=w2048',
+    specs: ['Facciate Vetrate Continue', 'Piazze & Spazi Pedonali', 'Illuminazione Architetturale LED'],
+  },
+];
 
 export const RenderingSection: React.FC = () => {
   const [selectedPreset, setSelectedPreset] = useState<number>(0);
   const [renderMode, setRenderMode] = useState<'pbr' | 'clay' | 'night'>('pbr');
 
-  const renderPresets = [
-    {
-      id: 'ext-villa',
-      title: 'Esterno Residenziale & Paesaggio',
-      category: 'ESTERNI // FOTOREALISMO',
-      software: 'Twinmotion / Unreal Engine + Revit',
-      description:
-        'Studio della luce naturale zenitale e tramonto, ambientazione con vegetazione autoctona dinamica e riflessi fisici su superfici vetrate e calcestruzzo a vista.',
-      resolution: '4K Ultra-HD (3840x2160)',
-      pbrImage:
-        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
-      clayImage:
-        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85',
-      nightImage:
-        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=85',
-      specs: ['Illuminazione HDRI Fisica', 'Materiali PBR Calibrati', 'Vegetazione 3D Scatter'],
-    },
-    {
-      id: 'int-living',
-      title: 'Interior Design & Spazi Living',
-      category: 'INTERNI // VIRTUAL STAGING',
-      software: 'Autodesk Revit + Twinmotion',
-      description:
-        'Inserimento di arredi di design su misura, studio illuminotecnico con sorgenti IES realistiche e valorizzazione dei contrasti tra legni caldi e pietre naturali.',
-      resolution: 'UHD Print Ready (300 DPI)',
-      pbrImage:
-        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=85',
-      clayImage:
-        'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1600&q=85',
-      nightImage:
-        'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1600&q=85',
-      specs: ['Luci IES Artificiali', 'Finiture e Tessuti Materici', 'Occlusione Ambientale Accurata'],
-    },
-    {
-      id: 'ind-complex',
-      title: 'Hub Commerciale & Direzionale',
-      category: 'COMMERCIALE & RETAIL // STILE ITALIANO',
-      software: 'BIM Revit + Twinmotion / Unreal Engine',
-      description:
-        'Complessi commerciali e direzionali stile italiano ispirati alle eccellenze di Milano CityLife e Porta Nuova: piazze pedonali, vetrate strutturali, facciate continue e grande impatto visivo scenografico.',
-      resolution: '4K Panoramic Walkthrough',
-      pbrImage:
-        'https://images.unsplash.com/photo-1555636222-cae831e670b3?auto=format&fit=crop&w=1600&q=85',
-      clayImage:
-        'https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1600&q=85',
-      nightImage:
-        'https://images.unsplash.com/photo-1519642918688-7e43b19245d8?auto=format&fit=crop&w=1600&q=85',
-      specs: ['Facciate Vetrate Continue', 'Piazze & Spazi Pedonali', 'Illuminazione Architetturale LED'],
-    },
-  ];
-
-  const current = renderPresets[selectedPreset];
-
-  const getActiveImage = () => {
-    if (renderMode === 'clay') return current.clayImage;
-    if (renderMode === 'night') return current.nightImage;
-    return current.pbrImage;
-  };
+  const presets = DEFAULT_RENDER_PRESETS;
+  const current = presets[selectedPreset] || presets[0];
 
   const renderingFeatures = [
     {
@@ -97,6 +88,13 @@ export const RenderingSection: React.FC = () => {
       desc: 'Flusso di lavoro senza interruzioni: esportazione e sincronizzazione diretta delle geometrie parametriche di Revit verso il motore di rendering.',
     },
   ];
+
+  const activeImage =
+    renderMode === 'pbr'
+      ? formatDriveOrDirectUrl(current.pbrImage)
+      : renderMode === 'clay'
+      ? formatDriveOrDirectUrl(current.clayImage)
+      : formatDriveOrDirectUrl(current.nightImage);
 
   return (
     <section
@@ -132,81 +130,82 @@ export const RenderingSection: React.FC = () => {
             </div>
 
             {/* Render Mode Switcher */}
-            <div className="flex items-center gap-1.5 bg-black/60 p-1 border border-white/10 rounded-sm">
+            <div className="flex items-center gap-1 bg-black/60 border border-white/10 p-1">
               <button
                 onClick={() => {
-                  audioSystem.playClick(640);
+                  audioSystem.playClick(600);
                   setRenderMode('pbr');
                 }}
-                className={`px-3 py-1.5 uppercase font-mono text-[11px] transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all cursor-pointer ${
                   renderMode === 'pbr'
-                    ? 'bg-cyan-400 text-stone-950 font-bold shadow-[0_0_10px_rgba(0,240,255,0.4)]'
+                    ? 'bg-cyan-400 text-stone-950 font-bold'
                     : 'text-white/60 hover:text-white'
                 }`}
               >
-                <Eye className="w-3 h-3" />
-                <span>PBR Fotorealistico</span>
+                <SunMedium className="w-3.5 h-3.5" />
+                <span>PBR DIURNO</span>
               </button>
 
               <button
                 onClick={() => {
-                  audioSystem.playClick(720);
+                  audioSystem.playClick(500);
                   setRenderMode('night');
                 }}
-                className={`px-3 py-1.5 uppercase font-mono text-[11px] transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all cursor-pointer ${
                   renderMode === 'night'
-                    ? 'bg-amber-400 text-stone-950 font-bold shadow-[0_0_10px_rgba(251,191,36,0.4)]'
+                    ? 'bg-amber-400 text-stone-950 font-bold'
                     : 'text-white/60 hover:text-white'
                 }`}
               >
-                <SunMedium className="w-3 h-3" />
-                <span>Golden Hour / Notturno</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>NOTTURNO / TRAMONTO</span>
               </button>
 
               <button
                 onClick={() => {
-                  audioSystem.playClick(800);
+                  audioSystem.playClick(400);
                   setRenderMode('clay');
                 }}
-                className={`px-3 py-1.5 uppercase font-mono text-[11px] transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all cursor-pointer ${
                   renderMode === 'clay'
-                    ? 'bg-purple-400 text-stone-950 font-bold shadow-[0_0_10px_rgba(168,85,247,0.4)]'
+                    ? 'bg-purple-400 text-stone-950 font-bold'
                     : 'text-white/60 hover:text-white'
                 }`}
               >
-                <Sliders className="w-3 h-3" />
-                <span>Clay / Studio Volumi</span>
+                <Layers className="w-3.5 h-3.5" />
+                <span>CLAY (VOLUMETRIA)</span>
               </button>
             </div>
           </div>
 
           {/* Main Visual Display */}
-          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden bg-black group">
+          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden bg-black group select-none">
             <img
-              src={getActiveImage()}
+              src={activeImage}
               alt={current.title}
               referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.currentTarget as HTMLImageElement;
-                if (!target.src.includes('photo-1486406146926-c627a92ad1ab')) {
-                  target.src = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=85';
+                const driveId = extractDriveId(
+                  renderMode === 'pbr'
+                    ? current.pbrImage
+                    : renderMode === 'clay'
+                    ? current.clayImage
+                    : current.nightImage
+                );
+                if (driveId && !target.src.includes('drive.google.com/thumbnail')) {
+                  target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w2048`;
                 }
               }}
-              className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-102 ${
-                renderMode === 'clay'
-                  ? 'grayscale-[55%] contrast-120 brightness-105'
-                  : renderMode === 'night'
-                  ? 'contrast-110 saturate-[1.12]'
-                  : ''
-              }`}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
 
-            {/* Ambient vignette and scanlines */}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950/90 via-transparent to-stone-950/30" />
+            {/* Ambient Vignette Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-transparent to-stone-950/30 pointer-events-none" />
 
-            {/* HUD Overlay inside image */}
-            <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-end justify-between gap-4 font-mono text-xs">
-              <div className="bg-black/75 backdrop-blur-md border border-white/15 p-3 max-w-lg">
+            {/* Bottom HUD Overlay */}
+            <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-end justify-between gap-4 font-mono text-xs z-10">
+              <div className="bg-black/70 backdrop-blur-md border border-white/10 p-3 max-w-lg">
                 <span className="text-[10px] text-cyan-400 uppercase tracking-widest block font-bold mb-1">
                   {current.category}
                 </span>
@@ -228,16 +227,16 @@ export const RenderingSection: React.FC = () => {
 
           {/* Preset Selector Tabs */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10 border-t border-white/10 bg-stone-950/80">
-            {renderPresets.map((preset, idx) => (
+            {presets.map((preset, idx) => (
               <button
                 key={preset.id}
                 onClick={() => {
                   audioSystem.playClick(600 + idx * 80);
                   setSelectedPreset(idx);
                 }}
-                className={`p-4 text-left transition-all flex flex-col justify-between ${
+                className={`p-4 text-left transition-all flex flex-col justify-between cursor-pointer ${
                   selectedPreset === idx
-                    ? 'bg-white/10 border-l-2 md:border-l-0 md:border-t-2 border-cyan-400'
+                    ? 'bg-white/10 border-l-2 md:border-l-0 md:border-t-2 border-cyan-400 shadow-[inset_0_0_20px_rgba(0,240,255,0.15)]'
                     : 'hover:bg-white/5 opacity-70 hover:opacity-100'
                 }`}
               >

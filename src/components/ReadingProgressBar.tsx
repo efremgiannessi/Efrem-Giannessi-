@@ -13,6 +13,7 @@ export const SECTIONS_CONFIG: SectionMeta[] = [
   { id: 'hero', name: 'Inizio // Visione & BIM', shortName: 'INIZIO', category: 'INTRO' },
   { id: 'profilo', name: 'Profilo Professionale', shortName: 'PROFILO', category: 'ESPERIENZA' },
   { id: 'competenze', name: 'Competenze Tecniche', shortName: 'COMPETENZE', category: 'SKILLS' },
+  { id: 'computi-costi', name: 'Computi Metrici Industriali & Costi', shortName: 'COMPUTI & COSTI', category: 'BIM 5D' },
   { id: 'certificazioni', name: 'Formazione e Certificazioni', shortName: 'CERTIFICAZIONI', category: 'COMPLIANCE' },
   { id: 'rendering', name: 'Realizzazione Rendering', shortName: 'RENDERING', category: 'ARCHVIZ' },
   { id: 'pyrevit-python', name: 'Sviluppo pyRevit & Python', shortName: 'pyREVIT', category: 'DEV & SDK' },
