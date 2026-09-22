@@ -8,6 +8,7 @@ interface ActiveTheoryHeroProps {
   onOpenAuditModal: () => void;
   onScrollToRendering?: () => void;
   onScrollToPyRevit?: () => void;
+  onScrollToVirtualStaging?: () => void;
 }
 
 export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
@@ -16,6 +17,7 @@ export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
   onOpenAuditModal,
   onScrollToRendering,
   onScrollToPyRevit,
+  onScrollToVirtualStaging,
 }) => {
   return (
     <section
@@ -97,6 +99,17 @@ export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
           >
             <Camera className="w-4 h-4 text-cyan-400" />
             <span>REALIZZAZIONE RENDERING</span>
+          </button>
+
+          <button
+            onClick={() => {
+              audioSystem.playClick(720);
+              if (onScrollToVirtualStaging) onScrollToVirtualStaging();
+            }}
+            className="flex items-center gap-2 px-5 py-3.5 border border-emerald-400/50 bg-emerald-950/20 hover:bg-emerald-900/40 text-emerald-200 transition-all font-mono shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span>VIRTUAL STAGING</span>
           </button>
 
           <button

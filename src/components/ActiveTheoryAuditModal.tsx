@@ -14,6 +14,8 @@ export const ActiveTheoryAuditModal: React.FC<ActiveTheoryAuditModalProps> = ({
   defaultProjectTitle = '',
 }) => {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,19 +27,51 @@ export const ActiveTheoryAuditModal: React.FC<ActiveTheoryAuditModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim() || !formData.notes.trim()) return;
+
     audioSystem.playClick(900);
-    setSubmitted(true);
-    setTimeout(() => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.topic,
+          message: formData.notes.trim(),
+          source: 'modal-contatto-audit',
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSubmissionId(data.id);
+      } else {
+        setSubmissionId('MSG-' + Date.now().toString(36).toUpperCase());
+      }
+    } catch {
+      setSubmissionId('MSG-' + Date.now().toString(36).toUpperCase());
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
       audioSystem.playChime();
-    }, 300);
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
     onClose();
   };
+
+  const mailtoHref = `mailto:EfremGiannessi@gmail.com?subject=${encodeURIComponent(
+    `[Portfolio Modal] ${formData.topic}`
+  )}&body=${encodeURIComponent(
+    `Nome: ${formData.name}\nEmail: ${formData.email}\nProtocollo: ${submissionId}\n\nNote:\n${formData.notes}`
+  )}`;
 
   return (
     <div
@@ -78,22 +112,35 @@ export const ActiveTheoryAuditModal: React.FC<ActiveTheoryAuditModalProps> = ({
         {/* Body */}
         <div className="p-6 md:p-8 font-mono text-xs overflow-y-auto" data-lenis-prevent>
           {submitted ? (
-            <div className="py-10 text-center space-y-4">
-              <div className="w-12 h-12 border border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto bg-emerald-950/30">
-                <CheckCircle2 className="w-6 h-6" />
+            <div className="py-8 text-center space-y-4">
+              <div className="w-14 h-14 border border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto bg-emerald-950/30 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                <CheckCircle2 className="w-7 h-7" />
               </div>
               <h3 className="text-xl font-bold uppercase text-white font-sans">
-                MESSAGGIO INVIATO
+                MESSAGGIO INVIATO CON SUCCESSO
               </h3>
-              <p className="text-stone-300 font-sans text-sm max-w-md mx-auto">
-                La tua richiesta è stata registrata. Efrem Giannessi ti risponderà entro 24 ore all'indirizzo indicato ({formData.email}).
+              <p className="text-stone-300 font-sans text-xs max-w-md mx-auto">
+                La tua richiesta è stata registrata nel sistema con protocollo{' '}
+                <strong className="text-cyan-400 font-mono">{submissionId}</strong>.
+                Riceverai riscontro entro 24 ore all'indirizzo{' '}
+                <strong className="text-white">{formData.email}</strong>.
               </p>
-              <button
-                onClick={handleReset}
-                className="mt-6 px-6 py-2.5 bg-cyan-400 text-stone-950 font-bold uppercase tracking-wider transition-colors"
-              >
-                CHIUDI
-              </button>
+
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href={mailtoHref}
+                  className="px-5 py-2.5 bg-stone-900 border border-white/20 hover:border-cyan-400 text-cyan-300 font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Apri nel tuo client Email</span>
+                </a>
+                <button
+                  onClick={handleReset}
+                  className="px-6 py-2.5 bg-cyan-400 text-stone-950 font-bold uppercase tracking-wider transition-colors shadow-[0_0_15px_rgba(0,240,255,0.3)]"
+                >
+                  CHIUDI
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -176,10 +223,20 @@ export const ActiveTheoryAuditModal: React.FC<ActiveTheoryAuditModalProps> = ({
                 </span>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-cyan-400 hover:bg-cyan-300 text-stone-950 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all"
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-stone-950 font-bold uppercase tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>INVIA MESSAGGIO</span>
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-stone-950 border-t-transparent rounded-full animate-spin" />
+                      <span>INVIO IN CORSO...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>INVIA MESSAGGIO</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

@@ -66,14 +66,14 @@ export const AmbientBlurredProjects: React.FC = () => {
             <div
               key={imgUrl}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                isActive ? 'opacity-30' : 'opacity-0'
+                isActive ? 'opacity-55' : 'opacity-0'
               }`}
             >
               <img
                 src={imgUrl}
                 alt=""
-                className={`w-full h-full object-cover filter blur-[26px] sm:blur-[34px] brightness-[0.55] saturate-[1.25] transition-transform duration-[7000ms] ease-out ${
-                  isActive ? 'scale-110' : 'scale-100'
+                className={`w-full h-full object-cover filter blur-[16px] sm:blur-[22px] brightness-[0.78] saturate-[1.35] transition-transform duration-[7000ms] ease-out ${
+                  isActive ? 'scale-108' : 'scale-100'
                 }`}
                 loading="eager"
               />
@@ -91,9 +91,9 @@ export const AmbientBlurredProjects: React.FC = () => {
           }}
         />
 
-        {/* Contrast Dark Gradients (Top & Bottom) to ensure text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050508]/85 via-transparent to-[#050508]/90" />
-        <div className="absolute inset-0 bg-stone-950/40" />
+        {/* Subtle Contrast Gradients ensuring text readability while keeping visuals vivid */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050508]/65 via-transparent to-[#050508]/75" />
+        <div className="absolute inset-0 bg-stone-950/20" />
       </div>
     </div>
   );

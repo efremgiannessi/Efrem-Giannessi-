@@ -1,0 +1,11 @@
+[
+  {
+    "id": "MSG-MUCLFXWE-HJ2M",
+    "timestamp": "2026-09-22T11:31:30.014Z",
+    "name": "Mario Rossi",
+    "email": "mario.rossi@test.it",
+    "subject": "Consulenza Revit",
+    "message": "Test messaggio inviato con successo",
+    "source": "modulo-contatto-diretto"
+  }
+]

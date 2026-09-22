@@ -28,7 +28,7 @@ export const RenderingSection: React.FC = () => {
       pbrImage:
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
       clayImage:
-        'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1600&q=85',
+        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85',
       nightImage:
         'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=85',
       specs: ['Illuminazione HDRI Fisica', 'Materiali PBR Calibrati', 'Vegetazione 3D Scatter'],
@@ -51,19 +51,19 @@ export const RenderingSection: React.FC = () => {
     },
     {
       id: 'ind-complex',
-      title: 'Hub Commerciale & Polo Produttivo',
-      category: 'OPERE COMPLESSE // MASTERPLAN',
-      software: 'BIM Revit + Real-Time Engine',
+      title: 'Hub Commerciale & Direzionale',
+      category: 'COMMERCIALE & RETAIL // STILE ITALIANO',
+      software: 'BIM Revit + Twinmotion / Unreal Engine',
       description:
-        'Visualizzazione su larga scala di complessi industriali e prefabbricati, con viste aeree, simulazione viabilità veicolare e contestualizzazione orografica.',
+        'Complessi commerciali e direzionali stile italiano ispirati alle eccellenze di Milano CityLife e Porta Nuova: piazze pedonali, vetrate strutturali, facciate continue e grande impatto visivo scenografico.',
       resolution: '4K Panoramic Walkthrough',
       pbrImage:
-        'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1600&q=85',
+        'https://images.unsplash.com/photo-1555636222-cae831e670b3?auto=format&fit=crop&w=1600&q=85',
       clayImage:
-        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=85',
+        'https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1600&q=85',
       nightImage:
-        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=85',
-      specs: ['Masterplan Terreno 3D', 'Simulazione Luce Solare 365gg', 'Foto-inserimento Paesaggistico'],
+        'https://images.unsplash.com/photo-1519642918688-7e43b19245d8?auto=format&fit=crop&w=1600&q=85',
+      specs: ['Facciate Vetrate Continue', 'Piazze & Spazi Pedonali', 'Illuminazione Architetturale LED'],
     },
   ];
 
@@ -192,7 +192,13 @@ export const RenderingSection: React.FC = () => {
                   target.src = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=85';
                 }
               }}
-              className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-102"
+              className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-102 ${
+                renderMode === 'clay'
+                  ? 'grayscale-[55%] contrast-120 brightness-105'
+                  : renderMode === 'night'
+                  ? 'contrast-110 saturate-[1.12]'
+                  : ''
+              }`}
             />
 
             {/* Ambient vignette and scanlines */}

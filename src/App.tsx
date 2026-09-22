@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ActiveTheoryScene } from './components/ActiveTheoryScene';
 import { ActiveTheoryNav } from './components/ActiveTheoryNav';
+import { ReadingProgressBar } from './components/ReadingProgressBar';
+import { BackgroundEffectsHUD } from './components/BackgroundEffectsHUD';
 import { ActiveTheoryHero } from './components/ActiveTheoryHero';
 import { AmbientBlurredProjects } from './components/AmbientBlurredProjects';
 import { RenderingSection } from './components/RenderingSection';
@@ -8,13 +10,15 @@ import { PyRevitPythonSection } from './components/PyRevitPythonSection';
 import { ProfessionalProfileSection } from './components/ProfessionalProfileSection';
 import { TechnicalSkillsSection } from './components/TechnicalSkillsSection';
 import { CertificationsSection } from './components/CertificationsSection';
+import { VirtualStagingGallerySection } from './components/VirtualStagingGallerySection';
 import { ActiveTheoryContact } from './components/ActiveTheoryContact';
+import { AutoGalleryShowcaseSection } from './components/AutoGalleryShowcaseSection';
 import { ActiveTheoryRevitModal } from './components/ActiveTheoryRevitModal';
 import { ActiveTheoryAuditModal } from './components/ActiveTheoryAuditModal';
 import { ActiveTheoryCursor } from './components/ActiveTheoryCursor';
 import { SceneManager, GraphicTheme, GRAPHIC_THEMES } from './webgl/SceneManager';
 import { SmoothScroll } from './webgl/SmoothScroll';
-import { Sparkles, ArrowDown, ArrowUp } from 'lucide-react';
+import { Sparkles, ArrowDown, ArrowUp, Activity } from 'lucide-react';
 
 export function App() {
   const [sceneManager, setSceneManager] = useState<SceneManager | null>(null);
@@ -25,7 +29,7 @@ export function App() {
   const [shiftToast, setShiftToast] = useState<{
     message: string;
     theme: GraphicTheme;
-    trigger: 'bottom' | 'top' | 'manual';
+    trigger: 'bottom' | 'top' | 'middle' | 'manual';
   } | null>(null);
 
   // pyRevit & Audit Modals
@@ -37,8 +41,8 @@ export function App() {
     setSceneManager(scene);
     scrollerRef.current = scroller;
 
-    // Listen to automatic edge morphing & manual theme changes
-    scene.onThemeChange = (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'manual') => {
+    // Listen to automatic edge/middle morphing & manual theme changes
+    scene.onThemeChange = (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'middle' | 'manual') => {
       setActiveTheme(theme);
 
       let msg = '';
@@ -46,8 +50,10 @@ export function App() {
         msg = 'ARRIVO IN FONDO AL SITO // TRASFORMAZIONE GRAFICA ATTIVATA';
       } else if (trigger === 'top') {
         msg = 'RITORNO IN CIMA AL SITO // NUOVO STILE GRAFICO APPLICATO';
+      } else if (trigger === 'middle') {
+        msg = 'METÀ PAGINA RAGGIUNTA // METAMORFOSI 3D DINAMICA';
       } else {
-        msg = 'COMMUTAZIONE MANUALE ARCHITETTURA 3D';
+        msg = 'EFFETTO SFONDO 3D ATTIVO // NUOVO REGIME PARAMETRICO';
       }
 
       setShiftToast({ message: msg, theme, trigger });
@@ -63,11 +69,12 @@ export function App() {
     return () => clearTimeout(timer);
   }, [shiftToast]);
 
-  // Dual-guard IntersectionObserver on top and bottom sentinels for 100% reliable edge detection
+  // Triple-guard IntersectionObserver & Scroll Percentage for Top, Middle (50%), and Bottom
   useEffect(() => {
     if (!sceneManager) return;
 
     const topEl = document.getElementById('edge-sentinel-top');
+    const midEl = document.getElementById('edge-sentinel-middle');
     const bottomEl = document.getElementById('edge-sentinel-bottom');
 
     if (!topEl || !bottomEl) return;
@@ -78,6 +85,8 @@ export function App() {
           if (entry.isIntersecting) {
             if (entry.target.id === 'edge-sentinel-bottom') {
               sceneManager.triggerEdge('bottom');
+            } else if (entry.target.id === 'edge-sentinel-middle') {
+              sceneManager.triggerEdge('middle');
             } else if (entry.target.id === 'edge-sentinel-top') {
               sceneManager.triggerEdge('top');
             }
@@ -92,16 +101,45 @@ export function App() {
     );
 
     observer.observe(topEl);
+    if (midEl) observer.observe(midEl);
     observer.observe(bottomEl);
+
+    // Fallback scroll percentage check at ~50%
+    const handleScrollPercentage = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight <= 0) return;
+      const progress = window.scrollY / scrollHeight;
+
+      if (progress >= 0.47 && progress <= 0.53) {
+        if (sceneManager.lastEdge !== 'middle') {
+          sceneManager.triggerEdge('middle');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollPercentage, { passive: true });
 
     return () => {
       observer.disconnect();
+      window.removeEventListener('scroll', handleScrollPercentage);
     };
   }, [sceneManager]);
 
   const handleManualCycleTheme = () => {
     if (sceneManager) {
       sceneManager.cycleGraphicTheme('manual');
+    }
+  };
+
+  const handleRandomTheme = () => {
+    if (sceneManager) {
+      sceneManager.randomGraphicTheme('manual');
+    }
+  };
+
+  const handleSelectTheme = (index: number) => {
+    if (sceneManager) {
+      sceneManager.selectThemeByIndex(index);
     }
   };
 
@@ -124,8 +162,28 @@ export function App() {
       {/* 2. Precision Kinetic Trailing Cursor */}
       <ActiveTheoryCursor />
 
+      {/* 2.5 Subtle Reading Progress Bar Fixed at Screen Top Edge */}
+      <ReadingProgressBar
+        scroller={scrollerRef.current}
+        onScrollToSection={handleScrollTo}
+      />
+
       {/* 3. Fixed HUD Technical Navigation */}
-      <ActiveTheoryNav onScrollToSection={handleScrollTo} />
+      <ActiveTheoryNav
+        onScrollToSection={handleScrollTo}
+        onRandomTheme={handleRandomTheme}
+        activeTheme={activeTheme}
+        onCycleTheme={handleManualCycleTheme}
+        onSelectTheme={handleSelectTheme}
+      />
+
+      {/* 3.2 Floating 3D Background Effects Controller & Visualizer */}
+      <BackgroundEffectsHUD
+        currentTheme={activeTheme}
+        onRandomTheme={handleRandomTheme}
+        onCycleTheme={handleManualCycleTheme}
+        onSelectTheme={handleSelectTheme}
+      />
 
       {/* 3.5 Real-time Graphic Shift Toast Alert */}
       {shiftToast && (
@@ -136,6 +194,8 @@ export function App() {
                 <ArrowDown className="w-5 h-5 animate-bounce" />
               ) : shiftToast.trigger === 'top' ? (
                 <ArrowUp className="w-5 h-5 animate-bounce" />
+              ) : shiftToast.trigger === 'middle' ? (
+                <Activity className="w-5 h-5 animate-pulse text-cyan-400" />
               ) : (
                 <Sparkles className="w-5 h-5 animate-spin" />
               )}
@@ -165,6 +225,7 @@ export function App() {
           onOpenAuditModal={() => handleScrollTo('contact')}
           onScrollToRendering={() => handleScrollTo('rendering')}
           onScrollToPyRevit={() => handleScrollTo('pyrevit-python')}
+          onScrollToVirtualStaging={() => handleScrollTo('virtual-staging')}
         />
 
         {/* 1. Profilo Professionale (6 Separate Modules) */}
@@ -178,6 +239,9 @@ export function App() {
         {/* 3. Formazione e Certificazioni (5 Specific Certificates) */}
         <CertificationsSection />
 
+        {/* Mid-Page Sentinel for automatic 3D background transformation at 50% scroll */}
+        <div id="edge-sentinel-middle" className="w-full h-24 pointer-events-none opacity-0" />
+
         {/* 4. Realizzazione Rendering & Visualizzazione Architettonica */}
         <RenderingSection />
 
@@ -186,7 +250,13 @@ export function App() {
           onOpenTerminalModal={() => setIsRevitModalOpen(true)}
         />
 
-        {/* 6. Personal Contacts & Direct Contact Form */}
+        {/* 6. Virtual Staging (16 Progetti Prima & Dopo) */}
+        <VirtualStagingGallerySection />
+
+        {/* 7. Galleria Rendering & Fotografia (Scorrimento Automatico - 2 Card) */}
+        <AutoGalleryShowcaseSection />
+
+        {/* 8. Personal Contacts & Direct Contact Form */}
         <ActiveTheoryContact
           onOpenAuditModal={() => {
             setAuditProjectTitle('');

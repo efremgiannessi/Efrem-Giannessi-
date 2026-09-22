@@ -58,48 +58,48 @@ float getPatternElevation(float mode, vec3 pos, float waveY, float time) {
     // 01: Organic Undulating Perlin Wave (Deep Cyber Sea / Fluid Currents)
     float n1 = snoise(vec2(pos.x * 0.035 + time * 0.12, waveY * 0.035 - time * 0.08));
     float n2 = snoise(vec2(pos.x * 0.07 - time * 0.2, waveY * 0.07 + time * 0.15)) * 0.5;
-    return (n1 + n2) * 5.6;
+    return (n1 + n2) * 7.5;
   } else if (mode < 1.5) {
     // 02: Cartesian Pulse Matrix (Tron / BIM Structural Wireframe Grid)
-    float pulse = sin(pos.x * 0.18 + time * 1.2) * cos(waveY * 0.18 - time * 0.8) * 4.8;
-    float diagonal = sin((pos.x + waveY) * 0.12 + time * 0.5) * 2.2;
+    float pulse = sin(pos.x * 0.18 + time * 1.2) * cos(waveY * 0.18 - time * 0.8) * 6.2;
+    float diagonal = sin((pos.x + waveY) * 0.12 + time * 0.5) * 2.8;
     return pulse + diagonal;
   } else if (mode < 2.5) {
     // 03: Kinetic Radial Vortex & Sonic Shockwave (Solar Flare Accretion)
     float dist = length(vec2(pos.x, waveY * 0.8));
-    float wave = sin(dist * 0.16 - time * 2.4) * 5.2;
-    float spiral = sin(atan(waveY, pos.x) * 4.0 + time * 1.8) * 2.5;
+    float wave = sin(dist * 0.16 - time * 2.4) * 6.5;
+    float spiral = sin(atan(waveY, pos.x) * 4.0 + time * 1.8) * 3.2;
     return wave + spiral;
   } else if (mode < 3.5) {
     // 04: Parametric Stepped Terraces (BIM 5D Topography & Architectural Contours)
-    float baseWave = snoise(vec2(pos.x * 0.04 + time * 0.08, waveY * 0.04 - time * 0.06)) * 6.5;
+    float baseWave = snoise(vec2(pos.x * 0.04 + time * 0.08, waveY * 0.04 - time * 0.06)) * 7.8;
     float terrace = floor(baseWave * 1.6) / 1.6;
-    float fineSteps = sin(pos.x * 0.25 + waveY * 0.25 - time * 1.2) * 1.2;
+    float fineSteps = sin(pos.x * 0.25 + waveY * 0.25 - time * 1.2) * 1.5;
     return terrace + fineSteps;
   } else if (mode < 4.5) {
     // 05: Voronoi Crystalline Geodesic Lattice (Ice Platinum / Faceted Diamonds)
     float facet1 = abs(sin(pos.x * 0.14 + time * 0.4) * cos(waveY * 0.14 - time * 0.4));
     float facet2 = abs(cos(pos.x * 0.22 - time * 0.3) * sin(waveY * 0.22 + time * 0.3));
-    float ridges = (facet1 + facet2 * 0.7) * 7.5 - 2.5;
+    float ridges = (facet1 + facet2 * 0.7) * 9.0 - 2.8;
     return ridges;
   } else if (mode < 5.5) {
     // 06: Quantum Double Helix Ribbon Interference (Intertwined Waveforms)
     float h1 = sin(pos.x * 0.12 + sin(waveY * 0.08 + time * 0.8) * 3.5);
     float h2 = cos(waveY * 0.14 + sin(pos.x * 0.08 - time * 0.8) * 3.5);
-    float helix = (h1 + h2) * 4.0;
+    float helix = (h1 + h2) * 5.2;
     return helix;
   } else if (mode < 6.5) {
     // 07: High-Frequency Radar & Sonar Sweep (Sonar Ping Concentric Pulsar)
     float dist = length(vec2(pos.x * 1.2, waveY));
-    float ping = sin(dist * 0.38 - time * 3.2) * exp(-dist * 0.018) * 6.5;
-    float sweep = sin(atan(waveY, pos.x) * 8.0 - time * 2.5) * 2.2;
+    float ping = sin(dist * 0.38 - time * 3.2) * exp(-dist * 0.018) * 8.0;
+    float sweep = sin(atan(waveY, pos.x) * 8.0 - time * 2.5) * 2.8;
     return ping + sweep;
   } else if (mode < 7.5) {
     // 08: Digital Tectonic Faults & Glitch Matrix (Segmented Cyber Displacements)
     float blockX = floor(pos.x * 0.1 + time * 0.1);
     float blockY = floor(waveY * 0.1 - time * 0.1);
-    float noiseBlock = snoise(vec2(blockX, blockY)) * 5.2;
-    float glitchStripe = sin(waveY * 0.6 - time * 4.0) * step(0.65, fract(sin(pos.x * 12.0) * 43758.5453)) * 3.5;
+    float noiseBlock = snoise(vec2(blockX, blockY)) * 6.5;
+    float glitchStripe = sin(waveY * 0.6 - time * 4.0) * step(0.65, fract(sin(pos.x * 12.0) * 43758.5453)) * 4.2;
     return noiseBlock + glitchStripe;
   } else if (mode < 8.5) {
     // 09: Sand Dune Fluid Aerodynamics (Wind-Sculpted Supersonic Airflow)
@@ -120,12 +120,54 @@ float getPatternElevation(float mode, vec3 pos, float waveY, float time) {
     float a2 = sin((pos.x * 0.08 + waveY * 0.138) - time * 0.7);
     float a3 = sin((-pos.x * 0.08 + waveY * 0.138) + time * 0.6);
     return (a1 + a2 + a3) * 2.6;
-  } else {
+  } else if (mode < 11.5) {
     // 12: Aurora Borealis Flowing Plasma Ribbons (Celestial Northern Lights)
     float flow1 = snoise(vec2(pos.x * 0.02 + time * 0.25, waveY * 0.04 - time * 0.15));
     float flow2 = snoise(vec2(pos.x * 0.05 - time * 0.35, waveY * 0.02 + time * 0.2));
     float ribbon = sin(flow1 * 4.0 + waveY * 0.08) * 5.2 + flow2 * 3.0;
     return ribbon;
+  } else if (mode < 12.5) {
+    // 13: LiDAR Point Cloud (Laser Scanner 3D Topographic Survey)
+    float scanY = fract(waveY * 0.04 + time * 0.35);
+    float scanBeam = exp(-pow(scanY - 0.5, 2.0) * 90.0) * 8.5;
+    float pointPillar = step(0.74, fract(sin(dot(floor(pos.xy * 0.16), vec2(12.9898, 78.233))) * 43758.5453)) * 6.5;
+    float terrainGrid = snoise(pos.xy * 0.035) * 2.2;
+    return scanBeam + pointPillar + terrainGrid;
+  } else if (mode < 13.5) {
+    // 14: Parametric Ribbon Façade (Kinetic Twisted Louvers)
+    float ribbonX = sin(pos.x * 0.28 + time * 1.3);
+    float twist = sin(waveY * 0.08 + time * 0.7) * cos(pos.x * 0.14 - time * 0.5);
+    float louver = ribbonX * twist * 8.2;
+    float finDepth = sin(pos.x * 0.52 + waveY * 0.12) * 2.4;
+    return louver + finDepth;
+  } else if (mode < 14.5) {
+    // 15: Tensegrity & Space-Frame (Structural Node Equilibrium)
+    float cable1 = abs(sin(pos.x * 0.18 + waveY * 0.18 + time * 0.55));
+    float cable2 = abs(cos(-pos.x * 0.18 + waveY * 0.18 - time * 0.55));
+    float struts = min(cable1, cable2);
+    float nodePulse = pow(sin(pos.x * 0.09) * cos(waveY * 0.09) * 0.5 + 0.5, 5.0) * 9.0;
+    return (1.0 - struts) * 6.0 + nodePulse - 2.0;
+  } else if (mode < 15.5) {
+    // 16: Contour Topography // Isoipse DTM (Digital Terrain Model)
+    float dtm = snoise(vec2(pos.x * 0.03 + time * 0.04, waveY * 0.03 - time * 0.03)) * 8.5;
+    float isoContour = floor(dtm * 1.7) / 1.7;
+    float contourRidge = sin(isoContour * 3.14159) * 1.5;
+    return isoContour + contourRidge;
+  } else if (mode < 16.5) {
+    // 17: Tesseract 4D (Hypercube Spatial Inversion & Non-Euclidean Fold)
+    float theta = time * 0.75;
+    float u = pos.x * 0.11 * cos(theta) - waveY * 0.11 * sin(theta);
+    float v = pos.x * 0.11 * sin(theta) + waveY * 0.11 * cos(theta);
+    float hyperEdge = (sin(u * 2.4) * sin(v * 2.4) + cos(u * 4.8) * cos(v * 4.8) * 0.5) * 5.8;
+    float fold = sin(sqrt(u * u + v * v) * 2.8 - time * 1.8) * 3.2;
+    return hyperEdge + fold;
+  } else {
+    // 18: Bionic Voronoi Canopy (Generative Cellular ETFE Membrane)
+    vec2 cell = fract(vec2(pos.x * 0.075, waveY * 0.075 + time * 0.09)) - 0.5;
+    float cellDist = length(cell);
+    float membrane = (1.0 - smoothstep(0.02, 0.42, cellDist)) * 7.5;
+    float breathing = sin(time * 1.4 + pos.x * 0.05) * 2.2;
+    return membrane + breathing - 1.8;
   }
 }
 
@@ -194,18 +236,18 @@ void main() {
   float elevFactor = smoothstep(-3.5, 6.5, vElevation);
   vec3 color = mix(uColorBase, uColorAccent, elevFactor);
 
-  // Mouse glow
-  float mouseGlow = smoothstep(18.0, 0.0, vDistToMouse) * 0.55;
+  // Mouse glow - enhanced radiance
+  float mouseGlow = smoothstep(22.0, 0.0, vDistToMouse) * 0.85;
   color += uColorAccent * mouseGlow;
 
   // Secondary highlights on wave crests
-  if(vElevation > 2.8) {
-    color = mix(color, uColorHighlight, (vElevation - 2.8) * 0.3);
+  if(vElevation > 2.0) {
+    color = mix(color, uColorHighlight, (vElevation - 2.0) * 0.45);
   }
 
-  // Pulsing grid line brightness
-  float pulse = sin(uTime * 1.5 + vUv.x * 12.0) * 0.12 + 0.92;
-  float alpha = (0.28 + elevFactor * 0.45 + abs(uScrollVelocity) * 0.35) * edgeFade * pulse;
+  // Pulsing grid line brightness - boosted visibility and clarity
+  float pulse = sin(uTime * 1.5 + vUv.x * 12.0) * 0.15 + 0.95;
+  float alpha = (0.55 + elevFactor * 0.45 + abs(uScrollVelocity) * 0.4) * edgeFade * pulse;
 
   gl_FragColor = vec4(color, alpha);
 }

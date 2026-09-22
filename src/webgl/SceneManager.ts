@@ -148,6 +148,66 @@ export const GRAPHIC_THEMES: GraphicTheme[] = [
     highlightColor: new THREE.Color(0xc084fc),
     particleColors: [new THREE.Color(0x2dd4bf), new THREE.Color(0xc084fc)],
   },
+  {
+    id: 'lidar-survey',
+    name: 'LIDAR POINT CLOUD',
+    code: '13',
+    patternMode: 12, // 13: Laser Scanner 3D & Dense Topographic Survey
+    baseColor: new THREE.Color(0x011b0e),
+    accentColor: new THREE.Color(0x10e88a),
+    highlightColor: new THREE.Color(0xf59e0b),
+    particleColors: [new THREE.Color(0x10e88a), new THREE.Color(0xf59e0b)],
+  },
+  {
+    id: 'parametric-ribbon',
+    name: 'PARAMETRIC RIBBON',
+    code: '14',
+    patternMode: 13, // 14: Kinetic Façade Louvers & Twisted Aluminum Fins
+    baseColor: new THREE.Color(0x1a1205),
+    accentColor: new THREE.Color(0xfbbf24),
+    highlightColor: new THREE.Color(0xf8fafc),
+    particleColors: [new THREE.Color(0xfbbf24), new THREE.Color(0xe2e8f0)],
+  },
+  {
+    id: 'tensegrity-truss',
+    name: 'TENSEGRITY FRAME',
+    code: '15',
+    patternMode: 14, // 15: Structural Steel Truss, Cable Equilibrium & Nodes
+    baseColor: new THREE.Color(0x071329),
+    accentColor: new THREE.Color(0x38bdf8),
+    highlightColor: new THREE.Color(0xf97316),
+    particleColors: [new THREE.Color(0x38bdf8), new THREE.Color(0xf97316)],
+  },
+  {
+    id: 'contour-topography',
+    name: 'CONTOUR DTM',
+    code: '16',
+    patternMode: 15, // 16: Altimetric Isoipse & Digital Terrain Elevation Map
+    baseColor: new THREE.Color(0x0c1b14),
+    accentColor: new THREE.Color(0x86efac),
+    highlightColor: new THREE.Color(0xfde047),
+    particleColors: [new THREE.Color(0x86efac), new THREE.Color(0xfde047)],
+  },
+  {
+    id: 'tesseract-4d',
+    name: 'TESSERACT 4D',
+    code: '17',
+    patternMode: 16, // 17: Non-Euclidean 4D Hypercube Inversion & Fold
+    baseColor: new THREE.Color(0x0a0524),
+    accentColor: new THREE.Color(0x818cf8),
+    highlightColor: new THREE.Color(0x22d3ee),
+    particleColors: [new THREE.Color(0x818cf8), new THREE.Color(0x22d3ee)],
+  },
+  {
+    id: 'bionic-voronoi',
+    name: 'BIONIC VORONOI',
+    code: '18',
+    patternMode: 17, // 18: Generative Bionic Cellular ETFE Canopy
+    baseColor: new THREE.Color(0x03181d),
+    accentColor: new THREE.Color(0x2dd4bf),
+    highlightColor: new THREE.Color(0xd946ef),
+    particleColors: [new THREE.Color(0x2dd4bf), new THREE.Color(0xd946ef)],
+  },
 ];
 
 export class SceneManager {
@@ -169,8 +229,8 @@ export class SceneManager {
   // Graphic Theme State & Morphing
   public currentThemeIndex: number = 0;
   private isMorphingTheme: boolean = false;
-  public lastEdge: 'top' | 'bottom' = 'top';
-  public onThemeChange?: (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'manual') => void;
+  public lastEdge: 'top' | 'bottom' | 'middle' = 'top';
+  public onThemeChange?: (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'middle' | 'manual') => void;
 
   // Interactive Project WebGL Meshes
   private projectPlanes: Map<
@@ -210,7 +270,7 @@ export class SceneManager {
 
     // 1. Three.js Scene & Camera setup
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x050508, 0.015);
+    this.scene.fog = new THREE.FogExp2(0x050508, 0.007);
 
     this.camera = new THREE.PerspectiveCamera(
       45,
@@ -270,14 +330,14 @@ export class SceneManager {
     });
 
     this.terrainMesh = new THREE.Mesh(geometry, this.terrainMaterial);
-    this.terrainMesh.position.z = -10;
-    this.terrainMesh.rotation.x = -0.35; // Gentle tilted perspective
+    this.terrainMesh.position.z = -8;
+    this.terrainMesh.rotation.x = -0.32; // Gentle tilted perspective
     this.scene.add(this.terrainMesh);
   }
 
   // 2. Floating Cybernetic Particles Field
   private initParticles() {
-    const particleCount = 750;
+    const particleCount = 1000;
     const geometry = new THREE.BufferGeometry();
     this.particlePositions = new Float32Array(particleCount * 3);
     this.particleColors = new Float32Array(particleCount * 3);
@@ -287,9 +347,9 @@ export class SceneManager {
     const c2 = currentTheme.particleColors[1];
 
     for (let i = 0; i < particleCount; i++) {
-      this.particlePositions[i * 3] = (Math.random() - 0.5) * 110;
-      this.particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 85;
-      this.particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 35;
+      this.particlePositions[i * 3] = (Math.random() - 0.5) * 115;
+      this.particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 90;
+      this.particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 40;
 
       const mixed = Math.random() > 0.65 ? c2 : c1;
       this.particleColors[i * 3] = mixed.r;
@@ -307,10 +367,10 @@ export class SceneManager {
     );
 
     const material = new THREE.PointsMaterial({
-      size: 0.24,
+      size: 0.38,
       vertexColors: true,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.92,
       blending: THREE.AdditiveBlending,
     });
 
@@ -319,7 +379,7 @@ export class SceneManager {
   }
 
   // Trigger edge morphing with debounce and strict transition state
-  public triggerEdge(edge: 'bottom' | 'top') {
+  public triggerEdge(edge: 'bottom' | 'top' | 'middle') {
     if (this.lastEdge !== edge) {
       this.lastEdge = edge;
       this.cycleGraphicTheme(edge);
@@ -333,14 +393,26 @@ export class SceneManager {
     this.applyThemeByIndex(index, 'manual');
   }
 
-  // Cycle to the Next Graphic Theme on Edge Arrival (Bottom or Top)
-  public cycleGraphicTheme(trigger: 'bottom' | 'top' | 'manual') {
+  // Cycle to the Next Graphic Theme on Arrival (Bottom, Top, or Middle)
+  public cycleGraphicTheme(trigger: 'bottom' | 'top' | 'middle' | 'manual') {
     const nextIndex = (this.currentThemeIndex + 1) % GRAPHIC_THEMES.length;
     this.applyThemeByIndex(nextIndex, trigger);
   }
 
+  // Randomize Graphic Theme among all available regimes
+  public randomGraphicTheme(trigger: 'bottom' | 'top' | 'middle' | 'manual' = 'manual') {
+    let nextIndex = Math.floor(Math.random() * GRAPHIC_THEMES.length);
+    if (GRAPHIC_THEMES.length > 1 && nextIndex === this.currentThemeIndex) {
+      nextIndex =
+        (this.currentThemeIndex + 1 + Math.floor(Math.random() * (GRAPHIC_THEMES.length - 1))) %
+        GRAPHIC_THEMES.length;
+    }
+    this.applyThemeByIndex(nextIndex, trigger);
+    return GRAPHIC_THEMES[nextIndex];
+  }
+
   // Apply Theme with Smooth GSAP Morphing Transition
-  public applyThemeByIndex(nextIndex: number, trigger: 'bottom' | 'top' | 'manual') {
+  public applyThemeByIndex(nextIndex: number, trigger: 'bottom' | 'top' | 'middle' | 'manual') {
     if (this.isMorphingTheme) return;
     this.isMorphingTheme = true;
 
