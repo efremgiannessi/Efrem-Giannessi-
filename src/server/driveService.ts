@@ -25,54 +25,106 @@ let lastFetchTime = 0;
 const CACHE_TTL_MS = 45 * 1000; // 45 seconds cache to balance responsiveness and avoid Google rate limits
 
 export async function fetchSingleFolder(folderId: string, prefix: string): Promise<GalleryMediaItem[]> {
-  const url = `https://drive.google.com/drive/folders/${folderId}`;
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Google Drive returned HTTP ${response.status}`);
-  }
-
-  const html = await response.text();
-
-  // Decode standard hex escapes used in Google Drive initial payload (\x22 -> ", \x5b -> [, \x5d -> ])
-  const unhex = html
-    .replace(/\\x22/g, '"')
-    .replace(/\\x5b/g, '[')
-    .replace(/\\x5d/g, ']')
-    .replace(/\\x2f/g, '/');
+  const urls = [
+    `https://drive.google.com/drive/folders/${folderId}`,
+    `https://drive.google.com/drive/folders/${folderId}?sort=7&direction=d`,
+    `https://drive.google.com/drive/folders/${folderId}?sort=7&direction=a`,
+    `https://drive.google.com/drive/folders/${folderId}?sort=13&direction=d`,
+  ];
 
   const files: GalleryMediaItem[] = [];
   const seen = new Set<string>();
-
-  // Pattern: ["FILE_ID",["FOLDER_ID"],"FILENAME"
-  const regex = new RegExp(`\\["([a-zA-Z0-9_-]{25,})",\\["${folderId}"\\],"([^"]+)"`, 'g');
-  let match: RegExpExecArray | null;
-
   const validExts = ['.jpg', '.jpeg', '.png', '.webp'];
 
-  while ((match = regex.exec(unhex)) !== null) {
-    const driveId = match[1];
-    const rawName = match[2];
+  const tryAdd = (rawId: string, rawName: string) => {
+    if (!rawId || !rawName) return;
+    const cleanId = rawId.replace(/-0-\d+$/, '').trim();
+    const cleanName = rawName.replace(/\.[^/.]+$/, '').trim();
     const lower = rawName.toLowerCase();
 
-    if (validExts.some(ext => lower.endsWith(ext))) {
-      if (!seen.has(driveId)) {
-        seen.add(driveId);
-        const cleanName = rawName.replace(/\.[^/.]+$/, '');
-        files.push({
-          id: `${prefix}-${files.length + 1}`,
-          driveId,
-          name: cleanName,
-          src: `https://lh3.googleusercontent.com/d/${driveId}=w1200`,
-          thumbSrc: `https://lh3.googleusercontent.com/d/${driveId}=w400`,
-        });
+    const isValidExt = validExts.some((ext) => lower.endsWith(ext));
+    if (!isValidExt) return;
+    if (cleanId.length < 25) return;
+    if (
+      cleanName.includes('favicon') ||
+      cleanName.includes('al-icon') ||
+      cleanName.includes('broken_image') ||
+      cleanName.includes('logo_drive')
+    ) {
+      return;
+    }
+
+    if (!seen.has(cleanId)) {
+      seen.add(cleanId);
+      files.push({
+        id: `${prefix}-${files.length + 1}`,
+        driveId: cleanId,
+        name: cleanName,
+        src: `https://lh3.googleusercontent.com/d/${cleanId}=w1200`,
+        thumbSrc: `https://lh3.googleusercontent.com/d/${cleanId}=w400`,
+      });
+    }
+  };
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
+      });
+
+      if (!response.ok) continue;
+
+      const html = await response.text();
+      const unhex = html
+        .replace(/\\x22/g, '"')
+        .replace(/\\x5b/g, '[')
+        .replace(/\\x5d/g, ']')
+        .replace(/\\x2f/g, '/');
+
+      // Pattern 1: aria-label + ssk
+      const regex1 =
+        /aria-label="([^"]+\.(?:jpg|jpeg|png|webp))[^"]*"[^>]*?ssk='[^:]+:[^:]+:([a-zA-Z0-9_-]{25,})/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex1.exec(unhex)) !== null) {
+        tryAdd(match[2], match[1]);
       }
+
+      // Pattern 2: ssk + aria-label
+      const regex2 =
+        /ssk='[^:]+:[^:]+:([a-zA-Z0-9_-]{25,})[^']*'[^>]*?aria-label="([^"]+\.(?:jpg|jpeg|png|webp))/gi;
+      while ((match = regex2.exec(unhex)) !== null) {
+        tryAdd(match[1], match[2]);
+      }
+
+      // Pattern 3: JSON array format ["FILE_ID",["FOLDER_ID"],"FILENAME"
+      const regex3 = new RegExp(
+        `\\["([a-zA-Z0-9_-]{25,})",\\["${folderId}"\\],"([^"]+)"`,
+        'g'
+      );
+      while ((match = regex3.exec(unhex)) !== null) {
+        tryAdd(match[1], match[2]);
+      }
+
+      // Pattern 4: ["FILE_ID","FILENAME.ext"
+      const regex4 =
+        /\["([a-zA-Z0-9_-]{25,})","([^"]+\.(?:jpg|jpeg|png|webp|JPG|JPEG|PNG|WEBP))"/g;
+      while ((match = regex4.exec(unhex)) !== null) {
+        tryAdd(match[1], match[2]);
+      }
+
+      // Pattern 5: ["FILENAME.ext","FILE_ID"
+      const regex5 =
+        /\["([^"]+\.(?:jpg|jpeg|png|webp|JPG|JPEG|PNG|WEBP))","([a-zA-Z0-9_-]{25,})"/g;
+      while ((match = regex5.exec(unhex)) !== null) {
+        tryAdd(match[2], match[1]);
+      }
+    } catch (e) {
+      console.warn(`[DriveService] Error fetching ${url}:`, e);
     }
   }
 

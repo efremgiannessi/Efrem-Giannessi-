@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { GalleryMediaItem } from '../data/galleriaAutoShowcase';
 import { useLiveGalleries } from '../hooks/useLiveGalleries';
-import { Layers, Camera, Play, Sparkles, RefreshCw } from 'lucide-react';
+import { Layers, Camera, Play, Sparkles, RefreshCw, Check } from 'lucide-react';
+import { audioSystem } from '../utils/audioSynthesizer';
 
 interface AutoGalleryCardProps {
   title: string;
@@ -181,8 +182,9 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
       <div className="relative py-2.5 px-3 bg-stone-900/60 border-t border-white/10 overflow-hidden pointer-events-none">
         <div className="flex items-center gap-2 w-max animate-marquee">
           {/* Loop over thumbnails twice for seamless marquee */}
-          {[...items.slice(0, 16), ...items.slice(0, 16)].map((item, i) => {
-            const isSelected = i % 16 === safeIndex % 16;
+          {[...items.slice(0, Math.min(items.length, 40)), ...items.slice(0, Math.min(items.length, 40))].map((item, i) => {
+            const sampleLen = Math.min(items.length, 40);
+            const isSelected = sampleLen > 0 && (i % sampleLen === safeIndex % sampleLen);
             return (
               <div
                 key={`${item.id}-strip-${i}`}
@@ -222,7 +224,26 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
 };
 
 export const AutoGalleryShowcaseSection: React.FC = () => {
-  const { rendering, fotografia, renderingCount, photoCount, isLive, isSyncing } = useLiveGalleries();
+  const { rendering, fotografia, renderingCount, photoCount, isLive, lastSynced, isSyncing, refreshNow } = useLiveGalleries();
+  const [syncFeedback, setSyncFeedback] = useState<boolean>(false);
+  const [feedbackStats, setFeedbackStats] = useState<string>('');
+
+  const handleManualSync = async () => {
+    audioSystem.playClick(650);
+    const result = await refreshNow(true);
+    if (result.success) {
+      setFeedbackStats(`${result.renderingCount} RND // ${result.photoCount} FOTO`);
+      setSyncFeedback(true);
+      audioSystem.playClick(850);
+      setTimeout(() => {
+        setSyncFeedback(false);
+      }, 4000);
+    }
+  };
+
+  const formattedLastSync = lastSynced
+    ? new Date(lastSynced).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    : null;
 
   return (
     <section
@@ -236,10 +257,42 @@ export const AutoGalleryShowcaseSection: React.FC = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b border-white/15 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-3 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 uppercase tracking-widest">
-              <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400 animate-pulse'}`} />
-              ARCHIVIO AUTOMATICO // {renderingCount + photoCount} SCATTI {isLive ? '(SYNC ATTIVO)' : ''}
+            {/* Live Status Badge + Compact Drive Refresh Button */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-3">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 uppercase tracking-widest">
+                <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400 animate-pulse'}`} />
+                ARCHIVIO AUTOMATICO // {renderingCount + photoCount} SCATTI {isLive ? '(SYNC ATTIVO)' : ''}
+              </div>
+
+              {/* Tasto compatto per aggiornamento immediato con le cartelle Google Drive */}
+              <button
+                id="btn-sync-drive-galleries"
+                onClick={handleManualSync}
+                disabled={isSyncing}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider transition-all duration-300 border cursor-pointer select-none ${
+                  syncFeedback
+                    ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.3)]'
+                    : isSyncing
+                    ? 'bg-cyan-950/80 border-cyan-400/80 text-cyan-200 cursor-wait'
+                    : 'bg-stone-900/90 hover:bg-cyan-950/60 border-white/20 hover:border-cyan-400 text-white/80 hover:text-cyan-300 shadow-sm active:scale-95'
+                }`}
+                title="Scansiona le cartelle Google Drive per sincronizzare immediatamente le immagini e il conteggio scatti effettivo"
+              >
+                {syncFeedback ? (
+                  <Check className="w-3 h-3 text-emerald-400" />
+                ) : (
+                  <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin text-cyan-400' : 'text-cyan-400'}`} />
+                )}
+                <span>
+                  {isSyncing
+                    ? 'CONTROLLO DRIVE...'
+                    : syncFeedback
+                    ? `AGGIORNATO (${feedbackStats})`
+                    : 'AGGIORNA DA DRIVE'}
+                </span>
+              </button>
             </div>
+
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase text-white font-mono">
               GALLERIA <span className="text-cyan-400">RENDERING</span> &amp; <span className="text-amber-400">FOTOGRAFIA</span>
             </h2>
@@ -249,11 +302,18 @@ export const AutoGalleryShowcaseSection: React.FC = () => {
             <span>
               Scorrimento automatico e continuo ad alta definizione delle collezioni complete di rendering fotorealistici e scatti fotografici sincronizzati in tempo reale con le cartelle Google Drive.
             </span>
-            {isSyncing && (
-              <span className="flex items-center gap-1 text-[11px] text-cyan-400 mt-1">
-                <RefreshCw className="w-3 h-3 animate-spin" /> Controllo aggiornamenti Drive in corso...
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              {formattedLastSync && (
+                <span className="text-[11px] text-white/40 font-mono">
+                  Ultimo sync: {formattedLastSync}
+                </span>
+              )}
+              {isSyncing && (
+                <span className="flex items-center gap-1 text-[11px] text-cyan-400">
+                  <RefreshCw className="w-3 h-3 animate-spin" /> Controllo aggiornamenti Drive in corso...
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -294,10 +354,15 @@ export const AutoGalleryShowcaseSection: React.FC = () => {
           </div>
           <div>
             <span className="block text-[10px] uppercase text-white/40 tracking-wider">Sincronizzazione</span>
-            <span className="text-lg font-bold text-emerald-400 flex items-center justify-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Tempo Reale
-            </span>
+            <button
+              onClick={handleManualSync}
+              disabled={isSyncing}
+              className="text-lg font-bold text-emerald-400 flex items-center justify-center gap-1.5 hover:text-emerald-300 transition-colors mx-auto cursor-pointer"
+              title="Clicca per forzare l'aggiornamento da Google Drive"
+            >
+              <span className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-cyan-400 animate-spin' : 'bg-emerald-400 animate-pulse'}`} />
+              {isSyncing ? 'Verifica...' : 'Tempo Reale'}
+            </button>
           </div>
           <div>
             <span className="block text-[10px] uppercase text-white/40 tracking-wider">Visualizzazione</span>

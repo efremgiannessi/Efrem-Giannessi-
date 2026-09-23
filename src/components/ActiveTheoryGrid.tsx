@@ -31,6 +31,7 @@ export const ActiveTheoryGrid: React.FC<ActiveTheoryGridProps> = ({
     });
 
     const handleResize = () => {
+      sceneManager.measureProjectBounds();
       sceneManager.updateProjectBounds();
     };
 

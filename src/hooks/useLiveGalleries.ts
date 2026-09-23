@@ -9,7 +9,7 @@ export interface LiveGalleriesState {
   isLive: boolean;
   lastSynced: string | null;
   isSyncing: boolean;
-  refreshNow: (force?: boolean) => Promise<void>;
+  refreshNow: (force?: boolean) => Promise<{ success: boolean; renderingCount: number; photoCount: number }>;
 }
 
 export function useLiveGalleries(): LiveGalleriesState {
@@ -24,36 +24,43 @@ export function useLiveGalleries(): LiveGalleriesState {
   const isMountedRef = useRef(true);
 
   const fetchLiveGalleries = useCallback(async (force = false) => {
-    if (!isMountedRef.current) return;
+    if (!isMountedRef.current) return { success: false, renderingCount, photoCount };
     setIsSyncing(true);
 
     try {
-      const url = force ? '/api/drive-galleries?force=true' : '/api/drive-galleries';
+      const url = force ? `/api/drive-galleries?force=true&_t=${Date.now()}` : '/api/drive-galleries';
       const response = await fetch(url);
 
       if (response.ok) {
         const data = await response.json();
         if (isMountedRef.current && data) {
+          const rCount = typeof data.renderingCount === 'number' ? data.renderingCount : (Array.isArray(data.rendering) ? data.rendering.length : rendering.length);
+          const pCount = typeof data.photoCount === 'number' ? data.photoCount : (Array.isArray(data.fotografia) ? data.fotografia.length : fotografia.length);
+
           if (Array.isArray(data.rendering) && data.rendering.length > 0) {
             setRendering(data.rendering);
-            setRenderingCount(data.renderingCount ?? data.rendering.length);
+            setRenderingCount(rCount);
           }
           if (Array.isArray(data.fotografia) && data.fotografia.length > 0) {
             setFotografia(data.fotografia);
-            setPhotoCount(data.photoCount ?? data.fotografia.length);
+            setPhotoCount(pCount);
           }
           setIsLive(true);
-          setLastSynced(data.lastSynced || new Date().toISOString());
+          const syncTimestamp = data.lastSynced || new Date().toISOString();
+          setLastSynced(syncTimestamp);
+          return { success: true, renderingCount: rCount, photoCount: pCount };
         }
       }
+      return { success: false, renderingCount, photoCount };
     } catch (err) {
       console.warn('[useLiveGalleries] Could not fetch live galleries, using local snapshot:', err);
+      return { success: false, renderingCount, photoCount };
     } finally {
       if (isMountedRef.current) {
         setIsSyncing(false);
       }
     }
-  }, []);
+  }, [renderingCount, photoCount, rendering.length, fotografia.length]);
 
   useEffect(() => {
     isMountedRef.current = true;

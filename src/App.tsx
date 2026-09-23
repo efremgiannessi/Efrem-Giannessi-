@@ -50,17 +50,13 @@ export function App() {
     scene.onThemeChange = (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'middle' | 'manual') => {
       setActiveTheme(theme);
 
-      let msg = '';
-      if (trigger === 'bottom') {
-        msg = 'ARRIVO IN FONDO AL SITO // TRASFORMAZIONE GRAFICA ATTIVATA';
-      } else if (trigger === 'top') {
-        msg = 'RITORNO IN CIMA AL SITO // NUOVO STILE GRAFICO APPLICATO';
-      } else if (trigger === 'middle') {
-        msg = 'METÀ PAGINA RAGGIUNTA // METAMORFOSI 3D DINAMICA';
-      } else {
-        msg = 'EFFETTO SFONDO 3D ATTIVO // NUOVO REGIME PARAMETRICO';
+      // Do not display toast messages on top, middle, or bottom edge arrivals
+      if (trigger === 'bottom' || trigger === 'top' || trigger === 'middle') {
+        return;
       }
 
+      // Display toast only for explicit manual selection
+      const msg = 'EFFETTO SFONDO 3D ATTIVO // NUOVO REGIME PARAMETRICO';
       setShiftToast({ message: msg, theme, trigger });
     };
   };
@@ -109,17 +105,22 @@ export function App() {
     if (midEl) observer.observe(midEl);
     observer.observe(bottomEl);
 
-    // Fallback scroll percentage check at ~50%
+    // Fallback scroll percentage check at ~50% (RAF-throttled to avoid layout thrashing on mobile)
+    let scrollRafId: number | null = null;
     const handleScrollPercentage = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight <= 0) return;
-      const progress = window.scrollY / scrollHeight;
+      if (scrollRafId !== null) return;
+      scrollRafId = requestAnimationFrame(() => {
+        scrollRafId = null;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollHeight <= 0) return;
+        const progress = window.scrollY / scrollHeight;
 
-      if (progress >= 0.47 && progress <= 0.53) {
-        if (sceneManager.lastEdge !== 'middle') {
-          sceneManager.triggerEdge('middle');
+        if (progress >= 0.47 && progress <= 0.53) {
+          if (sceneManager.lastEdge !== 'middle') {
+            sceneManager.triggerEdge('middle');
+          }
         }
-      }
+      });
     };
 
     window.addEventListener('scroll', handleScrollPercentage, { passive: true });
@@ -127,6 +128,7 @@ export function App() {
     return () => {
       observer.disconnect();
       window.removeEventListener('scroll', handleScrollPercentage);
+      if (scrollRafId !== null) cancelAnimationFrame(scrollRafId);
     };
   }, [sceneManager]);
 

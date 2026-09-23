@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { isMobileDevice } from '../utils/device';
 
 export const ActiveTheoryCursor: React.FC = () => {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -6,8 +7,13 @@ export const ActiveTheoryCursor: React.FC = () => {
   const [cursorText, setCursorText] = useState<string>('');
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [isClicking, setIsClicking] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(true);
 
   useEffect(() => {
+    const mobile = isMobileDevice();
+    setIsMobile(mobile);
+    if (mobile) return; // Do not register desktop cursor events or run RAF on mobile
+
     let mouseX = -100;
     let mouseY = -100;
     let ringX = -100;
@@ -66,6 +72,8 @@ export const ActiveTheoryCursor: React.FC = () => {
       cancelAnimationFrame(animId);
     };
   }, []);
+
+  if (isMobile) return null;
 
   return (
     <>

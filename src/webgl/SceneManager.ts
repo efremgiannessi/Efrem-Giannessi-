@@ -9,6 +9,7 @@ import {
   projectPlaneFragmentShader,
 } from './shaders/projectPlane';
 import { audioSystem } from '../utils/audioSynthesizer';
+import { isMobileDevice } from '../utils/device';
 
 export interface ProjectPlaneData {
   id: string;
@@ -232,14 +233,27 @@ export class SceneManager {
   public lastEdge: 'top' | 'bottom' | 'middle' = 'top';
   public onThemeChange?: (theme: GraphicTheme, trigger: 'bottom' | 'top' | 'middle' | 'manual') => void;
 
-  // Interactive Project WebGL Meshes
+  // Dimensions, Scroll & Device State
+  public isMobile: boolean = false;
+  private width: number;
+  private height: number;
+  private lastWidth: number = 0;
+  private lastHeight: number = 0;
+  private scrollY: number = 0;
+  private scrollVelocity: number = 0;
+  private isDestroyed: boolean = false;
+
+  // Interactive Project WebGL Meshes (with cached layout bounds to prevent DOM reflow during scroll)
   private projectPlanes: Map<
     string,
     {
       mesh: THREE.Mesh;
       material: THREE.ShaderMaterial;
       element: HTMLElement;
-      bounds: DOMRect;
+      docTop: number;
+      left: number;
+      width: number;
+      height: number;
     }
   > = new Map();
 
@@ -255,17 +269,13 @@ export class SceneManager {
   ];
   private nextRippleIndex = 0;
 
-  // Dimensions & Scroll
-  private width: number;
-  private height: number;
-  private scrollY: number = 0;
-  private scrollVelocity: number = 0;
-  private isDestroyed: boolean = false;
-
   constructor(container: HTMLElement) {
     this.container = container;
+    this.isMobile = isMobileDevice();
     this.width = container.clientWidth || window.innerWidth;
     this.height = container.clientHeight || window.innerHeight;
+    this.lastWidth = this.width;
+    this.lastHeight = this.height;
     this.clock = new THREE.Clock();
 
     // 1. Three.js Scene & Camera setup
@@ -281,13 +291,15 @@ export class SceneManager {
     this.camera.position.z = 40;
 
     // 2. WebGL Renderer with High Precision & Anti-aliasing
+    // On mobile: clamp DPR to max 1.5 to eliminate GPU fillrate bottlenecks and micro-stutters
     this.renderer = new THREE.WebGLRenderer({
       powerPreference: 'high-performance',
       antialias: true,
       alpha: true,
     });
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const maxDpr = this.isMobile ? 1.5 : 2.0;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     this.renderer.setClearColor(0x050508, 1);
     this.container.appendChild(this.renderer.domElement);
 
@@ -299,7 +311,10 @@ export class SceneManager {
 
   // 1. Undulating Wireframe Plane with Multi-Graphic Pattern Morphing
   private initTerrain() {
-    const geometry = new THREE.PlaneGeometry(120, 80, 110, 75);
+    // Mobile geometry uses optimized vertex density (65x45 vs 110x75) for 60/120fps fluid rasterization
+    const segX = this.isMobile ? 65 : 110;
+    const segY = this.isMobile ? 45 : 75;
+    const geometry = new THREE.PlaneGeometry(120, 80, segX, segY);
 
     const ripplesUniform: THREE.Vector3[] = this.ripples.map(
       (r) => new THREE.Vector3(r.x, r.y, r.progress)
@@ -337,7 +352,7 @@ export class SceneManager {
 
   // 2. Floating Cybernetic Particles Field
   private initParticles() {
-    const particleCount = 1000;
+    const particleCount = this.isMobile ? 450 : 1000;
     const geometry = new THREE.BufferGeometry();
     this.particlePositions = new Float32Array(particleCount * 3);
     this.particleColors = new Float32Array(particleCount * 3);
@@ -529,16 +544,34 @@ export class SceneManager {
       const mesh = new THREE.Mesh(geometry, material);
       this.scene.add(mesh);
 
-      const bounds = data.element.getBoundingClientRect();
+      const rect = data.element.getBoundingClientRect();
+      const curScrollY = typeof window !== 'undefined' ? window.scrollY || 0 : 0;
 
       this.projectPlanes.set(data.id, {
         mesh,
         material,
         element: data.element,
-        bounds,
+        docTop: rect.top + curScrollY,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
       });
 
       this.updateProjectBounds();
+    });
+  }
+
+  // Measure DOM layout positions once on resize/orientation change (never inside per-frame scroll)
+  public measureProjectBounds() {
+    if (typeof window === 'undefined') return;
+    const curScrollY = window.scrollY || 0;
+
+    this.projectPlanes.forEach((item) => {
+      const rect = item.element.getBoundingClientRect();
+      item.docTop = rect.top + curScrollY;
+      item.left = rect.left;
+      item.width = rect.width;
+      item.height = rect.height;
     });
   }
 
@@ -561,24 +594,20 @@ export class SceneManager {
     });
   }
 
-  // Sync DOM Elements Bounding Box to 3D World Coordinates
+  // Sync DOM Elements Bounding Box to 3D World Coordinates (Zero DOM layout queries during scroll)
   public updateProjectBounds() {
     const fovInRadians = (this.camera.fov * Math.PI) / 180;
     const viewHeight = 2 * Math.tan(fovInRadians / 2) * this.camera.position.z;
     const viewWidth = viewHeight * this.camera.aspect;
 
     this.projectPlanes.forEach((item) => {
-      const rect = item.element.getBoundingClientRect();
-      item.bounds = rect;
-
-      const width3D = (rect.width / this.width) * viewWidth;
-      const height3D = (rect.height / this.height) * viewHeight;
+      const width3D = (item.width / this.width) * viewWidth;
+      const height3D = (item.height / this.height) * viewHeight;
       item.mesh.scale.set(width3D, height3D, 1);
 
-      const x3D =
-        ((rect.left + rect.width / 2) / this.width - 0.5) * viewWidth;
-      const y3D =
-        -((rect.top + rect.height / 2) / this.height - 0.5) * viewHeight;
+      const currentViewportTop = item.docTop - this.scrollY;
+      const x3D = ((item.left + item.width / 2) / this.width - 0.5) * viewWidth;
+      const y3D = -((currentViewportTop + item.height / 2) / this.height - 0.5) * viewHeight;
 
       item.mesh.position.set(x3D, y3D, 2);
     });
@@ -586,15 +615,18 @@ export class SceneManager {
 
   // Mouse & Touch Tracking
   private bindEvents() {
+    const updatePointerPos = (clientX: number, clientY: number) => {
+      this.targetMouse.x = clientX / this.width;
+      this.targetMouse.y = 1.0 - clientY / this.height;
+    };
+
     window.addEventListener('mousemove', (e) => {
-      this.targetMouse.x = e.clientX / this.width;
-      this.targetMouse.y = 1.0 - e.clientY / this.height;
+      updatePointerPos(e.clientX, e.clientY);
     });
 
-    // Concentric Click Ripples
-    window.addEventListener('click', (e) => {
-      const rx = e.clientX / this.width;
-      const ry = 1.0 - e.clientY / this.height;
+    const triggerRipple = (clientX: number, clientY: number) => {
+      const rx = clientX / this.width;
+      const ry = 1.0 - clientY / this.height;
 
       const ripple = this.ripples[this.nextRippleIndex];
       ripple.x = rx;
@@ -608,7 +640,24 @@ export class SceneManager {
       });
 
       this.nextRippleIndex = (this.nextRippleIndex + 1) % this.ripples.length;
+    };
+
+    // Concentric Click Ripples
+    window.addEventListener('click', (e) => {
+      triggerRipple(e.clientX, e.clientY);
     });
+
+    if (this.isMobile) {
+      window.addEventListener(
+        ('touchstart'),
+        (e) => {
+          if (e.touches && e.touches.length > 0) {
+            updatePointerPos(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        },
+        { passive: true }
+      );
+    }
 
     window.addEventListener('resize', () => {
       this.onResize();
@@ -616,20 +665,43 @@ export class SceneManager {
   }
 
   public onResize() {
-    this.width = this.container.clientWidth || window.innerWidth;
-    this.height = this.container.clientHeight || window.innerHeight;
+    const newWidth = this.container.clientWidth || window.innerWidth;
+    const newHeight = this.container.clientHeight || window.innerHeight;
+
+    if (this.isMobile) {
+      // ANTI-FLICKER: On mobile devices, the URL address bar expands and collapses during
+      // active scrolling, firing resize events with slight height changes (<130px) while
+      // the screen width is unchanged. Re-allocating the WebGL buffer via setSize causes
+      // a severe black flash / frame flicker. We prevent buffer recreation during toolbar shifts.
+      const widthDiff = Math.abs(newWidth - this.lastWidth);
+      const heightDiff = Math.abs(newHeight - this.lastHeight);
+
+      if (widthDiff < 5 && heightDiff < 140) {
+        // Just smoothly adjust camera aspect ratio without reallocating WebGL canvas
+        this.camera.aspect = newWidth / newHeight;
+        this.camera.updateProjectionMatrix();
+        return;
+      }
+    }
+
+    this.width = newWidth;
+    this.height = newHeight;
+    this.lastWidth = newWidth;
+    this.lastHeight = newHeight;
 
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const maxDpr = this.isMobile ? 1.5 : 2.0;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
 
     this.terrainMaterial.uniforms.uResolution.value.set(
       this.width,
       this.height
     );
 
+    this.measureProjectBounds();
     this.updateProjectBounds();
   }
 
@@ -638,9 +710,16 @@ export class SceneManager {
     this.scrollY = scrollY;
     this.scrollVelocity = velocity;
 
-    // Perspective bending based on velocity
+    // Perspective bending based on velocity:
+    // On mobile devices, clamp velocity and dampen tilt angle to prevent jarring shake/pitch
+    const clampedVelocity = this.isMobile
+      ? Math.max(-10, Math.min(10, velocity))
+      : velocity;
+
     this.camera.position.y = -scrollY * 0.025;
-    this.camera.rotation.x = velocity * 0.008;
+    this.camera.rotation.x = this.isMobile
+      ? clampedVelocity * 0.002
+      : velocity * 0.008;
 
     // Keep terrain mesh and particles attached to camera Y so effects cover the full page to the very bottom
     if (this.terrainMesh) {
@@ -657,12 +736,17 @@ export class SceneManager {
     if (maxScroll && maxScroll > 100) {
       const progress = scrollY / maxScroll;
 
-      // 1. Arrived at Bottom (within bottom 18% or within 260px of bottom)
-      if (progress >= 0.82 || scrollY >= maxScroll - 260) {
+      // On mobile devices, use stricter thresholds to prevent rapid theme churn during touch momentum flicks
+      const bottomThreshold = this.isMobile ? 0.94 : 0.82;
+      const topThreshold = this.isMobile ? 0.06 : 0.18;
+      const pxThreshold = this.isMobile ? 120 : 260;
+
+      // 1. Arrived at Bottom
+      if (progress >= bottomThreshold || scrollY >= maxScroll - pxThreshold) {
         this.triggerEdge('bottom');
       }
-      // 2. Returned to Top (within top 18% or within 260px of top)
-      else if (progress <= 0.18 || scrollY <= 260) {
+      // 2. Returned to Top
+      else if (progress <= topThreshold || scrollY <= pxThreshold) {
         this.triggerEdge('top');
       }
     }
