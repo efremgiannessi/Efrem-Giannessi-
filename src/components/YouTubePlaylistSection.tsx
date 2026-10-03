@@ -249,6 +249,7 @@ export const YouTubePlaylistSection: React.FC = () => {
               key={activeVideo.id}
               src={`https://www.youtube-nocookie.com/embed/${activeVideo.id}?autoplay=0&rel=0&modestbranding=1`}
               title={activeVideo.title}
+              loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
               className="w-full h-full border-0"

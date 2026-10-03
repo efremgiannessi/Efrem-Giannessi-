@@ -106,4 +106,13 @@
   animation: marquee 35s linear infinite;
 }
 
+@keyframes marqueeProgress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
 

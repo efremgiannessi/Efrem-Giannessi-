@@ -18,6 +18,8 @@ export const ActiveTheoryCursor: React.FC = () => {
     let mouseY = -100;
     let ringX = -100;
     let ringY = -100;
+    let lastHovering = false;
+    let lastText = '';
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
@@ -27,19 +29,20 @@ export const ActiveTheoryCursor: React.FC = () => {
         dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
 
-      // Check for interactive targets and context tags
+      // Check for interactive targets only updating state on real changes
       const target = e.target as HTMLElement | null;
       if (target) {
-        const interactive = target.closest('button, a, [role="button"], input, select, textarea, .cursor-pointer');
-        setIsHovering(!!interactive);
+        const interactive = !!target.closest('button, a, [role="button"], input, select, textarea, .cursor-pointer');
+        if (interactive !== lastHovering) {
+          lastHovering = interactive;
+          setIsHovering(interactive);
+        }
 
         const projectCard = target.closest('[data-cursor-text]');
-        if (projectCard) {
-          setCursorText(projectCard.getAttribute('data-cursor-text') || 'VIEW');
-        } else if (interactive) {
-          setCursorText('');
-        } else {
-          setCursorText('');
+        const text = projectCard ? (projectCard.getAttribute('data-cursor-text') || 'VIEW') : '';
+        if (text !== lastText) {
+          lastText = text;
+          setCursorText(text);
         }
       }
     };

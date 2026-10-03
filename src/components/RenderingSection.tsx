@@ -184,6 +184,8 @@ export const RenderingSection: React.FC = () => {
               src={activeImage}
               alt={current.title}
               referrerPolicy="no-referrer"
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 const target = e.currentTarget as HTMLImageElement;
                 const driveId = extractDriveId(

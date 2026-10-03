@@ -19,7 +19,7 @@ export const BudgetCostPrecastSection: React.FC<BudgetCostPrecastSectionProps> =
   };
 
   return (
-    <section id="budget-cost-precast" className="relative py-24 md:py-32 px-6 md:px-12 border-t border-white/10 bg-[#07080c] overflow-hidden">
+    <section id="budget-cost-precast" className="relative py-16 md:py-24 px-6 md:px-12 border-t border-white/10 bg-[#07080c] overflow-hidden">
       {/* Background Ambience Glows */}
       <div className="absolute top-1/4 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-10 right-0 w-[450px] h-[450px] bg-cyan-500/10 rounded-full blur-[150px] pointer-events-none" />

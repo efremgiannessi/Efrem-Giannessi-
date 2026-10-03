@@ -4,7 +4,7 @@ import { isMobileDevice } from '../utils/device';
 
 export const AmbientBlurredProjects: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const parallaxRef = useRef<HTMLDivElement>(null);
   const isMobileRef = useRef<boolean>(false);
   const currentIndexRef = useRef<number>(0);
 
@@ -59,19 +59,28 @@ export const AmbientBlurredProjects: React.FC = () => {
     };
   }, [images.length]);
 
-  // 3. Subtle parallax reaction to mouse movement (desktop only)
+  // 3. Subtle parallax reaction to mouse movement (zero React re-renders, RAF throttled)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (isMobileDevice()) return; // Skip on mobile to save CPU/GPU during touch gestures
+    if (isMobileDevice()) return;
 
+    let rafId: number | null = null;
     const handleMouseMove = (e: MouseEvent) => {
-      const nx = (e.clientX / window.innerWidth - 0.5) * 16;
-      const ny = (e.clientY / window.innerHeight - 0.5) * 16;
-      setMousePos({ x: nx, y: ny });
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        if (!parallaxRef.current) return;
+        const nx = (e.clientX / window.innerWidth - 0.5) * 6;
+        const ny = (e.clientY / window.innerHeight - 0.5) * 6;
+        parallaxRef.current.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -86,10 +95,10 @@ export const AmbientBlurredProjects: React.FC = () => {
     >
       {/* Container with soft optical blur and cinematic vignette */}
       <div
+        ref={parallaxRef}
         className="relative w-full h-full"
         style={{
-          transform: `translate3d(${mousePos.x * 0.4}px, ${mousePos.y * 0.4}px, 0)`,
-          transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+          transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
         }}
       >
         {images.map((imgUrl, idx) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GalleryMediaItem } from '../data/galleriaAutoShowcase';
 import { useLiveGalleries } from '../hooks/useLiveGalleries';
 import { Layers, Camera, Play, Sparkles, RefreshCw, Check } from 'lucide-react';
@@ -24,11 +24,25 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
   idPrefix,
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const total = items.length;
 
   // Safe index within bounds
   const safeIndex = total > 0 ? currentIndex % total : 0;
+
+  // Track visibility to pause rotation timer when offscreen
+  useEffect(() => {
+    if (!cardRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: '120px' }
+    );
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Colors based on accent
   const borderAccent = accentColor === 'cyan' ? 'border-cyan-500/30 hover:border-cyan-400/50' : 'border-amber-500/30 hover:border-amber-400/50';
@@ -37,25 +51,16 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
   const barBg = accentColor === 'cyan' ? 'bg-cyan-400' : 'bg-amber-400';
   const glowShadow = accentColor === 'cyan' ? 'shadow-[0_0_30px_rgba(6,182,212,0.12)]' : 'shadow-[0_0_30px_rgba(245,158,11,0.12)]';
 
-  // Automatic slide interval with smooth progress bar
+  // Automatic slide interval (only runs when visible in viewport, zero CPU drain when offscreen)
   useEffect(() => {
-    if (total === 0) return;
-
-    const stepMs = 50;
-    const increment = (stepMs / intervalMs) * 100;
+    if (total <= 1 || !isVisible || (typeof document !== 'undefined' && document.hidden)) return;
 
     const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setCurrentIndex((idx) => (idx + 1) % total);
-          return 0;
-        }
-        return prev + increment;
-      });
-    }, stepMs);
+      setCurrentIndex((idx) => (idx + 1) % total);
+    }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [total, intervalMs]);
+  }, [total, intervalMs, isVisible]);
 
   // Preload adjacent images
   useEffect(() => {
@@ -76,6 +81,7 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
 
   return (
     <div
+      ref={cardRef}
       id={`${idPrefix}-card`}
       className={`relative flex flex-col bg-stone-950/70 backdrop-blur-md border ${borderAccent} ${glowShadow} rounded-none transition-all duration-500 overflow-hidden select-none cursor-default shadow-[0_15px_40px_rgba(0,0,0,0.6)]`}
     >
@@ -170,11 +176,15 @@ const AutoGalleryCard: React.FC<AutoGalleryCardProps> = ({
         </div>
       </div>
 
-      {/* Dynamic Slide Progress Bar */}
+      {/* Dynamic Slide Progress Bar (Pure CSS animation, 0% CPU overhead) */}
       <div className="w-full h-1 bg-stone-900 overflow-hidden">
         <div
-          className={`h-full transition-all duration-75 ease-linear ${barBg}`}
-          style={{ width: `${progress}%` }}
+          key={safeIndex}
+          className={`h-full origin-left ${barBg}`}
+          style={{
+            animation: `marqueeProgress ${intervalMs}ms linear forwards`,
+            width: '100%',
+          }}
         />
       </div>
 

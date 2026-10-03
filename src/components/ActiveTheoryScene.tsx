@@ -37,7 +37,9 @@ export const ActiveTheoryScene: React.FC<ActiveTheorySceneProps> = ({
 
     const animate = () => {
       scroller.tick();
-      scene.render();
+      if (!document.hidden) {
+        scene.render();
+      }
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -45,6 +47,7 @@ export const ActiveTheoryScene: React.FC<ActiveTheorySceneProps> = ({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      scroller.destroy();
       scene.destroy();
     };
   }, []);

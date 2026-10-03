@@ -6,6 +6,7 @@ import { BackgroundEffectsHUD } from './components/BackgroundEffectsHUD';
 import { ActiveTheoryHero } from './components/ActiveTheoryHero';
 import { AmbientBlurredProjects } from './components/AmbientBlurredProjects';
 import { RenderingSection } from './components/RenderingSection';
+import { CadBimRenderWorkflowSection } from './components/CadBimRenderWorkflowSection';
 import { PyRevitPythonSection } from './components/PyRevitPythonSection';
 import { ProfessionalProfileSection } from './components/ProfessionalProfileSection';
 import { TechnicalSkillsSection } from './components/TechnicalSkillsSection';
@@ -274,6 +275,9 @@ export function App() {
         {/* 4. Realizzazione Rendering & Visualizzazione Architettonica */}
         <RenderingSection />
 
+        {/* 4.5 Pipeline Video Interattiva (temporaneamente nascosta come richiesto) */}
+        {/* <CadBimRenderWorkflowSection /> */}
+
         {/* 5. Sviluppo Applicazioni per pyRevit con Python */}
         <PyRevitPythonSection
           onOpenTerminalModal={() => setIsRevitModalOpen(true)}
@@ -284,11 +288,6 @@ export function App() {
 
         {/* 7. Galleria Rendering & Fotografia (Scorrimento Automatico - 2 Card) */}
         <AutoGalleryShowcaseSection />
-
-        {/* 7.5 Sezione Interattiva: Budget Cost Precast (Software Parametrico C.A. Mobile) */}
-        <BudgetCostPrecastSection
-          onOpenMobileApp={() => setIsPrecastModalOpen(true)}
-        />
 
         {/* 7.8 Sezione Video: Playlist YouTube Revit Precast Manager */}
         <YouTubePlaylistSection />
@@ -304,7 +303,12 @@ export function App() {
           }}
         />
 
-        {/* 9. Banner Accesso Suite BIM Epica (Posizionato Subito Dopo il Modulo Contatti) */}
+        {/* 8.5 Sezione Interattiva: Budget Cost Precast (Posizionato dopo i Contatti e prima del Footer) */}
+        <BudgetCostPrecastSection
+          onOpenMobileApp={() => setIsPrecastModalOpen(true)}
+        />
+
+        {/* 9. Banner Accesso Suite BIM Epica */}
         <section id="bim-suite-access" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pb-16">
           <BimQuantumSuiteBanner
             onOpenSuite={(tabId) => {

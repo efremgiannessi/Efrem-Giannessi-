@@ -290,15 +290,15 @@ export class SceneManager {
     );
     this.camera.position.z = 40;
 
-    // 2. WebGL Renderer with High Precision & Anti-aliasing
-    // On mobile: clamp DPR to max 1.5 to eliminate GPU fillrate bottlenecks and micro-stutters
+    // 2. WebGL Renderer with High Precision & Optimized Fillrate
     this.renderer = new THREE.WebGLRenderer({
       powerPreference: 'high-performance',
       antialias: true,
       alpha: true,
     });
     this.renderer.setSize(this.width, this.height);
-    const maxDpr = this.isMobile ? 1.5 : 2.0;
+    // Cap pixel ratio to max 1.25 on all devices to ensure butter-smooth 60/120fps with zero fillrate lag
+    const maxDpr = 1.25;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     this.renderer.setClearColor(0x050508, 1);
     this.container.appendChild(this.renderer.domElement);
@@ -311,9 +311,9 @@ export class SceneManager {
 
   // 1. Undulating Wireframe Plane with Multi-Graphic Pattern Morphing
   private initTerrain() {
-    // Mobile geometry uses optimized vertex density (65x45 vs 110x75) for 60/120fps fluid rasterization
-    const segX = this.isMobile ? 65 : 110;
-    const segY = this.isMobile ? 45 : 75;
+    // Lightweight geometry (65x45) for fluid 60/120fps rasterization without CPU/GPU bottlenecks
+    const segX = 65;
+    const segY = 45;
     const geometry = new THREE.PlaneGeometry(120, 80, segX, segY);
 
     const ripplesUniform: THREE.Vector3[] = this.ripples.map(
@@ -352,7 +352,7 @@ export class SceneManager {
 
   // 2. Floating Cybernetic Particles Field
   private initParticles() {
-    const particleCount = this.isMobile ? 450 : 1000;
+    const particleCount = this.isMobile ? 200 : 350;
     const geometry = new THREE.BufferGeometry();
     this.particlePositions = new Float32Array(particleCount * 3);
     this.particleColors = new Float32Array(particleCount * 3);
@@ -693,7 +693,7 @@ export class SceneManager {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(this.width, this.height);
-    const maxDpr = this.isMobile ? 1.5 : 2.0;
+    const maxDpr = 1.25;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
 
     this.terrainMaterial.uniforms.uResolution.value.set(
@@ -757,6 +757,7 @@ export class SceneManager {
   // Main WebGL Render Loop
   public render() {
     if (this.isDestroyed) return;
+    if (typeof document !== 'undefined' && document.hidden) return;
 
     const elapsedTime = this.clock.getElapsedTime();
 

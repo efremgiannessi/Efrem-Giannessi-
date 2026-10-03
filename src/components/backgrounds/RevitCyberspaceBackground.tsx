@@ -9,7 +9,8 @@ export const RevitCyberspaceBackground: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;
+    let animationFrameId = 0;
+    let isVisible = true;
     let width = canvas.offsetWidth || 1200;
     let height = canvas.offsetHeight || 800;
     canvas.width = width;
@@ -24,6 +25,17 @@ export const RevitCyberspaceBackground: React.FC = () => {
     };
 
     window.addEventListener('resize', handleResize);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animationFrameId) {
+          render();
+        }
+      });
+    }, { rootMargin: '100px' });
+
+    observer.observe(canvas);
 
     // 3D Wireframe Precast Models
     interface WireframeStructure {
@@ -141,6 +153,11 @@ export const RevitCyberspaceBackground: React.FC = () => {
     };
 
     const render = () => {
+      if (!isVisible) {
+        animationFrameId = 0;
+        return;
+      }
+
       if (canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
         if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
           width = canvas.width = canvas.offsetWidth;
@@ -380,14 +397,19 @@ export const RevitCyberspaceBackground: React.FC = () => {
         ctx.restore();
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (isVisible && !document.hidden) {
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        animationFrameId = 0;
+      }
     };
 
     render();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 

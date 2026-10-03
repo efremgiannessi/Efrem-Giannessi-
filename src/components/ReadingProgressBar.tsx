@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { SmoothScroll } from '../webgl/SmoothScroll';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { audioSystem } from '../utils/audioSynthesizer';
+import { SmoothScroll } from '../webgl/SmoothScroll';
 
-export interface SectionMeta {
+interface SectionMeta {
   id: string;
   name: string;
   shortName: string;
@@ -10,19 +10,16 @@ export interface SectionMeta {
 }
 
 export const SECTIONS_CONFIG: SectionMeta[] = [
-  { id: 'hero', name: 'Inizio // Visione & BIM', shortName: 'INIZIO', category: 'INTRO' },
-  { id: 'profilo', name: 'Profilo Professionale', shortName: 'PROFILO', category: 'ESPERIENZA' },
-  { id: 'competenze', name: 'Competenze Tecniche', shortName: 'COMPETENZE', category: 'SKILLS' },
-  { id: 'computi-costi', name: 'Computi Metrici Industriali & Costi', shortName: 'COMPUTI & COSTI', category: 'BIM 5D' },
-  { id: 'certificazioni', name: 'Formazione e Certificazioni', shortName: 'CERTIFICAZIONI', category: 'COMPLIANCE' },
-  { id: 'rendering', name: 'Realizzazione Rendering', shortName: 'RENDERING', category: 'ARCHVIZ' },
-  { id: 'pyrevit-python', name: 'Sviluppo pyRevit & Python', shortName: 'pyREVIT', category: 'DEV & SDK' },
+  { id: 'hero', name: 'Inizio / Identità', shortName: 'TOP', category: 'INTRO' },
+  { id: 'profilo', name: 'Profilo & Filosofia', shortName: 'PROFILO', category: 'BIO' },
+  { id: 'competenze', name: 'Competenze & Metodo', shortName: 'SKILLS', category: 'METODO' },
+  { id: 'opere-selezionate', name: 'Opere & Modelli 3D', shortName: 'OPERE', category: 'PROGETTI' },
   { id: 'virtual-staging', name: 'Virtual Staging (Prima & Dopo)', shortName: 'STAGING', category: 'INTERIORS' },
   { id: 'galleria-showcase', name: 'Galleria Rendering & Fotografia', shortName: 'ARCHIVIO', category: 'ARCHIVIO' },
-  { id: 'budget-cost-precast', name: 'Budget Cost Precast', shortName: 'PRECAST APP', category: 'SOFTWARE' },
   { id: 'youtube-playlist', name: 'Video Revit Precast Manager', shortName: 'VIDEO YT', category: 'TUTORIAL' },
   { id: 'progetti-revit', name: 'Progetti Revit // Modelli 3D', shortName: 'PROGETTI REVIT', category: 'MODELLI' },
   { id: 'contact', name: 'Contatto Diretto', shortName: 'CONTATTO', category: 'COMMISSIONI' },
+  { id: 'budget-cost-precast', name: 'Budget Cost Precast', shortName: 'PRECAST APP', category: 'SOFTWARE' },
   { id: 'bim-suite-access', name: 'BIM Quantum Lab // Suite Epica', shortName: 'BIM LAB', category: 'SUITE' },
 ];
 
@@ -39,9 +36,15 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
   const [activeSectionId, setActiveSectionId] = useState<string>('hero');
   const [sectionOffsets, setSectionOffsets] = useState<{ id: string; pct: number }[]>([]);
   const [hoveredTick, setHoveredTick] = useState<SectionMeta | null>(null);
+
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const cachedMaxScrollRef = useRef<number>(1);
+  const cachedDocHeightRef = useRef<number>(1);
+  const sectionTopsRef = useRef<{ id: string; top: number }[]>([]);
+  const activeSectionIdRef = useRef<string>('hero');
   const rafId = useRef<number | null>(null);
 
-  // Measure section positions relative to maximum scroll distance
+  // Measure and cache positions only on resize or initial load (Zero layout thrashing during scroll)
   const updateOffsets = useCallback(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
@@ -53,70 +56,71 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
       contentHeight
     );
     const maxScroll = Math.max(1, docHeight - window.innerHeight);
+    cachedMaxScrollRef.current = maxScroll;
+    cachedDocHeightRef.current = docHeight;
 
+    const tops: { id: string; top: number }[] = [];
     const offsets = SECTIONS_CONFIG.map((sec) => {
       const el = document.getElementById(sec.id);
-      if (!el) return { id: sec.id, pct: 0 };
+      if (!el) {
+        tops.push({ id: sec.id, top: 0 });
+        return { id: sec.id, pct: 0 };
+      }
       const top = el.offsetTop;
+      tops.push({ id: sec.id, top });
       const pct = Math.min(100, Math.max(0, (top / maxScroll) * 100));
       return { id: sec.id, pct };
     });
 
+    sectionTopsRef.current = tops;
     setSectionOffsets(offsets);
   }, []);
 
-  // Compute active section and current scroll progress
+  // Compute active section and current scroll progress using cached measurements
   const updateProgressAndSection = useCallback(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (typeof window === 'undefined') return;
 
     const scrollY = window.scrollY || window.pageYOffset || 0;
-    const content = document.getElementById('smooth-content');
-    const contentHeight = content ? content.offsetHeight : 0;
-    const docHeight = Math.max(
-      document.documentElement.scrollHeight,
-      document.body.scrollHeight,
-      contentHeight
-    );
-    const maxScroll = Math.max(1, docHeight - window.innerHeight);
+    const maxScroll = cachedMaxScrollRef.current;
+    const docHeight = cachedDocHeightRef.current;
 
     // Calculate percentage
     const currentPct = Math.min(100, Math.max(0, (scrollY / maxScroll) * 100));
-    setProgress(currentPct);
 
-    // Determine current section in view
-    // At near-bottom, default to the last section
-    if (scrollY + window.innerHeight >= docHeight - 80) {
-      setActiveSectionId('contact');
-      return;
+    // Update progress bar width directly for zero-latency 120fps smoothness
+    if (progressBarRef.current) {
+      progressBarRef.current.style.width = `${currentPct}%`;
     }
 
-    // Otherwise find section closest to viewport focus line (top 35%)
-    const focusLine = scrollY + window.innerHeight * 0.35;
+    // Determine current section in view
     let currentId = 'hero';
-
-    for (let i = 0; i < SECTIONS_CONFIG.length; i++) {
-      const sec = SECTIONS_CONFIG[i];
-      const el = document.getElementById(sec.id);
-      if (el) {
-        if (focusLine >= el.offsetTop) {
-          currentId = sec.id;
+    if (scrollY + window.innerHeight >= docHeight - 80) {
+      currentId = 'contact';
+    } else {
+      const focusLine = scrollY + window.innerHeight * 0.35;
+      const tops = sectionTopsRef.current;
+      for (let i = 0; i < tops.length; i++) {
+        if (focusLine >= tops[i].top) {
+          currentId = tops[i].id;
         }
       }
     }
 
-    setActiveSectionId(currentId);
+    if (currentId !== activeSectionIdRef.current) {
+      activeSectionIdRef.current = currentId;
+      setActiveSectionId(currentId);
+    }
   }, []);
 
-  // Listen to both native events and smooth scroll updates
+  // Listen to native scroll with lightweight RAF throttling
   useEffect(() => {
     updateOffsets();
     updateProgressAndSection();
 
     const handleScroll = () => {
-      if (rafId.current !== null) {
-        cancelAnimationFrame(rafId.current);
-      }
+      if (rafId.current !== null) return;
       rafId.current = requestAnimationFrame(() => {
+        rafId.current = null;
         updateProgressAndSection();
       });
     };
@@ -125,7 +129,7 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
     window.addEventListener('resize', () => {
       updateOffsets();
       updateProgressAndSection();
-    });
+    }, { passive: true });
 
     if (scroller) {
       scroller.onUpdate(() => {
@@ -133,7 +137,6 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
       });
     }
 
-    // Re-check after 800ms when images/fonts finish loading
     const timer = setTimeout(() => {
       updateOffsets();
       updateProgressAndSection();
@@ -146,14 +149,14 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
     };
   }, [scroller, updateOffsets, updateProgressAndSection]);
 
-  const handleTickClick = (secId: string, index: number) => {
-    audioSystem.playClick(580 + index * 45);
+  const handleTickClick = (sectionId: string, idx: number) => {
+    audioSystem.playClick(600 + idx * 40);
     if (onScrollToSection) {
-      onScrollToSection(secId);
+      onScrollToSection(sectionId);
     } else {
-      const el = document.getElementById(secId);
+      const el = document.getElementById(sectionId);
       if (el) {
-        window.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+        el.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
@@ -175,8 +178,9 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
       >
         {/* Dynamic Gradient Fill */}
         <div
+          ref={progressBarRef}
           id="reading-progress-bar"
-          className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-purple-400 relative transition-[width] duration-75 ease-out shadow-[0_0_12px_rgba(0,240,255,0.85)]"
+          className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-purple-400 relative shadow-[0_0_12px_rgba(0,240,255,0.85)]"
           style={{ width: `${progress}%` }}
         >
           {/* Glowing Leading Head / Particle */}
@@ -218,16 +222,29 @@ export const ReadingProgressBar: React.FC<ReadingProgressBarProps> = ({
 
         {/* Floating Tooltip When Hovering Over a Section Tick */}
         {hoveredTick && (
-          <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-3 py-1 bg-stone-950/95 border border-cyan-400/60 shadow-[0_4px_20px_rgba(0,0,0,0.8)] backdrop-blur-md flex items-center gap-2 font-mono text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-              <span className="text-white/50 uppercase text-[10px]">{hoveredTick.category} //</span>
-              <span className="text-cyan-300 font-bold tracking-wide uppercase">
-                {hoveredTick.name}
-              </span>
-            </div>
+          <div
+            className="absolute top-4 -translate-x-1/2 px-2.5 py-1 bg-stone-950/95 border border-cyan-400/80 shadow-[0_4px_20px_rgba(0,0,0,0.8)] backdrop-blur-md pointer-events-none font-mono text-[10px] text-white whitespace-nowrap animate-in fade-in zoom-in-95 duration-150 flex items-center gap-2"
+            style={{
+              left: `${
+                sectionOffsets.find((s) => s.id === hoveredTick.id)?.pct || 50
+              }%`,
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span className="font-bold text-cyan-300">
+              [{hoveredTick.shortName}]
+            </span>
+            <span>{hoveredTick.name}</span>
           </div>
         )}
+      </div>
+
+      {/* 2. Compact Minimal HUD Badge Top Right */}
+      <div className="fixed top-3 right-4 z-40 hidden lg:flex items-center gap-2 px-2.5 py-1 bg-stone-950/70 backdrop-blur-md border border-white/10 font-mono text-[10px] text-white/70 pointer-events-none">
+        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+        <span className="text-white/40 uppercase">{activeSection.category}</span>
+        <span>•</span>
+        <span className="text-cyan-300 font-bold">{activeSection.shortName}</span>
       </div>
     </>
   );
