@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDownRight, Layers, Terminal, Sparkles, Camera, Code2 } from 'lucide-react';
+import { ArrowDownRight, Layers, Terminal, Sparkles, Camera, Code2, Smartphone } from 'lucide-react';
 import { audioSystem } from '../utils/audioSynthesizer';
 
 interface ActiveTheoryHeroProps {
@@ -9,6 +9,7 @@ interface ActiveTheoryHeroProps {
   onScrollToRendering?: () => void;
   onScrollToPyRevit?: () => void;
   onScrollToVirtualStaging?: () => void;
+  onScrollToPrecastApp?: () => void;
 }
 
 export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
@@ -18,6 +19,7 @@ export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
   onScrollToRendering,
   onScrollToPyRevit,
   onScrollToVirtualStaging,
+  onScrollToPrecastApp,
 }) => {
   return (
     <section
@@ -121,6 +123,17 @@ export const ActiveTheoryHero: React.FC<ActiveTheoryHeroProps> = ({
           >
             <Code2 className="w-4 h-4 text-purple-400" />
             <span>pyREVIT & PYTHON</span>
+          </button>
+
+          <button
+            onClick={() => {
+              audioSystem.playClick(780);
+              if (onScrollToPrecastApp) onScrollToPrecastApp();
+            }}
+            className="flex items-center gap-2 px-5 py-3.5 border border-blue-400/60 bg-blue-950/40 hover:bg-blue-900/60 text-blue-200 transition-all font-mono shadow-[0_0_15px_rgba(59,130,246,0.25)]"
+          >
+            <Smartphone className="w-4 h-4 text-cyan-400 animate-pulse" />
+            <span>BUDGET COST PRECAST</span>
           </button>
 
           <button

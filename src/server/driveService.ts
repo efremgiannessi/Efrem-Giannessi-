@@ -2,6 +2,44 @@ import { RENDERING_GALLERY, PHOTO_GALLERY, GalleryMediaItem } from '../data/gall
 
 export const RENDERING_FOLDER_ID = '1lLdKnTmr8lNcqfPqCl-OAfRzU6f5ymDq';
 export const PHOTO_FOLDER_ID = '1wKmxFuxG9dmSVQtNZnF4PPs3xOwH0y1C';
+export const REVIT_PROJECTS_FOLDER_ID = '1f1NdrmRafMzJSLSwNE4M_3TeBIIiesGo';
+
+export interface RevitProjectMediaItem {
+  id: string;
+  driveId: string;
+  src: string;
+  thumbSrc: string;
+}
+
+export const INITIAL_REVIT_PROJECTS: RevitProjectMediaItem[] = [
+  {
+    id: 'revit-1',
+    driveId: '1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD',
+    src: 'https://lh3.googleusercontent.com/d/1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD=w400',
+  },
+  {
+    id: 'revit-2',
+    driveId: '12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME',
+    src: 'https://lh3.googleusercontent.com/d/12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME=w400',
+  },
+  {
+    id: 'revit-3',
+    driveId: '1S30ihpx3inf2sURtZElga2K01ztoBTg7',
+    src: 'https://lh3.googleusercontent.com/d/1S30ihpx3inf2sURtZElga2K01ztoBTg7=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1S30ihpx3inf2sURtZElga2K01ztoBTg7=w400',
+  },
+  {
+    id: 'revit-4',
+    driveId: '1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv',
+    src: 'https://lh3.googleusercontent.com/d/1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv=w400',
+  },
+];
+
+let cachedRevitData: RevitProjectMediaItem[] = INITIAL_REVIT_PROJECTS;
+let lastRevitFetchTime = 0;
 
 export interface DriveGalleriesResponse {
   rendering: GalleryMediaItem[];
@@ -163,3 +201,53 @@ export async function getLiveGalleries(forceRefresh = false): Promise<DriveGalle
 
   return cachedData;
 }
+
+export async function getLiveRevitProjects(forceRefresh = false): Promise<{
+  success: boolean;
+  projects: RevitProjectMediaItem[];
+  count: number;
+  lastSynced: string;
+  isLive: boolean;
+}> {
+  const now = Date.now();
+  if (!forceRefresh && now - lastRevitFetchTime < CACHE_TTL_MS && cachedRevitData.length > 0) {
+    return {
+      success: true,
+      projects: cachedRevitData,
+      count: cachedRevitData.length,
+      lastSynced: new Date(lastRevitFetchTime).toISOString(),
+      isLive: true,
+    };
+  }
+
+  try {
+    const rawFiles = await fetchSingleFolder(REVIT_PROJECTS_FOLDER_ID, 'revit');
+    if (rawFiles.length > 0) {
+      cachedRevitData = rawFiles.map((f, i) => ({
+        id: `revit-${i + 1}`,
+        driveId: f.driveId,
+        src: `https://lh3.googleusercontent.com/d/${f.driveId}=w1600`,
+        thumbSrc: `https://lh3.googleusercontent.com/d/${f.driveId}=w400`,
+      }));
+      lastRevitFetchTime = now;
+      return {
+        success: true,
+        projects: cachedRevitData,
+        count: cachedRevitData.length,
+        lastSynced: new Date(now).toISOString(),
+        isLive: true,
+      };
+    }
+  } catch (e) {
+    console.error('[DriveService] Error fetching Revit projects:', e);
+  }
+
+  return {
+    success: true,
+    projects: cachedRevitData,
+    count: cachedRevitData.length,
+    lastSynced: new Date(lastRevitFetchTime || now).toISOString(),
+    isLive: false,
+  };
+}
+

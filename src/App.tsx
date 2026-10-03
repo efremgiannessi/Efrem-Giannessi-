@@ -11,6 +11,12 @@ import { ProfessionalProfileSection } from './components/ProfessionalProfileSect
 import { TechnicalSkillsSection } from './components/TechnicalSkillsSection';
 import { IndustrialQuantityCostingSection } from './components/IndustrialQuantityCostingSection';
 import { CertificationsSection } from './components/CertificationsSection';
+import { BudgetCostPrecastSection } from './components/BudgetCostPrecastSection';
+import { BudgetCostPrecastModal } from './components/BudgetCostPrecastModal';
+import { YouTubePlaylistSection } from './components/YouTubePlaylistSection';
+import { RevitProjectsShowcaseSection } from './components/RevitProjectsShowcaseSection';
+import { BimQuantumSuiteSection, SuiteTab } from './components/BimQuantumSuiteSection';
+import { BimQuantumSuiteBanner } from './components/BimQuantumSuiteBanner';
 import { VirtualStagingGallerySection } from './components/VirtualStagingGallerySection';
 import { ActiveTheoryContact } from './components/ActiveTheoryContact';
 import { AutoGalleryShowcaseSection } from './components/AutoGalleryShowcaseSection';
@@ -37,10 +43,15 @@ export function App() {
     trigger: 'bottom' | 'top' | 'middle' | 'manual';
   } | null>(null);
 
-  // pyRevit & Audit Modals
+  // pyRevit, Audit & Budget Cost Precast Modals
   const [isRevitModalOpen, setIsRevitModalOpen] = useState<boolean>(false);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
+  const [isPrecastModalOpen, setIsPrecastModalOpen] = useState<boolean>(false);
   const [auditProjectTitle, setAuditProjectTitle] = useState<string>('');
+
+  // Dedicated Fullscreen BIM Quantum Suite Page State
+  const [isSuitePageOpen, setIsSuitePageOpen] = useState<boolean>(false);
+  const [suiteInitialTab, setSuiteInitialTab] = useState<SuiteTab>('xray');
 
   const handleSceneReady = (scene: SceneManager, scroller: SmoothScroll) => {
     setSceneManager(scene);
@@ -240,6 +251,7 @@ export function App() {
           onScrollToRendering={() => handleScrollTo('rendering')}
           onScrollToPyRevit={() => handleScrollTo('pyrevit-python')}
           onScrollToVirtualStaging={() => handleScrollTo('virtual-staging')}
+          onScrollToPrecastApp={() => handleScrollTo('budget-cost-precast')}
         />
 
         {/* 1. Profilo Professionale (6 Separate Modules) */}
@@ -273,6 +285,17 @@ export function App() {
         {/* 7. Galleria Rendering & Fotografia (Scorrimento Automatico - 2 Card) */}
         <AutoGalleryShowcaseSection />
 
+        {/* 7.5 Sezione Interattiva: Budget Cost Precast (Software Parametrico C.A. Mobile) */}
+        <BudgetCostPrecastSection
+          onOpenMobileApp={() => setIsPrecastModalOpen(true)}
+        />
+
+        {/* 7.8 Sezione Video: Playlist YouTube Revit Precast Manager */}
+        <YouTubePlaylistSection />
+
+        {/* 7.9 Nuova Sezione: Progetti Revit (Galleria Transizioni 3D con Google Drive Auto-Sync) */}
+        <RevitProjectsShowcaseSection />
+
         {/* 8. Personal Contacts & Direct Contact Form */}
         <ActiveTheoryContact
           onOpenAuditModal={() => {
@@ -280,6 +303,16 @@ export function App() {
             setIsAuditModalOpen(true);
           }}
         />
+
+        {/* 9. Banner Accesso Suite BIM Epica (Posizionato Subito Dopo il Modulo Contatti) */}
+        <section id="bim-suite-access" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pb-16">
+          <BimQuantumSuiteBanner
+            onOpenSuite={(tabId) => {
+              if (tabId) setSuiteInitialTab(tabId);
+              setIsSuitePageOpen(true);
+            }}
+          />
+        </section>
 
         {/* Bottom Edge Sentinel for IntersectionObserver (positioned absolutely without adding layout height) */}
         <div id="edge-sentinel-bottom" className="absolute bottom-0 left-0 w-full h-24 pointer-events-none opacity-0" />
@@ -296,6 +329,19 @@ export function App() {
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
         defaultProjectTitle={auditProjectTitle}
+      />
+
+      {/* 7. Budget Cost Precast Android Smartphone Modal */}
+      <BudgetCostPrecastModal
+        isOpen={isPrecastModalOpen}
+        onClose={() => setIsPrecastModalOpen(false)}
+      />
+
+      {/* 8. Dedicated Full-Page BIM Quantum Suite (Nuova Pagina Autonoma con tutti i 5 Moduli) */}
+      <BimQuantumSuiteSection
+        isOpen={isSuitePageOpen}
+        onClose={() => setIsSuitePageOpen(false)}
+        initialTab={suiteInitialTab}
       />
     </div>
   );

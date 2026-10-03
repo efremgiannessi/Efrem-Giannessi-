@@ -2,7 +2,8 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
-import { getLiveGalleries } from './src/server/driveService';
+import { getLiveGalleries, getLiveRevitProjects } from './src/server/driveService';
+import { fetchLiveYouTubePlaylist } from './src/server/youtubePlaylistService';
 
 interface ContactMessage {
   id: string;
@@ -128,6 +129,32 @@ async function startServer() {
     } catch (err: any) {
       console.error('[API] /api/drive-galleries error:', err);
       res.status(500).json({ error: 'Failed to fetch galleries', message: err?.message });
+    }
+  });
+
+  // Real-time YouTube Playlist sync endpoint
+  app.get('/api/youtube-playlist', async (req, res) => {
+    try {
+      const force = req.query.force === 'true';
+      const data = await fetchLiveYouTubePlaylist(force);
+      res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes browser cache
+      res.json(data);
+    } catch (err: any) {
+      console.error('[API] /api/youtube-playlist error:', err);
+      res.status(500).json({ success: false, error: 'Failed to fetch playlist', message: err?.message });
+    }
+  });
+
+  // Real-time Revit Projects Google Drive sync endpoint
+  app.get('/api/revit-projects', async (req, res) => {
+    try {
+      const force = req.query.force === 'true';
+      const data = await getLiveRevitProjects(force);
+      res.setHeader('Cache-Control', 'public, max-age=45');
+      res.json(data);
+    } catch (err: any) {
+      console.error('[API] /api/revit-projects error:', err);
+      res.status(500).json({ success: false, error: 'Failed to fetch Revit projects', message: err?.message });
     }
   });
 

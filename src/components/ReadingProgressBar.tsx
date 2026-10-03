@@ -19,7 +19,11 @@ export const SECTIONS_CONFIG: SectionMeta[] = [
   { id: 'pyrevit-python', name: 'Sviluppo pyRevit & Python', shortName: 'pyREVIT', category: 'DEV & SDK' },
   { id: 'virtual-staging', name: 'Virtual Staging (Prima & Dopo)', shortName: 'STAGING', category: 'INTERIORS' },
   { id: 'galleria-showcase', name: 'Galleria Rendering & Fotografia', shortName: 'ARCHIVIO', category: 'ARCHIVIO' },
+  { id: 'budget-cost-precast', name: 'Budget Cost Precast', shortName: 'PRECAST APP', category: 'SOFTWARE' },
+  { id: 'youtube-playlist', name: 'Video Revit Precast Manager', shortName: 'VIDEO YT', category: 'TUTORIAL' },
+  { id: 'progetti-revit', name: 'Progetti Revit // Modelli 3D', shortName: 'PROGETTI REVIT', category: 'MODELLI' },
   { id: 'contact', name: 'Contatto Diretto', shortName: 'CONTATTO', category: 'COMMISSIONI' },
+  { id: 'bim-suite-access', name: 'BIM Quantum Lab // Suite Epica', shortName: 'BIM LAB', category: 'SUITE' },
 ];
 
 interface ReadingProgressBarProps {

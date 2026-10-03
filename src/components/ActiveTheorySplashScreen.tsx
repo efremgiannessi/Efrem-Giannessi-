@@ -543,22 +543,28 @@ export const ActiveTheorySplashScreen: React.FC<ActiveTheorySplashScreenProps> =
       ctx.restore();
 
       // 4. Moving Kinetic Laser Scanline
-      const scanY = (time * 180) % dimensions.h;
-      ctx.save();
-      const laserGrad = ctx.createLinearGradient(0, scanY - 30, 0, scanY + 10);
-      laserGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-      laserGrad.addColorStop(0.7, 'rgba(0, 240, 255, 0.18)');
-      laserGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
-      ctx.fillStyle = laserGrad;
-      ctx.fillRect(0, scanY - 30, dimensions.w, 40);
+      if (dimensions.h > 0 && dimensions.w > 0 && Number.isFinite(dimensions.h) && Number.isFinite(dimensions.w)) {
+        const scanY = (time * 180) % dimensions.h;
+        const gradTop = Math.max(0, scanY - 30);
+        const gradBottom = Math.max(gradTop + 1, scanY + 10);
+        if (Number.isFinite(gradTop) && Number.isFinite(gradBottom)) {
+          ctx.save();
+          const laserGrad = ctx.createLinearGradient(0, gradTop, 0, gradBottom);
+          laserGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+          laserGrad.addColorStop(0.7, 'rgba(0, 240, 255, 0.18)');
+          laserGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+          ctx.fillStyle = laserGrad;
+          ctx.fillRect(0, gradTop, dimensions.w, Math.max(1, gradBottom - gradTop));
 
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, scanY);
-      ctx.lineTo(dimensions.w, scanY);
-      ctx.stroke();
-      ctx.restore();
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, scanY);
+          ctx.lineTo(dimensions.w, scanY);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
 
       // 5. Interactive Shockwaves
       for (let sIdx = shockwavesRef.current.length - 1; sIdx >= 0; sIdx--) {
