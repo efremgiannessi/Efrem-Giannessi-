@@ -22,24 +22,132 @@ export const REVIT_DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1f
 export const INITIAL_REVIT_PROJECTS: RevitProjectMediaItem[] = [
   {
     id: 'revit-1',
+    driveId: '1S4lXWOzcG5OyylcqSwYckl8-4ghpxaMl',
+    src: 'https://lh3.googleusercontent.com/d/1S4lXWOzcG5OyylcqSwYckl8-4ghpxaMl=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1S4lXWOzcG5OyylcqSwYckl8-4ghpxaMl=w400',
+  },
+  {
+    id: 'revit-2',
+    driveId: '1z-nSr0iPxesS8UMedbBYzbwyk9fALkOR',
+    src: 'https://lh3.googleusercontent.com/d/1z-nSr0iPxesS8UMedbBYzbwyk9fALkOR=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1z-nSr0iPxesS8UMedbBYzbwyk9fALkOR=w400',
+  },
+  {
+    id: 'revit-3',
     driveId: '1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD',
     src: 'https://lh3.googleusercontent.com/d/1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD=w1600',
     thumbSrc: 'https://lh3.googleusercontent.com/d/1HKuJpoNDlOUw-orJwLNy0JpnJxvUXbaD=w400',
   },
   {
-    id: 'revit-2',
+    id: 'revit-4',
+    driveId: '1g9TizBqW1ymeFIJWLYmkDVyu2SrFYvW4',
+    src: 'https://lh3.googleusercontent.com/d/1g9TizBqW1ymeFIJWLYmkDVyu2SrFYvW4=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1g9TizBqW1ymeFIJWLYmkDVyu2SrFYvW4=w400',
+  },
+  {
+    id: 'revit-5',
+    driveId: '17t8BLl0WWCdvACqpPQV4imOVc1HUEoSA',
+    src: 'https://lh3.googleusercontent.com/d/17t8BLl0WWCdvACqpPQV4imOVc1HUEoSA=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/17t8BLl0WWCdvACqpPQV4imOVc1HUEoSA=w400',
+  },
+  {
+    id: 'revit-6',
+    driveId: '1Oc_erFbjialLaue8K9fS4P0x8p29mkxv',
+    src: 'https://lh3.googleusercontent.com/d/1Oc_erFbjialLaue8K9fS4P0x8p29mkxv=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1Oc_erFbjialLaue8K9fS4P0x8p29mkxv=w400',
+  },
+  {
+    id: 'revit-7',
     driveId: '12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME',
     src: 'https://lh3.googleusercontent.com/d/12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME=w1600',
     thumbSrc: 'https://lh3.googleusercontent.com/d/12Dcr7b2KQpGJIkJElTUawVBlGxbA0zME=w400',
   },
   {
-    id: 'revit-3',
+    id: 'revit-8',
     driveId: '1S30ihpx3inf2sURtZElga2K01ztoBTg7',
     src: 'https://lh3.googleusercontent.com/d/1S30ihpx3inf2sURtZElga2K01ztoBTg7=w1600',
     thumbSrc: 'https://lh3.googleusercontent.com/d/1S30ihpx3inf2sURtZElga2K01ztoBTg7=w400',
   },
   {
-    id: 'revit-4',
+    id: 'revit-9',
+    driveId: '1Al10D1hZCVTKNmWmgqUw5iMA0P7QCpHX',
+    src: 'https://lh3.googleusercontent.com/d/1Al10D1hZCVTKNmWmgqUw5iMA0P7QCpHX=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1Al10D1hZCVTKNmWmgqUw5iMA0P7QCpHX=w400',
+  },
+  {
+    id: 'revit-10',
+    driveId: '1wQiCQdoy5nKayEfLmRcXLFbWneX7y4kC',
+    src: 'https://lh3.googleusercontent.com/d/1wQiCQdoy5nKayEfLmRcXLFbWneX7y4kC=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1wQiCQdoy5nKayEfLmRcXLFbWneX7y4kC=w400',
+  },
+  {
+    id: 'revit-11',
+    driveId: '1sqjoldyfdw4x5WqeR22vkinJqhI4hUq5',
+    src: 'https://lh3.googleusercontent.com/d/1sqjoldyfdw4x5WqeR22vkinJqhI4hUq5=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1sqjoldyfdw4x5WqeR22vkinJqhI4hUq5=w400',
+  },
+  {
+    id: 'revit-12',
+    driveId: '19fm16Z6ybtnEY1-lsi9Qy2dOLvd6krAP',
+    src: 'https://lh3.googleusercontent.com/d/19fm16Z6ybtnEY1-lsi9Qy2dOLvd6krAP=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/19fm16Z6ybtnEY1-lsi9Qy2dOLvd6krAP=w400',
+  },
+  {
+    id: 'revit-13',
+    driveId: '1HLVw-9QXfK94rb1TK1znb10WLCWN2Y5n',
+    src: 'https://lh3.googleusercontent.com/d/1HLVw-9QXfK94rb1TK1znb10WLCWN2Y5n=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1HLVw-9QXfK94rb1TK1znb10WLCWN2Y5n=w400',
+  },
+  {
+    id: 'revit-14',
+    driveId: '1JsOYp2eheazMXOKiI9n9RprbxSW6e9Rt',
+    src: 'https://lh3.googleusercontent.com/d/1JsOYp2eheazMXOKiI9n9RprbxSW6e9Rt=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1JsOYp2eheazMXOKiI9n9RprbxSW6e9Rt=w400',
+  },
+  {
+    id: 'revit-15',
+    driveId: '1wK6h-3pHV7xDoiEATh5E5SsJB5LiDa1m',
+    src: 'https://lh3.googleusercontent.com/d/1wK6h-3pHV7xDoiEATh5E5SsJB5LiDa1m=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1wK6h-3pHV7xDoiEATh5E5SsJB5LiDa1m=w400',
+  },
+  {
+    id: 'revit-16',
+    driveId: '1l-lvsEBedocQlUIBtLr3FNZDGS4KcGwk',
+    src: 'https://lh3.googleusercontent.com/d/1l-lvsEBedocQlUIBtLr3FNZDGS4KcGwk=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1l-lvsEBedocQlUIBtLr3FNZDGS4KcGwk=w400',
+  },
+  {
+    id: 'revit-17',
+    driveId: '1MVvQUctn9fOL4qOHyq3zs-wnVS3Ls7VK',
+    src: 'https://lh3.googleusercontent.com/d/1MVvQUctn9fOL4qOHyq3zs-wnVS3Ls7VK=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1MVvQUctn9fOL4qOHyq3zs-wnVS3Ls7VK=w400',
+  },
+  {
+    id: 'revit-18',
+    driveId: '1p7QtRXwprikM_SiNC90oZEgrF3VLvcFZ',
+    src: 'https://lh3.googleusercontent.com/d/1p7QtRXwprikM_SiNC90oZEgrF3VLvcFZ=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1p7QtRXwprikM_SiNC90oZEgrF3VLvcFZ=w400',
+  },
+  {
+    id: 'revit-19',
+    driveId: '1deCf0szT1tJ184YmMfAjPQIb4OFyvMDq',
+    src: 'https://lh3.googleusercontent.com/d/1deCf0szT1tJ184YmMfAjPQIb4OFyvMDq=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1deCf0szT1tJ184YmMfAjPQIb4OFyvMDq=w400',
+  },
+  {
+    id: 'revit-20',
+    driveId: '1rMl78pAac1k2bCn1FDpOZyemhabkB7NY',
+    src: 'https://lh3.googleusercontent.com/d/1rMl78pAac1k2bCn1FDpOZyemhabkB7NY=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1rMl78pAac1k2bCn1FDpOZyemhabkB7NY=w400',
+  },
+  {
+    id: 'revit-21',
+    driveId: '1C8Ac-0hoxnmF4b4KSpS89hJLVvgkot1a',
+    src: 'https://lh3.googleusercontent.com/d/1C8Ac-0hoxnmF4b4KSpS89hJLVvgkot1a=w1600',
+    thumbSrc: 'https://lh3.googleusercontent.com/d/1C8Ac-0hoxnmF4b4KSpS89hJLVvgkot1a=w400',
+  },
+  {
+    id: 'revit-22',
     driveId: '1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv',
     src: 'https://lh3.googleusercontent.com/d/1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv=w1600',
     thumbSrc: 'https://lh3.googleusercontent.com/d/1MOG-3fkSnt5VbVuZWFhqh-nmnLZR-sSv=w400',
@@ -77,6 +185,7 @@ export const RevitProjectsShowcaseSection: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [isLiveSyncing, setIsLiveSyncing] = useState<boolean>(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [activeStyle, setActiveStyle] = useState<CyberspaceTransitionStyle>('quantum-slices');
   const [autoCycleStyles, setAutoCycleStyles] = useState<boolean>(true);
@@ -91,16 +200,33 @@ export const RevitProjectsShowcaseSection: React.FC = () => {
   const fetchLiveRevitFolder = async (force = false) => {
     try {
       setIsLiveSyncing(true);
-      const res = await fetch(`/api/revit-projects${force ? '?force=true' : ''}`);
+      const url = `/api/revit-projects?force=${force}&t=${Date.now()}`;
+      const res = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+          Pragma: 'no-cache',
+          'Cache-Control': 'no-cache',
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         if (data?.projects && Array.isArray(data.projects) && data.projects.length > 0) {
           setProjects(data.projects);
-          setLastSyncTime(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+          const timeStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          setLastSyncTime(timeStr);
+          if (force) {
+            audioSystem.playChime();
+            setSyncFeedback(`✓ Sincronizzati ${data.projects.length} modelli!`);
+            setTimeout(() => setSyncFeedback(null), 4000);
+          }
         }
       }
     } catch (e) {
       console.warn('[RevitProjects] Drive live sync fallback to cached items:', e);
+      if (force) {
+        setSyncFeedback('Errore sincronizzazione Google Drive');
+        setTimeout(() => setSyncFeedback(null), 3500);
+      }
     } finally {
       setIsLiveSyncing(false);
     }
@@ -230,11 +356,17 @@ export const RevitProjectsShowcaseSection: React.FC = () => {
                 fetchLiveRevitFolder(true);
               }}
               title="Aggiorna e sincronizza con la cartella Google Drive"
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-cyan-300 hover:text-white transition shadow active:scale-95 group"
+              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-[11px] font-mono transition shadow active:scale-95 group ${
+                syncFeedback
+                  ? 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300 shadow-emerald-950/50'
+                  : 'bg-slate-900 border-slate-700/80 text-cyan-300 hover:text-white'
+              }`}
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${isLiveSyncing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-              <span>{isLiveSyncing ? 'Sincronizzazione...' : `Sincronizza Live (${projects.length})`}</span>
-              {lastSyncTime && <span className="text-stone-500 text-[10px]">({lastSyncTime})</span>}
+              <RefreshCw className={`w-3.5 h-3.5 ${syncFeedback ? 'text-emerald-400' : 'text-cyan-400'} ${isLiveSyncing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+              <span>
+                {syncFeedback ? syncFeedback : isLiveSyncing ? 'Sincronizzazione in corso...' : `Sincronizza Live (${projects.length})`}
+              </span>
+              {lastSyncTime && !syncFeedback && <span className="text-stone-500 text-[10px]">({lastSyncTime})</span>}
             </button>
           </div>
         </div>

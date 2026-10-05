@@ -12,7 +12,7 @@ const PLAYLIST_ID = 'PLkHo5YliNpBhQ6hpYCMb-WmB4UczHgB8Y';
 // In-memory cache
 let cachedVideos: YouTubePlaylistVideo[] | null = null;
 let lastFetchTime = 0;
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
+const CACHE_TTL_MS = 60 * 1000; // 1 minute cache for fast updates when new videos are uploaded
 
 // Default fallback list in case of network interruption
 export const DEFAULT_FALLBACK_VIDEOS: YouTubePlaylistVideo[] = [

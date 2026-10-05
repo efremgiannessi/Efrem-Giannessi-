@@ -103,6 +103,7 @@ export const YouTubePlaylistSection: React.FC = () => {
   const [videos, setVideos] = useState<YouTubeVideoItem[]>(INITIAL_PLAYLIST_VIDEOS);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isLiveSyncing, setIsLiveSyncing] = useState<boolean>(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [isExpandedAll, setIsExpandedAll] = useState<boolean>(false);
 
@@ -110,7 +111,14 @@ export const YouTubePlaylistSection: React.FC = () => {
   const fetchPlaylistUpdates = async (force = false) => {
     try {
       setIsLiveSyncing(true);
-      const res = await fetch(`/api/youtube-playlist${force ? '?force=true' : ''}`);
+      const url = `/api/youtube-playlist?force=${force}&t=${Date.now()}`;
+      const res = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+          Pragma: 'no-cache',
+          'Cache-Control': 'no-cache',
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         if (data?.videos && Array.isArray(data.videos) && data.videos.length > 0) {
@@ -128,11 +136,22 @@ export const YouTubePlaylistSection: React.FC = () => {
           });
 
           setVideos(merged);
-          setLastSyncTime(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+          const timeStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          setLastSyncTime(timeStr);
+
+          if (force) {
+            audioSystem.playChime();
+            setSyncFeedback(`✓ Sincronizzati ${merged.length} video!`);
+            setTimeout(() => setSyncFeedback(null), 4000);
+          }
         }
       }
     } catch (e) {
       console.warn('[YouTubePlaylist] Error auto-syncing from API, using preloaded videos:', e);
+      if (force) {
+        setSyncFeedback('Errore sincronizzazione YouTube');
+        setTimeout(() => setSyncFeedback(null), 3500);
+      }
     } finally {
       setIsLiveSyncing(false);
     }
@@ -140,6 +159,8 @@ export const YouTubePlaylistSection: React.FC = () => {
 
   useEffect(() => {
     fetchPlaylistUpdates();
+    const interval = setInterval(() => fetchPlaylistUpdates(false), 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const activeVideo = videos[activeIndex] || videos[0] || INITIAL_PLAYLIST_VIDEOS[0];
@@ -214,11 +235,17 @@ export const YouTubePlaylistSection: React.FC = () => {
             <button
               onClick={handleManualRefresh}
               title="Verifica nuovi video caricati sulla playlist YouTube"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-stone-300 hover:text-white transition shadow"
+              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-[11px] font-mono transition shadow active:scale-95 group ${
+                syncFeedback
+                  ? 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300 shadow-emerald-950/50'
+                  : 'bg-slate-900 border-slate-700/80 text-stone-300 hover:text-white'
+              }`}
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-red-400 ${isLiveSyncing ? 'animate-spin' : ''}`} />
-              <span>{isLiveSyncing ? 'Sincronizzazione in corso...' : 'Sincronizzato Auto'}</span>
-              {lastSyncTime && <span className="text-stone-500 text-[10px]">({lastSyncTime})</span>}
+              <RefreshCw className={`w-3.5 h-3.5 ${syncFeedback ? 'text-emerald-400' : 'text-red-400'} ${isLiveSyncing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+              <span>
+                {syncFeedback ? syncFeedback : isLiveSyncing ? 'Sincronizzazione in corso...' : `Sincronizzato Auto (${videos.length})`}
+              </span>
+              {lastSyncTime && !syncFeedback && <span className="text-stone-500 text-[10px]">({lastSyncTime})</span>}
             </button>
 
             <a

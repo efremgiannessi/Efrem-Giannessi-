@@ -124,7 +124,13 @@ async function startServer() {
     try {
       const force = req.query.force === 'true';
       const data = await getLiveGalleries(force);
-      res.setHeader('Cache-Control', 'public, max-age=30');
+      if (force) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, private');
+      }
       res.json(data);
     } catch (err: any) {
       console.error('[API] /api/drive-galleries error:', err);
@@ -137,7 +143,13 @@ async function startServer() {
     try {
       const force = req.query.force === 'true';
       const data = await fetchLiveYouTubePlaylist(force);
-      res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes browser cache
+      if (force) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, private');
+      }
       res.json(data);
     } catch (err: any) {
       console.error('[API] /api/youtube-playlist error:', err);
@@ -150,7 +162,13 @@ async function startServer() {
     try {
       const force = req.query.force === 'true';
       const data = await getLiveRevitProjects(force);
-      res.setHeader('Cache-Control', 'public, max-age=45');
+      if (force) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, private');
+      }
       res.json(data);
     } catch (err: any) {
       console.error('[API] /api/revit-projects error:', err);

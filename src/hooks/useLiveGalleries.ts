@@ -28,8 +28,14 @@ export function useLiveGalleries(): LiveGalleriesState {
     setIsSyncing(true);
 
     try {
-      const url = force ? `/api/drive-galleries?force=true&_t=${Date.now()}` : '/api/drive-galleries';
-      const response = await fetch(url);
+      const url = `/api/drive-galleries?force=${force}&_t=${Date.now()}`;
+      const response = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+          Pragma: 'no-cache',
+          'Cache-Control': 'no-cache',
+        },
+      });
 
       if (response.ok) {
         const data = await response.json();
